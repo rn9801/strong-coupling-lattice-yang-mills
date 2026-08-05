@@ -7,6 +7,7 @@ Authors: The Strong-Coupling Lattice Yang--Mills contributors
 import YangMills.Audit.MathlibSmoke
 import YangMills.Baseline.PeriodicTorusMassGap
 import YangMills.Compat.DouglasLGT
+import YangMills.Gauge.FiniteEdgeHaar
 import YangMills.Lattice.Box
 import YangMills.Lattice.Plaquette
 

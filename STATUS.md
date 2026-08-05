@@ -2,7 +2,7 @@
 
 Last updated: 2026-08-04
 
-## Current milestone: 2 -- Haar probability and finite products
+## Current milestone: 3 -- Gauge action and holonomy
 
 ### Completed
 
@@ -54,11 +54,27 @@ Last updated: 2026-08-04
   word, together with closure and perimeter theorems.
 - Defined nonempty finite coordinate boxes and their finite internal
   positive-edge sets.
+- Added `GaugeHaarProbability`, an explicit chosen Haar probability carrying
+  left, right, and inversion invariance without a global `MeasureSpace`.
+- Constructed `GaugeHaarProbability.ofCompact` from Mathlib's normalized Haar
+  measure for compact Borel topological groups, deriving right and inversion
+  invariance from uniqueness of Haar probability.
+- Exposed left, right, two-sided, and inversion maps as `MeasurePreserving`.
+- Defined finite product Haar probability, proved coordinatewise preservation,
+  and proved invariance of integrals under coordinate reindexing.
+- Proved integral factorization for measurable real functions depending on
+  disjoint coordinate sets, with explicit attribution to the generalized
+  Douglas locality argument.
+- Defined finite-box site fields, positive-edge fields, and their gauge action.
+- Proved `productHaar_map_gaugeTransform`: independent Haar edge variables
+  remain product Haar after every finite gauge transformation.
+- Verified that the new core `Gauge` modules do not import `LGT` or
+  `YangMills.Compat`.
 
 ### Not started
 
-- Milestone 2 Haar probability and finite products (current).
-- All gauge-field, polymer, infinite-volume, area-law, and
+- Milestone 3 gauge action and holonomy (current).
+- All holonomy, local-observable, polymer, infinite-volume, area-law, and
   reflection-positivity results.
 
 ## Verification log
@@ -88,6 +104,15 @@ Commands are added here only after they succeed.
   [propext, Quot.sound].
 2026-08-04: lake build
   Success; 3,699 jobs after completing Milestone 1.
+2026-08-04: lake build YangMills.Gauge.ProductHaar
+  YangMills.Gauge.FiniteEdgeHaar
+  Success; 2,590 jobs.
+2026-08-04: lake build YangMills.Tests.Milestone2
+  Success; 2,591 jobs; the compact Haar constructor, disjoint-support
+  factorization, and finite gauge-invariance exit theorem have footprint
+  [propext, Classical.choice, Quot.sound].
+2026-08-04: lake build
+  Success; 3,702 jobs after completing Milestone 2.
 ```
 
 ## Conventions fixed so far
