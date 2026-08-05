@@ -8,6 +8,7 @@ import YangMills.Audit.MathlibSmoke
 import YangMills.Baseline.PeriodicTorusMassGap
 import YangMills.Compat.DouglasLGT
 import YangMills.Gauge.FiniteEdgeHaar
+import YangMills.Gauge.Observable
 import YangMills.Lattice.Box
 import YangMills.Lattice.Plaquette
 

@@ -2,7 +2,7 @@
 
 Last updated: 2026-08-04
 
-## Current milestone: 3 -- Gauge action and holonomy
+## Current milestone: 4 -- General finite-volume model
 
 ### Completed
 
@@ -70,11 +70,32 @@ Last updated: 2026-08-04
   remain product Haar after every finite gauge transformation.
 - Verified that the new core `Gauge` modules do not import `LGT` or
   `YangMills.Compat`.
+- Defined infinite positive-edge configurations and sitewise gauge
+  transformations, with backward signed edges evaluated by group inverse.
+- Proved the identity and composition laws and registered gauge
+  transformations as a genuine `MulAction` on configurations.
+- Defined ordered holonomy on endpoint-indexed cubic paths and proved its
+  empty-path, edge-append, concatenation, and reversal laws.
+- Defined the finite positive-edge support of a path and proved holonomy only
+  depends on that support.
+- Proved endpoint covariance
+  `Hol(g • A, p) = g(source(p)) Hol(A,p) g(target(p))⁻¹` by typed-path induction,
+  and loop conjugation as its specialization.
+- Proved continuity of fixed-edge evaluation and fixed-path holonomy in the
+  product topology.
+- Added continuous local observables with explicit finite supports, support
+  enlargement, algebra operations, complex conjugation, translation and gauge
+  pullbacks, and compact-domain sup-norm bounds.
+- Added continuous class functions and local plaquette and Wilson-loop
+  constructors.
+- Proved gauge invariance of a one-plaquette class-function observable and an
+  arbitrary Wilson loop, completing the Milestone 3 exit criterion.
 
 ### Not started
 
-- Milestone 3 gauge action and holonomy (current).
-- All holonomy, local-observable, polymer, infinite-volume, area-law, and
+- Milestone 4 general finite-volume model (current).
+- All finite-volume Gibbs, representation-theoretic, polymer, infinite-volume,
+  area-law, and
   reflection-positivity results.
 
 ## Verification log
@@ -113,13 +134,22 @@ Commands are added here only after they succeed.
   [propext, Classical.choice, Quot.sound].
 2026-08-04: lake build
   Success; 3,702 jobs after completing Milestone 2.
+2026-08-04: lake build YangMills.Gauge.Observable YangMills.Tests.Milestone3
+  Success; 1,952 jobs; path covariance has footprint [propext, Quot.sound],
+  while the plaquette and Wilson-loop gauge-invariance theorems have footprint
+  [propext, Classical.choice, Quot.sound].
+2026-08-04: lake build
+  Success; 3,705 jobs after completing Milestone 3.
 ```
 
 ## Conventions fixed so far
 
 - Strong coupling means small `|β|` around the independent-Haar point `β = 0`.
-- The future cubic-lattice model stores variables only on positive edges;
+- The cubic-lattice model stores variables only on positive edges;
   reversed edges evaluate by group inverse.
+- Milestone 3 Wilson loops are labelled by arbitrary continuous class
+  functions; Milestone 5 will construct the canonical labels from normalized
+  unitary-representation characters.
 - Real Gibbs probability measures and complex analytic partition functions are
   separate APIs.
 - The Dobrushin baseline and the polymer strong-coupling theorem remain distinct

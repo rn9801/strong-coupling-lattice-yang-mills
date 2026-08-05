@@ -15,12 +15,12 @@ work planned here.
 
 ## Status
 
-Milestones 0, 0A, 1, and 2 are complete; Milestone 3 (gauge action and
-holonomy) is next. The repository now includes an independent cubic-lattice
-geometry and a normalized bi-invariant Haar-probability layer, finite product
-integration, coordinate reindexing, disjoint-support factorization, and
-product-Haar invariance under finite gauge transformations, alongside the
-narrow Douglas compatibility baseline.
+Milestones 0, 0A, 1, 2, and 3 are complete; Milestone 4 (the general
+finite-volume model) is next. The repository now includes an independent
+cubic-lattice geometry, normalized bi-invariant Haar probability, a genuine
+gauge action, typed path holonomy with endpoint covariance, and finitely
+supported continuous observables, including gauge-invariant plaquette and
+Wilson-loop constructors.
 See [`STATUS.md`](STATUS.md),
 [`DOUGLAS_REUSE_AUDIT.md`](DOUGLAS_REUSE_AUDIT.md), and
 [`docs/DOUGLAS_SCOPE.md`](docs/DOUGLAS_SCOPE.md) for exact progress, provenance,
@@ -74,6 +74,7 @@ particular, `Polymer/` will remain independent of `StrongCoupling/`.
 See the [detailed formalization roadmap](docs/DETAILED_ROADMAP.md),
 the [Milestone 1 API summary](docs/MILESTONE1.md),
 the [Milestone 2 API summary](docs/MILESTONE2.md),
+the [Milestone 3 API summary](docs/MILESTONE3.md),
 [`CONTRIBUTING.md`](CONTRIBUTING.md) for the development workflow, and
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for dependency rules. The project
 is released under the [Apache License 2.0](LICENSE).
