@@ -15,14 +15,16 @@ work planned here.
 
 ## Status
 
-Milestones 0, 0A, 1, 2, 3, 4, and 5 are complete; Milestone 6 (the finite
-abstract polymer gas) is next. The repository now includes an independent
+Milestones 0 through 9 (including 0A) are complete; Milestone 10 (boundary
+decay) is next. The repository now includes an independent
 cubic-lattice geometry, normalized bi-invariant Haar probability, a genuine
 gauge action, typed path holonomy with endpoint covariance, finitely supported
 continuous observables, and a general finite-volume plaquette model with real
 Gibbs expectations and an entire complex partition function. Continuous
 unitary representations now supply bounded Wilson actions and loops with
-explicit center-charge covariance.
+explicit center-charge covariance. A standalone finite polymer gas, connected
+cluster layer, exact plaquette-polymer representation, uniform lattice-animal
+count, and explicit positive strong-coupling zero-free disk are now available.
 See [`STATUS.md`](STATUS.md),
 [`DOUGLAS_REUSE_AUDIT.md`](DOUGLAS_REUSE_AUDIT.md), and
 [`docs/DOUGLAS_SCOPE.md`](docs/DOUGLAS_SCOPE.md) for exact progress, provenance,
@@ -79,6 +81,10 @@ the [Milestone 2 API summary](docs/MILESTONE2.md),
 the [Milestone 3 API summary](docs/MILESTONE3.md),
 the [Milestone 4 API summary](docs/MILESTONE4.md),
 the [Milestone 5 API summary](docs/MILESTONE5.md),
+the [Milestone 6 API summary](docs/MILESTONE6.md),
+the [Milestone 7 API summary](docs/MILESTONE7.md),
+the [Milestone 8 API summary](docs/MILESTONE8.md),
+the [Milestone 9 API summary](docs/MILESTONE9.md),
 [`CONTRIBUTING.md`](CONTRIBUTING.md) for the development workflow, and
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for dependency rules. The project
 is released under the [Apache License 2.0](LICENSE).

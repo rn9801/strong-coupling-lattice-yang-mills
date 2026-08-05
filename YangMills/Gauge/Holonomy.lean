@@ -36,6 +36,22 @@ theorem edgeSupport_cons {y z : Site d} (p : Path x y) (e : EdgeBetween y z) :
     edgeSupport (p.cons e) = insert e.1.positive (edgeSupport p) :=
   rfl
 
+@[simp]
+theorem edgeSupport_castTarget {y z : Site d} (p : Path x y) (h : y = z) :
+    edgeSupport (YangMills.Basic.OrientedPath.castTarget p h) = edgeSupport p := by
+  subst h
+  rfl
+
+@[simp]
+theorem edgeSupport_comp {y z : Site d} (p : Path x y) (q : Path y z) :
+    edgeSupport (p.comp q) = edgeSupport p ∪ edgeSupport q := by
+  induction q with
+  | nil => simp
+  | cons q e ih =>
+      simp only [Quiver.Path.comp_cons, edgeSupport_cons, ih]
+      ext a
+      simp [or_left_comm]
+
 end YangMills.Lattice.Cubic.Path
 
 namespace YangMills.Gauge

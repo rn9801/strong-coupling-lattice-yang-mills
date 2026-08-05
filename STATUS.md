@@ -2,7 +2,7 @@
 
 Last updated: 2026-08-05
 
-## Current milestone: 6 -- Finite abstract polymer gas
+## Current milestone: 10 -- Boundary decay
 
 ### Completed
 
@@ -127,11 +127,47 @@ Last updated: 2026-08-05
 - Added explicit center-charge and finite-order center-charge data, and proved
   scalar center transformation laws for characters and Wilson loops,
   completing the Milestone 5 exit criterion.
+- Defined a standalone finite hard-core polymer gas with compatible families,
+  restricted partition functions, deletion recursion, and finite deletion
+  certificates, with no Yang--Mills imports.
+- Proved the local finite Dobrushin--Kotecký--Preiss criterion by strong
+  induction on deletion ratios; every restricted partition function is
+  nonzero under the explicit exponential inequality.
+- Defined tuple incompatibility graphs, connected spanning-subgraph sums,
+  Ursell coefficients, disconnected-cluster vanishing, spanning trees, and a
+  conservative proved tree-indexed graph bound.
+- Added analytic activity families, entire finite partition functions,
+  analytic marked connected-family sums, absolute finite-support summability,
+  and analytic KP packages under deletion and explicit local Dobrushin
+  hypotheses, completing Milestones 6 and 7.
+- Expanded the complex Boltzmann factor exactly over active plaquette subsets
+  and proved each factor depends only on its typed dynamic-edge support.
+- Generalized product-Haar factorization to finite families of functions with
+  pairwise disjoint coordinate supports.
+- Constructed canonical graph components of every active plaquette subset,
+  proved their support cover, pairwise compatibility, and uniqueness among
+  compatible polymer families, and derived exact activity factorization.
+- Proved unconditional equality of the finite-volume Yang--Mills partition
+  function and the abstract connected-plaquette polymer partition function,
+  together with activity bounds and exterior-boundary locality, completing
+  Milestone 8.
+- Proved that each positive cubic edge meets at most `4d` oriented plaquettes
+  and that active-plaquette adjacency has degree at most `16d`, uniformly in
+  the finite volume and exterior field.
+- Proved by deterministic breadth-first exploration that maximum degree `D`
+  implies at most `(2^D)^(n-1)` rooted connected `n`-vertex sets, constructing
+  the plaquette animal-counting certificate automatically.
+- Proved rooted and incompatible polymer generating-function estimates,
+  geometric tails, and a cardinality-weighted Dobrushin certificate below an
+  explicit positive threshold.
+- Defined the positive dimension-only `latticeStrongCouplingRadius` and proved
+  the exact finite-volume complex Yang--Mills partition function is zero-free
+  throughout that disk, uniformly over finite volumes and frozen exterior
+  configurations, completing Milestone 9.
 
 ### Not started
 
-- Milestone 6 finite abstract polymer gas (current).
-- All connected-cluster, lattice-polymer, infinite-volume, area-law, and
+- Milestone 10 boundary decay and all later infinite-volume, area-law, and
   reflection-positivity results.
 
 ## Verification log
@@ -194,6 +230,20 @@ Commands are added here only after they succeed.
   Success; 3,713 jobs after completing Milestone 5. Warnings replayed during
   this build originate in pinned external dependencies; the new project
   modules build without warnings.
+2026-08-05: lake build YangMills.Tests.Milestone6
+  YangMills.Tests.Milestone7 YangMills.Tests.Milestone8
+  YangMills.Tests.Milestone9
+  Success; 2,789 jobs. The abstract finite-gas nonvanishing theorem, cluster
+  bounds and analytic exit package, exact plaquette-polymer identity, lattice
+  animal count, and uniform zero-free theorem have footprint
+  [propext, Classical.choice, Quot.sound].
+2026-08-05: lake -KmaxJobs=2 build
+  Success; 3,734 jobs after completing Milestones 6--9. Warnings replayed
+  during this build originate in pinned external dependencies; the new project
+  modules build without warnings.
+2026-08-05: lake build YangMills.Audit.DouglasAxioms
+  Success; 3,690 jobs; the pinned upstream and regression theorem footprints
+  remain [propext, Classical.choice, Quot.sound].
 ```
 
 ## Conventions fixed so far
@@ -202,7 +252,7 @@ Commands are added here only after they succeed.
 - The cubic-lattice model stores variables only on positive edges;
   reversed edges evaluate by group inverse.
 - Milestone 3 Wilson loops are labelled by arbitrary continuous class
-  functions; Milestone 5 will construct the canonical labels from normalized
+  functions; Milestone 5 constructs canonical labels from normalized
   unitary-representation characters.
 - Real Gibbs probability measures and complex analytic partition functions are
   separate APIs.

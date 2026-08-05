@@ -12,6 +12,11 @@ import YangMills.Gauge.FiniteEdgeHaar
 import YangMills.Gauge.Observable
 import YangMills.Lattice.Box
 import YangMills.Lattice.Plaquette
+import YangMills.Polymer.Cluster
+import YangMills.Polymer.Dobrushin
+import YangMills.Polymer.FiniteGas
+import YangMills.StrongCoupling.Counting
+import YangMills.StrongCoupling.PlaquettePolymer
 import YangMills.Wilson.Loop
 
 /-!
