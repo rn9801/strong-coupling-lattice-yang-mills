@@ -1,0 +1,23 @@
+name = "strong-coupling-lattice-yang-mills"
+version = "0.1.0"
+keywords = ["math", "formalization", "lattice-gauge-theory", "yang-mills"]
+defaultTargets = ["YangMills"]
+
+[leanOptions]
+autoImplicit = false
+pp.unicode.fun = true
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.30.0"
+
+[[require]]
+name = "LGT"
+git = "https://github.com/mrdouglasny/lgt.git"
+rev = "b8793ccf6a51e00e9e2b1685ba191b8626e37137"
+
+[[lean_lib]]
+name = "YangMills"

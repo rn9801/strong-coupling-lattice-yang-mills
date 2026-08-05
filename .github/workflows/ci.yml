@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: lake build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Lean toolchain and Lake build
+        uses: leanprover/lean-action@v1
+        with:
+          use-mathlib-cache: auto
+
+      - name: Reject proof placeholders
+        run: |
+          if rg --line-number '\bsorry\b|\badmit\b' YangMills; then
+            exit 1
+          fi
+          if rg --line-number '^[[:space:]]*(axiom|unsafe)[[:space:]]' YangMills; then
+            exit 1
+          fi
