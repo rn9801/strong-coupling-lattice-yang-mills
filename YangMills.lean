@@ -12,6 +12,7 @@ import YangMills.Gauge.FiniteEdgeHaar
 import YangMills.Gauge.Observable
 import YangMills.Lattice.Box
 import YangMills.Lattice.Plaquette
+import YangMills.Wilson.Loop
 
 /-!
 # Strong-coupling lattice Yang--Mills theory

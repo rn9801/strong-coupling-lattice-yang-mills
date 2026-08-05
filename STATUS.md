@@ -1,8 +1,8 @@
 # Project status
 
-Last updated: 2026-08-04
+Last updated: 2026-08-05
 
-## Current milestone: 5 -- Wilson representation layer
+## Current milestone: 6 -- Finite abstract polymer gas
 
 ### Completed
 
@@ -112,11 +112,27 @@ Last updated: 2026-08-04
   local dominating bound, and proved it is entire.
 - Proved `partitionFunction_zero` and `complexPartitionFunction_zero` for every
   arbitrary finite specification, completing the Milestone 4 exit criterion.
+- Added a positive-dimensional continuous unitary representation wrapper with
+  fixed matrix coordinates and no broad representation-theory dependency.
+- Proved continuity, conjugation invariance, inversion-conjugation, identity,
+  and the sharp dimension bound for matrix characters.
+- Constructed the normalized character as a continuous class function, proved
+  its pointwise unit bound, and built the bounded real Wilson plaquette
+  potential required by the general finite-volume model.
+- Proved the uniform Wilson perturbation estimate
+  `|exp(β Φ(g)) - 1| ≤ exp(|β|) - 1`.
+- Defined the finite-volume Wilson action and representation-labelled local
+  Wilson loops; proved action and loop gauge invariance, the pointwise loop
+  unit bound, orientation reversal, and immediate backtrack cancellation.
+- Added explicit center-charge and finite-order center-charge data, and proved
+  scalar center transformation laws for characters and Wilson loops,
+  completing the Milestone 5 exit criterion.
 
 ### Not started
 
-- Milestone 5 Wilson representation layer (current).
-- All polymer, infinite-volume, area-law, and reflection-positivity results.
+- Milestone 6 finite abstract polymer gas (current).
+- All connected-cluster, lattice-polymer, infinite-volume, area-law, and
+  reflection-positivity results.
 
 ## Verification log
 
@@ -167,6 +183,15 @@ Commands are added here only after they succeed.
   footprint [propext, Classical.choice, Quot.sound].
 2026-08-04: lake -KmaxJobs=2 build
   Success; 3,708 jobs after completing Milestone 4. Warnings replayed during
+  this build originate in pinned external dependencies; the new project
+  modules build without warnings.
+2026-08-05: lake -KmaxJobs=2 build YangMills.Wilson.Loop
+  YangMills.Tests.Milestone5
+  Success; 2,689 jobs; the Wilson unit bound, gauge invariance, and center
+  transformation law have footprint
+  [propext, Classical.choice, Quot.sound].
+2026-08-05: lake -KmaxJobs=2 build
+  Success; 3,713 jobs after completing Milestone 5. Warnings replayed during
   this build originate in pinned external dependencies; the new project
   modules build without warnings.
 ```
