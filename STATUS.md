@@ -2,7 +2,7 @@
 
 Last updated: 2026-08-04
 
-## Current milestone: 4 -- General finite-volume model
+## Current milestone: 5 -- Wilson representation layer
 
 ### Completed
 
@@ -90,13 +90,33 @@ Last updated: 2026-08-04
   constructors.
 - Proved gauge invariance of a one-plaquette class-function observable and an
   arbitrary Wilson loop, completing the Milestone 3 exit criterion.
+- Defined arbitrary finite specifications by their dynamic positive edges,
+  active plaquettes, and explicit frozen exterior configuration.
+- Proved exterior gluing is continuous and intertwines boundary-compatible
+  dynamic gauge transformations with the full configuration-space action.
+- Equipped every specification's dynamic variables with finite product Haar
+  probability and proved coordinatewise dynamic gauge transformations preserve
+  it, including an integral change-of-variables theorem.
+- Defined bounded continuous real plaquette potentials with conjugation and
+  inversion symmetry, and defined their finite-volume action and an explicit
+  uniform action bound.
+- Defined the positive real Boltzmann weight, partition function, and normalized
+  Gibbs expectation; proved weight integrability, strict partition-function
+  positivity, normalization on the constant-one observable, and the bounded
+  expectation estimate.
+- Proved active plaquette holonomy conjugation, action and weight invariance,
+  partition-integrand invariance, and Gibbs-expectation invariance under every
+  boundary-compatible gauge transformation.
+- Defined the complex finite-volume partition function separately from the real
+  probability API, justified differentiation under its integral by an explicit
+  local dominating bound, and proved it is entire.
+- Proved `partitionFunction_zero` and `complexPartitionFunction_zero` for every
+  arbitrary finite specification, completing the Milestone 4 exit criterion.
 
 ### Not started
 
-- Milestone 4 general finite-volume model (current).
-- All finite-volume Gibbs, representation-theoretic, polymer, infinite-volume,
-  area-law, and
-  reflection-positivity results.
+- Milestone 5 Wilson representation layer (current).
+- All polymer, infinite-volume, area-law, and reflection-positivity results.
 
 ## Verification log
 
@@ -140,6 +160,15 @@ Commands are added here only after they succeed.
   [propext, Classical.choice, Quot.sound].
 2026-08-04: lake build
   Success; 3,705 jobs after completing Milestone 3.
+2026-08-04: lake -KmaxJobs=2 build YangMills.Gauge.ComplexFiniteVolume
+  YangMills.Tests.Milestone4
+  Success; 2,744 jobs; arbitrary-specification normalization, the bounded
+  Gibbs expectation, admissible gauge invariance, and entire analyticity have
+  footprint [propext, Classical.choice, Quot.sound].
+2026-08-04: lake -KmaxJobs=2 build
+  Success; 3,708 jobs after completing Milestone 4. Warnings replayed during
+  this build originate in pinned external dependencies; the new project
+  modules build without warnings.
 ```
 
 ## Conventions fixed so far
