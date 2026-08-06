@@ -15,8 +15,10 @@ work planned here.
 
 ## Status
 
-Milestones 0 through 9 (including 0A) are complete; Milestone 10 (boundary
-decay) is next. The repository now includes an independent
+Milestones 0 through 10 (including 0A) are complete. Milestone 10 proves
+uniform boundary decay for arbitrary finite boxes through a compact-spin
+Dobrushin specification, with an explicit positive strong-coupling radius and
+no prefactor proportional to the boundary size. The repository now includes an independent
 cubic-lattice geometry, normalized bi-invariant Haar probability, a genuine
 gauge action, typed path holonomy with endpoint covariance, finitely supported
 continuous observables, and a general finite-volume plaquette model with real
@@ -85,6 +87,7 @@ the [Milestone 6 API summary](docs/MILESTONE6.md),
 the [Milestone 7 API summary](docs/MILESTONE7.md),
 the [Milestone 8 API summary](docs/MILESTONE8.md),
 the [Milestone 9 API summary](docs/MILESTONE9.md),
+the [Milestone 10 worklog](docs/MILESTONE10.md),
 [`CONTRIBUTING.md`](CONTRIBUTING.md) for the development workflow, and
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for dependency rules. The project
 is released under the [Apache License 2.0](LICENSE).

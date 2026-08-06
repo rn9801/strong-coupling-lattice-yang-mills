@@ -8,6 +8,7 @@ import YangMills.Gauge.Specification
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.MeasureTheory.Integral.IntegrableOn
+import Mathlib.MeasureTheory.Measure.Tilted
 
 /-!
 # General real finite-volume plaquette model
@@ -192,6 +193,34 @@ noncomputable def gibbsExpectation
     (F : DynamicConfiguration Λ → ℝ) : ℝ :=
   (partitionFunction Λ Φ β)⁻¹ *
     ∫ U, boltzmannWeight Λ Φ β U * F U ∂Λ.haarMeasure
+
+/-- The finite-volume Gibbs probability measure, packaged as the exponential
+tilt of product Haar by the action. -/
+noncomputable def gibbsMeasure
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℝ) :
+    Measure (DynamicConfiguration Λ) :=
+  Λ.haarMeasure.tilted fun U => β * action Λ Φ U
+
+instance instIsProbabilityMeasureGibbsMeasure
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℝ) :
+    IsProbabilityMeasure (gibbsMeasure Λ Φ β) := by
+  apply isProbabilityMeasure_tilted
+  simpa only [boltzmannWeight] using integrable_boltzmannWeight Λ Φ β
+
+/-- Ratio-of-Haar-integrals expectations are ordinary integrals against the
+finite-volume Gibbs probability measure. -/
+theorem gibbsExpectation_eq_integral_gibbsMeasure
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℝ)
+    (F : DynamicConfiguration Λ → ℝ) :
+    gibbsExpectation Λ Φ β F = ∫ U, F U ∂gibbsMeasure Λ Φ β := by
+  rw [gibbsMeasure, integral_tilted]
+  simp only [smul_eq_mul, boltzmannWeight, gibbsExpectation, partitionFunction]
+  have hZ : (∫ U, Real.exp (β * action Λ Φ U) ∂Λ.haarMeasure) ≠ 0 :=
+    (partitionFunction_pos Λ Φ β).ne'
+  rw [← integral_const_mul]
+  congr 1
+  funext U
+  field_simp
 
 /-- Gibbs expectation is normalized on the constant-one observable. -/
 @[simp]

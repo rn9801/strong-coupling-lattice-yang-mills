@@ -164,10 +164,34 @@ Last updated: 2026-08-05
   the exact finite-volume complex Yang--Mills partition function is zero-free
   throughout that disk, uniformly over finite volumes and frozen exterior
   configurations, completing Milestone 9.
+- Added a model-independent marked influence certificate and proved an
+  exponentially decaying finite-range Neumann bound.  The full defect set is
+  summed inside the path-length series, so the estimate has no factor
+  proportional to the boundary size.
+- Defined complex local-observable numerators and normalized expectations,
+  proved the exact marked plaquette-subset expansion and its sup-norm bound,
+  and proved marked weights are unchanged away from the exact exterior
+  disagreement set.
+- Defined observable-root and boundary-disagreement plaquettes, proved the
+  uniform root count `|R(F)| ≤ 4d |support(F)|`, and proved the connected-set
+  graph-distance/cardinality conversion needed for boundary decay.
+- Constructed arbitrary-box compact-spin Gibbs specifications and proved their
+  full DLR equations by finite-product Haar gluing.
+- Proved volume-independent one-edge influence, `16d` interaction-neighbor,
+  row-sum, and column-sum bounds, together with the explicit positive
+  `boxDobrushinRadius`.
+- Proved the normalized boundary-sensitivity theorem
+  `complexGibbsExpectation_boundaryDecay`, with geometric decay and no factor
+  proportional to the boundary-defect cardinality, completing Milestone 10.
+
+### In progress
+
+- Milestone 11 planning: infinite-volume Gibbs-state construction from the
+  uniform finite-volume boundary estimate.
 
 ### Not started
 
-- Milestone 10 boundary decay and all later infinite-volume, area-law, and
+- Milestone 12 and all later area-law and
   reflection-positivity results.
 
 ## Verification log
@@ -244,6 +268,22 @@ Commands are added here only after they succeed.
 2026-08-05: lake build YangMills.Audit.DouglasAxioms
   Success; 3,690 jobs; the pinned upstream and regression theorem footprints
   remain [propext, Classical.choice, Quot.sound].
+2026-08-05: lake build YangMills.Tests.Milestone10Foundations YangMills
+  Success; 3,739 jobs. The aggregate marked influence tail, exact marked
+  numerator expansion, and connected-set distance conversion have footprint
+  [propext, Classical.choice, Quot.sound].
+2026-08-05: lake -KmaxJobs=2 build
+  Success; 3,738 jobs after adding the Milestone 10 foundation modules.
+  Replayed warnings originate in pinned external dependencies; the new
+  project modules build without warnings.
+2026-08-05: lake build YangMills.Tests.Milestone10Foundations
+  Success; 2,883 jobs. The marked influence tail, exact marked numerator
+  expansion, graph-distance conversion, explicit Dobrushin radius theorem,
+  and concrete boundary-decay exit theorem have footprint
+  [propext, Classical.choice, Quot.sound].
+2026-08-05: lake -KmaxJobs=2 build
+  Success; 3,744 jobs after completing Milestone 10. Remaining messages are
+  linter or deprecation warnings; there are no build errors.
 ```
 
 ## Conventions fixed so far

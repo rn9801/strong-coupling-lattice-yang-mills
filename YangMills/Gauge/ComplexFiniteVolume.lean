@@ -36,6 +36,14 @@ def complexBoltzmannWeight
     (β : ℂ) (U : DynamicConfiguration Λ) : ℂ :=
   Complex.exp (β * (action Λ Φ U : ℂ))
 
+@[simp]
+theorem complexBoltzmannWeight_ofReal
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
+    (β : ℝ) (U : DynamicConfiguration Λ) :
+    complexBoltzmannWeight Λ Φ (β : ℂ) U =
+      (boltzmannWeight Λ Φ β U : ℂ) := by
+  simp [complexBoltzmannWeight, boltzmannWeight]
+
 omit [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
     [GaugeHaarProbability G] in
 /-- The complex weight is continuous in the dynamic variables. -/
@@ -75,6 +83,15 @@ theorem integrable_complexBoltzmannWeight
 def complexPartitionFunction
     (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℂ) : ℂ :=
   ∫ U, complexBoltzmannWeight Λ Φ β U ∂Λ.haarMeasure
+
+@[simp]
+theorem complexPartitionFunction_ofReal
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℝ) :
+    complexPartitionFunction Λ Φ (β : ℂ) =
+      (partitionFunction Λ Φ β : ℂ) := by
+  simp only [complexPartitionFunction, complexBoltzmannWeight_ofReal,
+    partitionFunction]
+  exact integral_ofReal
 
 omit [IsTopologicalGroup G] [BorelSpace G] [SecondCountableTopology G] in
 /-- The complex partition function also equals one at zero coupling. -/

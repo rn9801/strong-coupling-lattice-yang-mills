@@ -15,7 +15,15 @@ import YangMills.Lattice.Plaquette
 import YangMills.Polymer.Cluster
 import YangMills.Polymer.Dobrushin
 import YangMills.Polymer.FiniteGas
+import YangMills.Polymer.Influence
+import YangMills.Probability.FiniteProductGibbs
+import YangMills.StrongCoupling.AbstractBoundaryDecay
+import YangMills.StrongCoupling.BoundaryDecay
+import YangMills.StrongCoupling.BoundaryGeometry
+import YangMills.StrongCoupling.BoxDobrushin
+import YangMills.StrongCoupling.BoxGibbs
 import YangMills.StrongCoupling.Counting
+import YangMills.StrongCoupling.MarkedExpansion
 import YangMills.StrongCoupling.PlaquettePolymer
 import YangMills.Wilson.Loop
 
