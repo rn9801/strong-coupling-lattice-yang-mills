@@ -8,7 +8,9 @@ import YangMills.Basic.OrientedPath
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Int.Basic
+import Mathlib.Data.Countable.Basic
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.DeriveCountable
 
 /-!
 # Oriented edges of the infinite cubic lattice
@@ -123,7 +125,7 @@ theorem translate_step {d : ℕ} (v x : Site d) (s : SignedDirection d) :
 structure PositiveEdge (d : ℕ) where
   source : Site d
   direction : Fin d
-  deriving DecidableEq
+  deriving DecidableEq, Countable
 
 namespace PositiveEdge
 

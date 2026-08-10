@@ -1,8 +1,8 @@
 # Project status
 
-Last updated: 2026-08-05
+Last updated: 2026-08-10
 
-## Current milestone: 10 -- Boundary decay
+## Current milestone: 11--13 -- Cluster thermodynamic limit and clustering
 
 ### Completed
 
@@ -183,16 +183,95 @@ Last updated: 2026-08-05
 - Proved the normalized boundary-sensitivity theorem
   `complexGibbsExpectation_boundaryDecay`, with geometric decay and no factor
   proportional to the boundary-defect cardinality, completing Milestone 10.
+- Audited Mathlib's countable-product Borel construction, compactness of
+  probability measures on compact spaces, weak-convergence integral API, and
+  Riesz--Markov/Prokhorov alternatives before choosing the compact weak-limit
+  route for Milestone 12.
+- Made `PositiveEdge d` explicitly countable, so the infinite configuration
+  space has the required countable-product Borel structure.
+- Defined centered boxes `[-n,n]^d`, proved nestedness of their site and edge
+  sets, and proved that every finite edge support is eventually contained in
+  the exhaustion.
+- Defined centered arbitrary-boundary Yang--Mills specifications whose active
+  plaquettes are exactly those incident to a dynamic edge, and pushed their
+  Gibbs laws to probability measures on the full configuration space.
+- Added a one-root `ClusterLimitCertificate` whose input is a uniform marked
+  linked-cluster tail, and proved Cauchy convergence, additivity, complex
+  homogeneity, normalization, the sup-norm bound, and boundary/sequence limit
+  uniqueness for the resulting local state.
+- Added an `InvariantClusterLimitCertificate` and proved that the asymptotic
+  translated-boundary and gauge-transformed-boundary cluster comparisons imply
+  translation and gauge invariance of the local state.
+- Constructed an infinite-volume probability as a weak cluster point of the
+  full-space finite-volume laws and proved that it represents every local
+  cluster-state expectation.  Positivity and reality for nonnegative real
+  local observables follow from the representing probability measure.
+- Added a two-root linked-cluster certificate and proved the infinite-volume
+  theorem `TwoRootClusterCertificate.exponential_clustering`, together with
+  its literal exponential form and the explicit positive mass
+  `-log(rate) > 0`.
+- Kept all new Milestone 11--13 modules independent of `Compat/`, `LGT`, the
+  Douglas repository, and the Dobrushin theorem family.  Their finite-volume
+  hypotheses are explicitly one-root and two-root cluster-cancellation bounds.
+- Added executable regressions and axiom checks for centered-box cofinality,
+  the local-state algebra, probability representation, and exponential
+  clustering; all have footprint
+  `[propext, Classical.choice, Quot.sound]`.
+- Defined the actual Mayer multi-index of a finite hard-core gas, its labelled
+  incompatibility graph, Ursell coefficient, symmetry factor, activity
+  monomial, and normalized connected cluster term in the polymer-only layer.
+  Proved disconnected-cluster cancellation and the exact one-source and
+  two-source scaling laws that select multiplicity-one rooted terms.  This
+  module has no Yang--Mills, `Compat/`, `LGT`, or Douglas dependency.
+- Proved the Milestone 11 cross-exhaustion principle: a vanishing one-root
+  comparison tail between two independently chosen volume/boundary sequences
+  forces their local cluster states to agree.
+- Completed the Milestone 12 density/uniqueness step.  Real finite-edge
+  cylinder functions form a separating Stone--Weierstrass algebra on the full
+  compact configuration space; consequently two probability measures agreeing
+  on local continuous observables are equal, and the cluster-state
+  infinite-volume measure is the unique representing Borel probability.
+- Proved the finite-volume normalized Mayer/log identity by a deletion-ordered
+  Mayer series.  Each pinned insertion variable is strictly inside the unit
+  disk under the local Dobrushin--KP certificate, its Taylor series equals
+  `Complex.log (1 + u)`, and the exponential of the summed branch is exactly
+  the restricted polymer partition function.  This avoids an invalid global
+  principal-log choice.
+- Exposed the weighted KP tree telescope and pinned bound from the existing
+  explicit certificate: deletion from `U` to `V` costs at most the exponential
+  of the deleted weights, while a marked compatible-partition ratio is bounded
+  by `1 - exp (-a γ)`.  Instantiated both estimates and the exact Mayer
+  identity for the plaquette gas on the explicit lattice strong-coupling disk,
+  uniformly in finite volume and frozen exterior data.
+- Added a polymer-only finite-root augmentation and instantiated one- and
+  two-observable plaquette-root gases.  Root--bulk adjacency is exactly
+  intersection with `observableRootPlaquettes`; distinct observable roots are
+  compatible, so a two-root connected cluster can link them only through bulk
+  plaquette polymers.  The associated one- and two-source partition
+  polynomials are exact for arbitrary local observables; after vacuum
+  normalization their linear coefficients are finite-volume expectations and
+  their connected bilinear coefficient is exactly the truncated correlation.
+  The construction has no `Compat/`, LGT, or Douglas dependency.
 
 ### In progress
 
-- Milestone 11 planning: infinite-volume Gibbs-state construction from the
-  uniform finite-volume boundary estimate.
+- Concrete linked-cluster instantiation of the new certificates for
+  `centeredGibbsSequence`: prove one-root cancellation and its uniform tail,
+  translated/gauge-transformed boundary comparison, and two-root cancellation
+  directly from the plaquette-polymer expansion.
+- Regroup the deletion-ordered normalized Mayer logarithm into the previously
+  defined symmetric multi-index Ursell sum.  The exact log/partition identity,
+  weighted pinned estimate, and observable-root gases are now available; this
+  remaining combinatorial regrouping is needed before the concrete one- and
+  two-root tails can directly consume `mayerClusterTerm`.
+- Milestones 11--13 are not marked complete until those certificate fields are
+  discharged for Yang--Mills at the explicit strong-coupling radius.  The
+  existing Dobrushin boundary theorem remains only a distinct baseline and
+  will not be used to discharge them.
 
 ### Not started
 
-- Milestone 12 and all later area-law and
-  reflection-positivity results.
+- Milestone 14 and all later area-law and reflection-positivity results.
 
 ## Verification log
 
@@ -284,6 +363,46 @@ Commands are added here only after they succeed.
 2026-08-05: lake -KmaxJobs=2 build
   Success; 3,744 jobs after completing Milestone 10. Remaining messages are
   linter or deprecation warnings; there are no build errors.
+2026-08-10: lake -KmaxJobs=2 build
+  YangMills.StrongCoupling.ClusterState
+  YangMills.StrongCoupling.InfiniteVolumeMeasure
+  YangMills.StrongCoupling.ExponentialClustering
+  YangMills.StrongCoupling.ThermodynamicBoxes
+  Success; the cluster-only Milestone 11--13 thermodynamic-limit backbone and
+  centered exhaustion compile without placeholders.
+2026-08-10: lake -KmaxJobs=2 build
+  YangMills.Tests.Milestones11To13Foundations YangMills
+  Success; 3,749 jobs. Centered-box cofinality, local-state algebra, measure
+  representation, and exponential clustering have axiom footprint
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-10: lake -KmaxJobs=2 build
+  Success; 3,748 jobs after adding the cluster-only Milestone 11--13 backbone.
+  Remaining messages are linter or deprecation warnings, primarily replayed
+  from pinned dependencies; there are no build errors.
+2026-08-10: lake build YangMills.StrongCoupling.ClusterState
+  YangMills.StrongCoupling.InfiniteVolumeMeasure YangMills.Polymer.Mayer
+  YangMills.Tests.Milestones11To13Foundations
+  Success; 2,865 jobs. Cross-exhaustion state uniqueness, the
+  Stone--Weierstrass measure-uniqueness theorem, disconnected Mayer
+  cancellation, and one-/two-source scaling have footprint
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-10: lake build
+  Success; 3,749 jobs after adding the Mayer source formalism and completing
+  the Milestone 12 density/measure-uniqueness step. There are no build errors.
+2026-08-10: lake build YangMills.Polymer.FiniteMayer
+  YangMills.StrongCoupling.ObservableRootPolymer
+  YangMills.StrongCoupling.FiniteClusterExpansion
+  Success. The normalized finite Mayer/log identity, weighted deletion and
+  pinned KP bounds, explicit plaquette-disk instantiation, and augmented
+  observable-root source constructions compile without placeholders.
+2026-08-10: lake env lean YangMills/Tests/Milestones11To13Foundations.lean
+  Success. The new finite Mayer, pinned, explicit plaquette, observable-root,
+  and connected two-source coefficient declarations have footprint
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-10: lake build
+  Success; 3,753 jobs. Remaining output consists of linter and deprecation
+  warnings, mostly replayed from pinned dependencies; there are no build
+  errors.
 ```
 
 ## Conventions fixed so far

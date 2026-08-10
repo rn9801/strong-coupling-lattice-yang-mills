@@ -114,6 +114,44 @@ def add (F H : LocalObservable d G) : LocalObservable d G where
     rw [F.dependsOn_support (fun e he => h e (Finset.mem_union_left _ he)),
       H.dependsOn_support (fun e he => h e (Finset.mem_union_right _ he))]
 
+@[simp]
+theorem add_apply (F H : LocalObservable d G) (A : Configuration d G) :
+    add F H A = F A + H A :=
+  rfl
+
+/-- Scalar multiplication of a local observable does not enlarge its support. -/
+def smul (z : ℂ) (F : LocalObservable d G) : LocalObservable d G where
+  toContinuousMap := z • F.toContinuousMap
+  support := F.support
+  dependsOn_support := by
+    intro A B h
+    simp only [ContinuousMap.smul_apply]
+    rw [F.dependsOn_support h]
+
+/-- Pointwise negation of a local observable. -/
+def neg (F : LocalObservable d G) : LocalObservable d G :=
+  smul (-1) F
+
+/-- Difference of two local observables, supported on the union. -/
+def sub (F H : LocalObservable d G) : LocalObservable d G :=
+  add F (neg H)
+
+@[simp]
+theorem smul_apply (z : ℂ) (F : LocalObservable d G)
+    (A : Configuration d G) : smul z F A = z * F A :=
+  rfl
+
+@[simp]
+theorem neg_apply (F : LocalObservable d G) (A : Configuration d G) :
+    neg F A = -F A := by
+  simp [neg, smul]
+
+@[simp]
+theorem sub_apply (F H : LocalObservable d G) (A : Configuration d G) :
+    sub F H A = F A - H A := by
+  change F A + (-1 : ℂ) * H A = F A - H A
+  ring
+
 /-- Product of two local observables, supported on the union. -/
 def mul (F H : LocalObservable d G) : LocalObservable d G where
   toContinuousMap := F.toContinuousMap * H.toContinuousMap
