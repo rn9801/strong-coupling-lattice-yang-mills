@@ -104,6 +104,77 @@ structure ClusterLimitCertificate
     ‖localExpectation (measure m) F - localExpectation (measure n) F‖ ≤
       tail F N
 
+/-- Canonical tail attached to a Cauchy family of local expectations: the
+supremum of all pairwise differences beyond the displayed index. -/
+def cauchyLocalExpectationTail
+    (measure : ℕ → ProbabilityMeasure (Configuration d G))
+    (F : LocalObservable d G) (N : ℕ) : ℝ :=
+  sSup {x : ℝ | ∃ m n, N ≤ m ∧ N ≤ n ∧
+    x = ‖localExpectation (measure m) F - localExpectation (measure n) F‖}
+
+theorem cauchyLocalExpectationTail_bddAbove
+    (measure : ℕ → ProbabilityMeasure (Configuration d G))
+    (F : LocalObservable d G) (N : ℕ) :
+    BddAbove {x : ℝ | ∃ m n, N ≤ m ∧ N ≤ n ∧
+      x = ‖localExpectation (measure m) F - localExpectation (measure n) F‖} := by
+  refine ⟨2 * ‖F.toBoundedContinuousMap‖, ?_⟩
+  rintro x ⟨m, n, _hm, _hn, rfl⟩
+  calc
+    ‖localExpectation (measure m) F - localExpectation (measure n) F‖ ≤
+        ‖localExpectation (measure m) F‖ +
+          ‖localExpectation (measure n) F‖ := norm_sub_le _ _
+    _ ≤ ‖F.toBoundedContinuousMap‖ + ‖F.toBoundedContinuousMap‖ :=
+      add_le_add (norm_localExpectation_le (measure m) F)
+        (norm_localExpectation_le (measure n) F)
+    _ = 2 * ‖F.toBoundedContinuousMap‖ := by ring
+
+theorem cauchyLocalExpectationTail_nonneg
+    (measure : ℕ → ProbabilityMeasure (Configuration d G))
+    (F : LocalObservable d G) (N : ℕ) :
+    0 ≤ cauchyLocalExpectationTail measure F N := by
+  apply le_csSup (cauchyLocalExpectationTail_bddAbove measure F N)
+  exact ⟨N, N, le_rfl, le_rfl, by simp⟩
+
+theorem norm_localExpectation_sub_le_cauchyTail
+    (measure : ℕ → ProbabilityMeasure (Configuration d G))
+    (F : LocalObservable d G) (N m n : ℕ) (hm : N ≤ m) (hn : N ≤ n) :
+    ‖localExpectation (measure m) F - localExpectation (measure n) F‖ ≤
+      cauchyLocalExpectationTail measure F N := by
+  exact le_csSup (cauchyLocalExpectationTail_bddAbove measure F N)
+    ⟨m, n, hm, hn, rfl⟩
+
+theorem cauchyLocalExpectationTail_tendsto_zero
+    (measure : ℕ → ProbabilityMeasure (Configuration d G))
+    (hcauchy : ∀ F : LocalObservable d G,
+      CauchySeq (fun n => localExpectation (measure n) F))
+    (F : LocalObservable d G) :
+    Tendsto (cauchyLocalExpectationTail measure F) atTop (nhds 0) := by
+  rw [Metric.tendsto_atTop]
+  intro ε hε
+  obtain ⟨N, hN⟩ := (Metric.cauchySeq_iff.mp (hcauchy F)) (ε / 2) (half_pos hε)
+  refine ⟨N, fun M hNM => ?_⟩
+  rw [dist_zero_right, Real.norm_eq_abs,
+    abs_of_nonneg (cauchyLocalExpectationTail_nonneg measure F M)]
+  have hle : cauchyLocalExpectationTail measure F M ≤ ε / 2 := by
+    apply csSup_le
+    · exact ⟨0, M, M, le_rfl, le_rfl, by simp⟩
+    · rintro x ⟨m, n, hm, hn, rfl⟩
+      rw [← dist_eq_norm]
+      exact (hN m (hNM.trans hm) n (hNM.trans hn)).le
+  exact hle.trans_lt (half_lt_self hε)
+
+/-- Package pointwise Cauchy convergence of all local expectations as the
+uniform-tail interface used by the infinite-volume construction. -/
+def clusterLimitCertificateOfCauchy
+    (measure : ℕ → ProbabilityMeasure (Configuration d G))
+    (hcauchy : ∀ F : LocalObservable d G,
+      CauchySeq (fun n => localExpectation (measure n) F)) :
+    ClusterLimitCertificate measure where
+  tail := cauchyLocalExpectationTail measure
+  tail_nonneg := cauchyLocalExpectationTail_nonneg measure
+  tail_tendsto_zero := cauchyLocalExpectationTail_tendsto_zero measure hcauchy
+  compare := norm_localExpectation_sub_le_cauchyTail measure
+
 namespace ClusterLimitCertificate
 
 variable {measure : ℕ → ProbabilityMeasure (Configuration d G)}

@@ -96,6 +96,53 @@ theorem positiveEdge_mem_centeredBox_eventually {d : ℕ}
   exact ⟨centeredBox_sites_mono (Nat.le_max_left m n) hm,
     centeredBox_sites_mono (Nat.le_max_right m n) hn⟩
 
+/-- An explicit radius controlling every coordinate of a lattice
+translation. -/
+def siteTranslationRadius {d : ℕ} (v : Site d) : ℕ :=
+  ∑ i : Fin d, (v i).natAbs
+
+/-- Every coordinate of a translation vector is bounded by its explicit
+translation radius. -/
+theorem abs_coord_le_siteTranslationRadius {d : ℕ} (v : Site d) (i : Fin d) :
+    |v i| ≤ (siteTranslationRadius v : ℤ) := by
+  have hi : (v i).natAbs ≤ siteTranslationRadius v := by
+    dsimp only [siteTranslationRadius]
+    exact Finset.single_le_sum
+      (s := (Finset.univ : Finset (Fin d)))
+      (f := fun j : Fin d => (v j).natAbs)
+      (fun _ _ => Nat.zero_le _) (Finset.mem_univ i)
+  rw [← Int.natCast_natAbs]
+  exact_mod_cast hi
+
+/-- Translating a site in the radius-`m` centered box lands in the centered
+box enlarged by the explicit translation radius. -/
+theorem translate_mem_centeredBox_add_radius {d m : ℕ} (v : Site d)
+    {x : Site d} (hx : x ∈ (centeredBox d m).sites) :
+    translate v x ∈
+      (centeredBox d (m + siteTranslationRadius v)).sites := by
+  rw [mem_centeredBox_sites] at hx ⊢
+  intro i
+  have hv := abs_le.mp (abs_coord_le_siteTranslationRadius v i)
+  change -((m + siteTranslationRadius v : ℕ) : ℤ) ≤ x i + v i ∧
+    x i + v i ≤ ((m + siteTranslationRadius v : ℕ) : ℤ)
+  constructor
+  · simpa only [Int.natCast_add, neg_add_rev, add_comm] using
+      (add_le_add (hx i).1 hv.1 :
+        -(m : ℤ) + -(siteTranslationRadius v : ℤ) ≤ x i + v i)
+  · simpa only [Int.natCast_add] using add_le_add (hx i).2 hv.2
+
+/-- Translating a positive edge in the radius-`m` centered box lands in the
+box enlarged by the explicit translation radius. -/
+theorem positiveEdge_translate_mem_centeredBox_add_radius {d m : ℕ}
+    (v : Site d) {e : PositiveEdge d}
+    (he : e ∈ (centeredBox d m).positiveEdges) :
+    e.translate v ∈
+      (centeredBox d (m + siteTranslationRadius v)).positiveEdges := by
+  rw [Box.mem_positiveEdges] at he ⊢
+  exact ⟨translate_mem_centeredBox_add_radius v he.1,
+    by rw [PositiveEdge.target_translate]
+       exact translate_mem_centeredBox_add_radius v he.2⟩
+
 /-- Every finite edge support is contained in one centered box. -/
 theorem finiteSupport_subset_centeredBox {d : ℕ}
     (S : Finset (PositiveEdge d)) :
@@ -146,6 +193,15 @@ theorem centeredSpecification_activePlaquettes {d : ℕ} {G : Type*}
     (n : ℕ) (η : Configuration d G) :
     (centeredSpecification n η).activePlaquettes =
       centeredActivePlaquettes d n :=
+  rfl
+
+/-- Gauge transformation of the frozen exterior field commutes with the
+centered specification constructor. -/
+theorem centeredSpecification_gaugeTransformExterior
+    {d : ℕ} {G : Type*} [Group G]
+    (n : ℕ) (η : Configuration d G) (g : GaugeTransformation d G) :
+    (centeredSpecification n η).gaugeTransformExterior g =
+      centeredSpecification n (gaugeTransform g η) :=
   rfl
 
 /-- The full-space Yang--Mills probability sequence along centered boxes. -/

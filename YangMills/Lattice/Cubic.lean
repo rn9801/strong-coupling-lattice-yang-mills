@@ -105,6 +105,26 @@ end SignedDirection
 def translate {d : ℕ} (v x : Site d) : Site d :=
   x + v
 
+@[simp]
+theorem translate_zero {d : ℕ} (x : Site d) :
+    translate 0 x = x := by
+  simp [translate]
+
+@[simp]
+theorem translate_translate {d : ℕ} (v w : Site d) (x : Site d) :
+    translate w (translate v x) = translate (v + w) x := by
+  simp [translate, add_assoc]
+
+@[simp]
+theorem translate_neg_self {d : ℕ} (v : Site d) (x : Site d) :
+    translate (-v) (translate v x) = x := by
+  simp [translate, add_assoc]
+
+@[simp]
+theorem translate_neg_self' {d : ℕ} (v : Site d) (x : Site d) :
+    translate v (translate (-v) x) = x := by
+  simp [translate, add_assoc]
+
 /-- Take one signed coordinate step from `x`. -/
 def step {d : ℕ} (x : Site d) (s : SignedDirection d) : Site d :=
   x + s.delta
@@ -136,6 +156,34 @@ def target {d : ℕ} (e : PositiveEdge d) : Site d :=
 /-- Translate a positive edge without changing its coordinate direction. -/
 def translate {d : ℕ} (v : Site d) (e : PositiveEdge d) : PositiveEdge d :=
   ⟨Cubic.translate v e.source, e.direction⟩
+
+@[simp]
+theorem translate_zero {d : ℕ} (e : PositiveEdge d) : e.translate 0 = e := by
+  cases e
+  simp [PositiveEdge.translate]
+
+@[simp]
+theorem translate_translate {d : ℕ} (v w : Site d) (e : PositiveEdge d) :
+    (e.translate v).translate w = e.translate (v + w) := by
+  cases e
+  simp [PositiveEdge.translate]
+
+@[simp]
+theorem translate_neg_self {d : ℕ} (v : Site d) (e : PositiveEdge d) :
+    (e.translate v).translate (-v) = e := by
+  simp
+
+@[simp]
+theorem translate_neg_self' {d : ℕ} (v : Site d) (e : PositiveEdge d) :
+    (e.translate (-v)).translate v = e := by
+  simp
+
+/-- Translation is a bijection of the positive edges. -/
+def translationEquiv {d : ℕ} (v : Site d) : PositiveEdge d ≃ PositiveEdge d where
+  toFun := PositiveEdge.translate v
+  invFun := PositiveEdge.translate (-v)
+  left_inv := PositiveEdge.translate_neg_self v
+  right_inv := PositiveEdge.translate_neg_self' v
 
 @[simp]
 theorem source_translate {d : ℕ} (v : Site d) (e : PositiveEdge d) :

@@ -6,6 +6,7 @@ Authors: The Strong-Coupling Lattice Yang--Mills contributors
 
 import YangMills.StrongCoupling.PlaquettePolymer
 import YangMills.Polymer.Dobrushin
+import YangMills.Polymer.KoteckyPreiss
 import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
@@ -49,6 +50,17 @@ theorem plaquette_boundary_edgeSupport {d : ℕ} (p : Plaquette d) :
   intro e
   simp only [Finset.mem_insert, Finset.mem_singleton]
   tauto
+
+/-- Translation carries the four stored positive boundary edges of a
+plaquette to the boundary edges of the translated plaquette. -/
+theorem plaquette_boundary_edgeSupport_translate {d : ℕ}
+    (v : Site d) (p : Plaquette d) :
+    (p.translate v).boundary.edgeSupport =
+      p.boundary.edgeSupport.map
+        (PositiveEdge.translationEquiv v).toEmbedding := by
+  rw [plaquette_boundary_edgeSupport, plaquette_boundary_edgeSupport]
+  simp [PositiveEdge.translationEquiv, PositiveEdge.translate,
+    Plaquette.translate, translate_step]
 
 /-- Every plaquette containing `e` is one of four placements for a choice of
 the other coordinate direction. -/
@@ -112,6 +124,44 @@ theorem mem_incidentPlaquettes_of_mem_boundary {d : ℕ}
     apply Finset.mem_insert.mpr; left
     cases p
     simp_all [j]
+
+/-- The explicit incidence list contains only plaquettes whose boundary
+contains the specified positive edge. -/
+theorem mem_boundary_of_mem_incidentPlaquettes {d : ℕ}
+    (e : PositiveEdge d) (p : Plaquette d)
+    (hp : p ∈ incidentPlaquettes e) : e ∈ p.boundary.edgeSupport := by
+  classical
+  rw [incidentPlaquettes, Finset.mem_biUnion] at hp
+  obtain ⟨j, _, hp⟩ := hp
+  simp only [Finset.mem_insert, Finset.mem_singleton] at hp
+  rcases hp with rfl | rfl | rfl | rfl <;>
+    rw [plaquette_boundary_edgeSupport] <;> simp [step]
+
+/-- Incidence is exactly boundary membership. -/
+theorem mem_incidentPlaquettes_iff_mem_boundary {d : ℕ}
+    (e : PositiveEdge d) (p : Plaquette d) :
+    p ∈ incidentPlaquettes e ↔ e ∈ p.boundary.edgeSupport :=
+  ⟨mem_boundary_of_mem_incidentPlaquettes e p,
+    mem_incidentPlaquettes_of_mem_boundary e p⟩
+
+/-- Translation commutes with the finite list of plaquettes incident to a
+positive edge. -/
+theorem incidentPlaquettes_translate {d : ℕ} (v : Site d)
+    (e : PositiveEdge d) :
+    incidentPlaquettes (e.translate v) =
+      (incidentPlaquettes e).map
+        (Plaquette.translationEquiv v).toEmbedding := by
+  classical
+  ext p
+  rw [Finset.mem_map_equiv]
+  rw [mem_incidentPlaquettes_iff_mem_boundary,
+    mem_incidentPlaquettes_iff_mem_boundary]
+  change e.translate v ∈ p.boundary.edgeSupport ↔
+    e ∈ (p.translate (-v)).boundary.edgeSupport
+  rw [plaquette_boundary_edgeSupport_translate, Finset.mem_map_equiv]
+  change e.translate v ∈ p.boundary.edgeSupport ↔
+    e.translate (-(-v)) ∈ p.boundary.edgeSupport
+  rw [neg_neg]
 
 /-- A positive edge belongs to at most `4d` oriented coordinate plaquettes. -/
 theorem card_incidentPlaquettes_le {d : ℕ} (e : PositiveEdge d) :
@@ -901,6 +951,196 @@ def plaquetteDobrushinWeight (q : ℝ) {Λ : FiniteSpecification d G₀}
     (γ : PlaquettePolymer Λ) : ℝ :=
   (8 * q) ^ γ.1.card
 
+/-- Linear size weight used by the standard Kotecký--Preiss tree
+criterion. -/
+def plaquetteKPWeight {Λ : FiniteSpecification d G₀}
+    (γ : PlaquettePolymer Λ) : ℝ :=
+  (γ.1.card : ℝ) * Real.log 2
+
+omit [IsTopologicalGroup G₀] [BorelSpace G₀] [SecondCountableTopology G₀] in
+/-- The same explicit scalar threshold also discharges the genuine
+Kotecký--Preiss activity-sum condition used by the rooted-tree expansion. -/
+theorem plaquettePolymerModel_koteckyPreiss
+    (Λ : FiniteSpecification d G₀) (Φ : RealPlaquettePotential G₀) (β : ℂ)
+    (cert : AnimalCountingCertificate (ActivePlaquette Λ)
+      (plaquetteAdjacencyGraph Λ))
+    (hsmall : perturbationMajorant Φ β <
+      dobrushinThreshold cert.degreeBound cert.animalConstant) :
+    (plaquettePolymerModel Λ Φ β).KoteckyPreissCertificate Finset.univ
+      plaquetteKPWeight := by
+  classical
+  let q := perturbationMajorant Φ β
+  have hq₀ : 0 ≤ q := perturbationMajorant_nonneg Φ β
+  have hthreshold := hsmall
+  rw [dobrushinThreshold, lt_min_iff, lt_min_iff] at hthreshold
+  rcases hthreshold with ⟨hqEight, hqAnimal, hqDegree⟩
+  have htwoq₀ : 0 ≤ 2 * q := mul_nonneg (by norm_num) hq₀
+  have hCtwoq : (cert.animalConstant : ℝ) * (2 * q) < 1 := by
+    have hCnonneg : 0 ≤ (cert.animalConstant : ℝ) := by positivity
+    have hdenpos : 0 < (16 : ℝ) * (cert.animalConstant + 1) := by positivity
+    have hmul := (lt_div_iff₀ hdenpos).mp hqAnimal
+    nlinarith
+  refine ⟨?_, ?_⟩
+  · intro γ
+    exact mul_nonneg (Nat.cast_nonneg γ.1.card) (Real.log_pos (by norm_num)).le
+  · intro γ _
+    let n := γ.1.card
+    have hsum := sum_incompatiblePlaquettePolymerWeights_le
+      Λ cert γ htwoq₀ hCtwoq
+    have hpoint : ∀ δ : PlaquettePolymer Λ,
+        ‖(plaquettePolymerModel Λ Φ β).activity δ‖ *
+            Real.exp (plaquetteKPWeight δ) ≤
+          (2 * q) ^ δ.1.card := by
+      intro δ
+      have hactivity := norm_plaquettePolymer_activity_le Λ Φ β δ
+      have hexp : Real.exp (plaquetteKPWeight δ) =
+          (2 : ℝ) ^ δ.1.card := by
+        rw [plaquetteKPWeight, Real.exp_nat_mul,
+          Real.exp_log (by norm_num : (0 : ℝ) < 2)]
+      rw [hexp]
+      calc
+        _ ≤ q ^ δ.1.card * (2 : ℝ) ^ δ.1.card := by
+          exact mul_le_mul_of_nonneg_right
+            (by simpa [q, PlaquettePolymer.support] using hactivity)
+            (pow_nonneg (by norm_num) _)
+        _ = (2 * q) ^ δ.1.card := by rw [mul_pow]; ring
+    have hweighted :
+        ∑ δ ∈ (Finset.univ : Finset (PlaquettePolymer Λ)).filter
+            ((plaquettePolymerModel Λ Φ β).incompatible γ),
+            ‖(plaquettePolymerModel Λ Φ β).activity δ‖ *
+              Real.exp (plaquetteKPWeight δ) ≤
+          (n : ℝ) * (cert.degreeBound + 1) *
+            ((2 * q) /
+              (1 - (cert.animalConstant : ℝ) * (2 * q))) := by
+      calc
+        _ ≤ ∑ δ ∈ (Finset.univ : Finset (PlaquettePolymer Λ)).filter
+              (plaquettePolymerIncompatible Λ γ),
+              (2 * q) ^ δ.1.card := by
+          apply Finset.sum_le_sum
+          intro δ _
+          exact hpoint δ
+        _ ≤ _ := hsum
+    have hfrac :
+        (2 * q) / (1 - (cert.animalConstant : ℝ) * (2 * q)) ≤ 4 * q := by
+      have hCnonneg : 0 ≤ (cert.animalConstant : ℝ) := by positivity
+      have hdenpos : 0 < (16 : ℝ) * (cert.animalConstant + 1) := by positivity
+      have hmul := (lt_div_iff₀ hdenpos).mp hqAnimal
+      have hhalf : (cert.animalConstant : ℝ) * (2 * q) ≤ 1 / 2 := by
+        nlinarith
+      have hden : 0 < 1 - (cert.animalConstant : ℝ) * (2 * q) := by
+        linarith
+      apply (div_le_iff₀ hden).mpr
+      nlinarith
+    have hlocal : (cert.degreeBound + 1 : ℝ) * (4 * q) ≤ Real.log 2 := by
+      have hdenpos : 0 < (16 : ℝ) * (cert.degreeBound + 1) := by positivity
+      have hmul := (lt_div_iff₀ hdenpos).mp hqDegree
+      have hlogpos : 0 < Real.log 2 := Real.log_pos (by norm_num)
+      nlinarith
+    calc
+      _ ≤ (n : ℝ) * (cert.degreeBound + 1) *
+          ((2 * q) / (1 - (cert.animalConstant : ℝ) * (2 * q))) := hweighted
+      _ ≤ (n : ℝ) * (cert.degreeBound + 1) * (4 * q) := by
+        gcongr
+      _ ≤ (n : ℝ) * Real.log 2 := by
+        have hn : 0 ≤ (n : ℝ) := Nat.cast_nonneg n
+        nlinarith
+      _ = plaquetteKPWeight γ := rfl
+
+omit [IsTopologicalGroup G₀] [BorelSpace G₀] [SecondCountableTopology G₀] in
+/-- The explicit strong-coupling threshold leaves a quantitative three-
+quarter reserve in the bulk KP inequality.  This reserve is used to switch
+on finitely many small labelled source activities without changing the bulk
+weight. -/
+theorem plaquettePolymerModel_kp_incompatible_sum_le_quarter
+    (Λ : FiniteSpecification d G₀) (Φ : RealPlaquettePotential G₀) (β : ℂ)
+    (cert : AnimalCountingCertificate (ActivePlaquette Λ)
+      (plaquetteAdjacencyGraph Λ))
+    (hsmall : perturbationMajorant Φ β <
+      dobrushinThreshold cert.degreeBound cert.animalConstant)
+    (γ : PlaquettePolymer Λ) :
+    ∑ δ ∈ (Finset.univ : Finset (PlaquettePolymer Λ)).filter
+        ((plaquettePolymerModel Λ Φ β).incompatible γ),
+        ‖(plaquettePolymerModel Λ Φ β).activity δ‖ *
+          Real.exp (plaquetteKPWeight δ) ≤
+      (γ.1.card : ℝ) * (Real.log 2 / 4) := by
+  classical
+  let q := perturbationMajorant Φ β
+  have hq₀ : 0 ≤ q := perturbationMajorant_nonneg Φ β
+  have hthreshold := hsmall
+  rw [dobrushinThreshold, lt_min_iff, lt_min_iff] at hthreshold
+  rcases hthreshold with ⟨_hqEight, hqAnimal, hqDegree⟩
+  have htwoq₀ : 0 ≤ 2 * q := mul_nonneg (by norm_num) hq₀
+  have hCtwoq : (cert.animalConstant : ℝ) * (2 * q) < 1 := by
+    have hCnonneg : 0 ≤ (cert.animalConstant : ℝ) := by positivity
+    have hdenpos : 0 < (16 : ℝ) * (cert.animalConstant + 1) := by
+      positivity
+    have hmul := (lt_div_iff₀ hdenpos).mp hqAnimal
+    nlinarith
+  have hsum := sum_incompatiblePlaquettePolymerWeights_le
+    Λ cert γ htwoq₀ hCtwoq
+  have hpoint : ∀ δ : PlaquettePolymer Λ,
+      ‖(plaquettePolymerModel Λ Φ β).activity δ‖ *
+          Real.exp (plaquetteKPWeight δ) ≤
+        (2 * q) ^ δ.1.card := by
+    intro δ
+    have hactivity := norm_plaquettePolymer_activity_le Λ Φ β δ
+    have hexp : Real.exp (plaquetteKPWeight δ) =
+        (2 : ℝ) ^ δ.1.card := by
+      rw [plaquetteKPWeight, Real.exp_nat_mul,
+        Real.exp_log (by norm_num : (0 : ℝ) < 2)]
+    rw [hexp]
+    calc
+      _ ≤ q ^ δ.1.card * (2 : ℝ) ^ δ.1.card := by
+        exact mul_le_mul_of_nonneg_right
+          (by simpa [q, PlaquettePolymer.support] using hactivity)
+          (pow_nonneg (by norm_num) _)
+      _ = (2 * q) ^ δ.1.card := by rw [mul_pow]; ring
+  have hweighted :
+      ∑ δ ∈ (Finset.univ : Finset (PlaquettePolymer Λ)).filter
+          ((plaquettePolymerModel Λ Φ β).incompatible γ),
+          ‖(plaquettePolymerModel Λ Φ β).activity δ‖ *
+            Real.exp (plaquetteKPWeight δ) ≤
+        (γ.1.card : ℝ) * (cert.degreeBound + 1) *
+          ((2 * q) /
+            (1 - (cert.animalConstant : ℝ) * (2 * q))) := by
+    calc
+      _ ≤ ∑ δ ∈ (Finset.univ : Finset (PlaquettePolymer Λ)).filter
+            (plaquettePolymerIncompatible Λ γ),
+            (2 * q) ^ δ.1.card := by
+        apply Finset.sum_le_sum
+        intro δ _
+        exact hpoint δ
+      _ ≤ _ := hsum
+  have hfrac :
+      (2 * q) / (1 - (cert.animalConstant : ℝ) * (2 * q)) ≤ 4 * q := by
+    have hCnonneg : 0 ≤ (cert.animalConstant : ℝ) := by positivity
+    have hdenpos : 0 < (16 : ℝ) * (cert.animalConstant + 1) := by
+      positivity
+    have hmul := (lt_div_iff₀ hdenpos).mp hqAnimal
+    have hhalf : (cert.animalConstant : ℝ) * (2 * q) ≤ 1 / 2 := by
+      nlinarith
+    have hden : 0 < 1 - (cert.animalConstant : ℝ) * (2 * q) := by
+      linarith
+    apply (div_le_iff₀ hden).mpr
+    nlinarith
+  have hlocal :
+      (cert.degreeBound + 1 : ℝ) * (4 * q) ≤ Real.log 2 / 4 := by
+    have hdenpos : 0 < (16 : ℝ) * (cert.degreeBound + 1) := by
+      positivity
+    have hmul := (lt_div_iff₀ hdenpos).mp hqDegree
+    have hlogpos : 0 < Real.log 2 := Real.log_pos (by norm_num)
+    nlinarith
+  calc
+    _ ≤ (γ.1.card : ℝ) * (cert.degreeBound + 1) *
+        ((2 * q) /
+          (1 - (cert.animalConstant : ℝ) * (2 * q))) := hweighted
+    _ ≤ (γ.1.card : ℝ) * (cert.degreeBound + 1) * (4 * q) := by
+      gcongr
+    _ = (γ.1.card : ℝ) *
+        ((cert.degreeBound + 1 : ℝ) * (4 * q)) := by ring
+    _ ≤ (γ.1.card : ℝ) * (Real.log 2 / 4) :=
+      mul_le_mul_of_nonneg_left hlocal (Nat.cast_nonneg _)
+
 omit [IsTopologicalGroup G₀] [BorelSpace G₀] [SecondCountableTopology G₀] in
 /-- The animal-counting bounds discharge the local Dobrushin criterion at the
 explicit scalar threshold. -/
@@ -1075,6 +1315,32 @@ theorem latticeStrongCouplingRadius_pos (d : ℕ) {potentialBound : ℝ}
     (hbound : 0 ≤ potentialBound) :
     0 < latticeStrongCouplingRadius d potentialBound :=
   certifiedStrongCouplingRadius_pos _ _ hbound
+
+omit [IsTopologicalGroup G₀] [MeasurableSpace G₀] [BorelSpace G₀]
+  [SecondCountableTopology G₀] [GaugeHaarProbability G₀] in
+/-- On the explicit lattice disk, the twice-tilted plaquette activity
+majorant remains inside the geometric animal radius.  This is the scalar
+estimate used when an additional factor `exp (plaquetteKPWeight γ) = 2^|γ|`
+is attached to every polymer. -/
+theorem animalConstant_mul_two_mul_perturbationMajorant_lt_one
+    (Φ : RealPlaquettePotential G₀) {β : ℂ}
+    (hβ : ‖β‖ < latticeStrongCouplingRadius d Φ.bound) :
+    (2 ^ (16 * d) : ℝ) * (2 * perturbationMajorant Φ β) < 1 := by
+  let C : ℕ := 2 ^ (16 * d)
+  have hsmall :=
+    perturbationMajorant_lt_dobrushinThreshold_of_norm_lt_radius Φ
+      (16 * d) (2 ^ (16 * d)) hβ
+  rw [dobrushinThreshold, lt_min_iff, lt_min_iff] at hsmall
+  have hqAnimal := hsmall.2.1
+  have hqAnimal' : perturbationMajorant Φ β <
+      1 / ((16 : ℝ) * ((C : ℝ) + 1)) := by
+    simpa [C] using hqAnimal
+  have hCnonneg : 0 ≤ (C : ℝ) := by positivity
+  have hdenpos : 0 < (16 : ℝ) * ((C : ℝ) + 1) := by positivity
+  have hmul := (lt_div_iff₀ hdenpos).mp hqAnimal'
+  have htarget : (C : ℝ) * (2 * perturbationMajorant Φ β) < 1 := by
+    nlinarith
+  simpa [C] using htarget
 
 /-- Milestone 9 exit theorem: the exact finite-volume Yang--Mills partition
 function is zero-free on one explicit nonzero disk, uniformly over every

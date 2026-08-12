@@ -5,7 +5,7 @@ Authors: The Strong-Coupling Lattice Yang--Mills contributors
 -/
 
 import YangMills.Polymer.FiniteGas
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+import YangMills.Polymer.GraphExponential
 import Mathlib.Data.Finsupp.Basic
 
 /-!
@@ -45,6 +45,16 @@ namespace FinitePolymerModel
 
 variable {P : Type*} [Fintype P] [DecidableEq P]
 
+local instance {V : Type*} [Fintype V] [DecidableEq V] :
+    DecidableLE (Finpartition (Finset.univ : Finset V)) := Classical.decRel _
+
+local instance {V : Type*} [Fintype V] [DecidableEq V] :
+    DecidableLT (Finpartition (Finset.univ : Finset V)) := Classical.decRel _
+
+local instance {V : Type*} [Fintype V] [DecidableEq V] :
+    LocallyFiniteOrder (Finpartition (Finset.univ : Finset V)) :=
+  Fintype.toLocallyFiniteOrder
+
 /-- A finite polymer multi-index.  Its value is the multiplicity with which a
 polymer occurs in a Mayer cluster. -/
 abbrev MayerMultiIndex (P : Type*) := P →₀ ℕ
@@ -61,30 +71,37 @@ def mayerIncompatibilityGraph (M : FinitePolymerModel P)
 
 /-- Connected spanning subgraphs of a graph on an arbitrary finite vertex
 type. -/
-def mayerConnectedSpanningSubgraphs {V : Type*} [Fintype V]
+def mayerConnectedSpanningSubgraphs {V : Type*} [Fintype V] [DecidableEq V]
     (G : SimpleGraph V) : Finset (SimpleGraph V) := by
   classical
-  exact Finset.univ.filter fun H => H ≤ G ∧ H.Connected
+  exact (spanningSubgraphs G).filter SimpleGraph.Connected
 
 /-- Signed connected-graph sum on an arbitrary finite vertex type. -/
-def mayerUrsellGraph {V : Type*} [Fintype V]
-    (G : SimpleGraph V) : ℤ := by
-  classical
-  exact ∑ H ∈ mayerConnectedSpanningSubgraphs G,
-    (-1 : ℤ) ^ H.edgeFinset.card
+def mayerUrsellGraph {V : Type*} [Fintype V] [DecidableEq V]
+    (G : SimpleGraph V) : ℤ :=
+  connectedSpanningGraphSum G
+
+/-- The Ursell coefficient is the Möbius cumulant of the finite compatibility
+moments.  This is the connected-component regrouping behind the symmetric
+Mayer expansion. -/
+theorem mayerUrsellGraph_eq_moebius_cancellation
+    {V : Type*} [Fintype V] [DecidableEq V] [Nonempty V]
+    (G : SimpleGraph V) :
+    mayerUrsellGraph G =
+      ∑ Q : Finpartition (Finset.univ : Finset V),
+        IncidenceAlgebra.mu ℤ Q ⊤ *
+          (if partitionEdgeFinset G Q = ∅ then 1 else 0) :=
+  connectedSpanningGraphSum_eq_moebius_cancellation G
 
 /-- Ursell coefficient of a polymer multi-index. -/
 def mayerUrsell (M : FinitePolymerModel P) (X : MayerMultiIndex P) : ℤ :=
   mayerUrsellGraph (M.mayerIncompatibilityGraph X)
 
 theorem mayerConnectedSpanningSubgraphs_eq_empty_of_not_connected
-    {V : Type*} [Fintype V] {G : SimpleGraph V} (hG : ¬G.Connected) :
+    {V : Type*} [Fintype V] [DecidableEq V]
+    {G : SimpleGraph V} (hG : ¬G.Connected) :
     mayerConnectedSpanningSubgraphs G = ∅ := by
-  classical
-  apply Finset.eq_empty_iff_forall_notMem.mpr
-  intro H hH
-  have hdata := (Finset.mem_filter.mp hH).2
-  exact hG (hdata.2.mono hdata.1)
+  exact connectedSpanningSubgraphs_eq_empty_of_not_connected hG
 
 /-- The multi-index Ursell coefficient vanishes unless its incompatibility
 graph is connected.  This is the exact linked-cluster cancellation used by
@@ -93,9 +110,7 @@ theorem mayerUrsell_eq_zero_of_not_connected
     (M : FinitePolymerModel P) (X : MayerMultiIndex P)
     (hX : ¬(M.mayerIncompatibilityGraph X).Connected) :
     M.mayerUrsell X = 0 := by
-  rw [mayerUrsell, mayerUrsellGraph,
-    mayerConnectedSpanningSubgraphs_eq_empty_of_not_connected hX]
-  simp
+  exact connectedSpanningGraphSum_eq_zero_of_not_connected hX
 
 /-- Product of multiplicity factorials in the Mayer symmetry factor. -/
 def mayerSymmetryFactor (X : MayerMultiIndex P) : ℕ :=

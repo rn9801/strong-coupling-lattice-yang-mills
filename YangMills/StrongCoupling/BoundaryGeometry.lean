@@ -128,6 +128,31 @@ theorem markedSubsetWeight_withExterior_eq_of_disjoint_defects
     exact ⟨e, he, hedyn, hne⟩
   exact (Finset.disjoint_left.mp hdisjoint hpX hpD)
 
+/-- If a selected active plaquette set avoids the disagreement plaquettes,
+its unmarked polymer activity is also exactly independent of the two exterior
+fields. -/
+theorem subsetWeight_withExterior_eq_of_disjoint_defects
+    [Group G] [TopologicalSpace G] [MeasurableSpace G]
+    [GaugeHaarProbability G]
+    (Λ : FiniteSpecification d G)
+    (Φ : RealPlaquettePotential G) (β : ℂ) (X : Finset (Plaquette d))
+    (η η' : Gauge.Configuration d G)
+    (hX : X ⊆ Λ.activePlaquettes)
+    (hdisjoint : Disjoint (activeSubset Λ X)
+      (boundaryDisagreementPlaquettes Λ η η')) :
+    subsetWeight (withExterior Λ η) Φ β X =
+      subsetWeight (withExterior Λ η') Φ β X := by
+  apply subsetWeight_withExterior_eq_of_eqOn Λ Φ β X η η'
+  intro p hp e he hedyn
+  by_contra hne
+  let pA : ActivePlaquette Λ := ⟨p, hX hp⟩
+  have hpX : pA ∈ activeSubset Λ X := by
+    simp [activeSubset, pA, hp]
+  have hpD : pA ∈ boundaryDisagreementPlaquettes Λ η η' := by
+    rw [mem_boundaryDisagreementPlaquettes]
+    exact ⟨e, he, hedyn, hne⟩
+  exact (Finset.disjoint_left.mp hdisjoint hpX hpD)
+
 /-- Distance conversion inside a connected active plaquette set.  The graph
 distance between any two of its plaquettes is strictly smaller than its
 cardinality. -/

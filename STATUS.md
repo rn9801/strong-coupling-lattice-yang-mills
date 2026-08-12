@@ -1,8 +1,8 @@
 # Project status
 
-Last updated: 2026-08-10
+Last updated: 2026-08-12
 
-## Current milestone: 11--13 -- Cluster thermodynamic limit and clustering
+## Next milestone: 14 -- Analyticity and pressure
 
 ### Completed
 
@@ -252,22 +252,403 @@ Last updated: 2026-08-10
   normalization their linear coefficients are finite-volume expectations and
   their connected bilinear coefficient is exactly the truncated correlation.
   The construction has no `Compat/`, LGT, or Douglas dependency.
+- Proved the finite connected-graph regrouping needed by the symmetric Mayer
+  formula.  Spanning subgraphs are grouped by their canonical connected-
+  component finpartition, finite-poset Möbius inversion isolates the connected
+  fiber, and every partition-restricted signed graph sum is reduced to an
+  explicit powerset inclusion--exclusion cancellation.  The public theorem
+  `mayerUrsellGraph_eq_moebius_cancellation` identifies the existing Ursell
+  coefficient with this Möbius cumulant.  The proof is polymer-only and has no
+  Douglas or Yang--Mills dependency.
+- Completed the degree-by-degree labelled-to-symmetric Mayer normalization.
+  `mayerMultiIndicesOfDegree` enumerates exactly the multi-indices of total
+  degree `n`; the multinomial identity proves
+  `countPerms / n! = 1 / ∏γ X(γ)!`; and
+  `labelledMayerDegreeSum_eq_symmetricMayerDegreeSum` applies the equality to
+  the actual Ursell/activity coefficient.  The full symmetric series is now
+  exposed as `symmetricMayerSum`.
+- Completed the pinned symmetry normalization as well.  After distinguishing
+  one of the `X(root)` labelled occurrences, the full symmetry factor is
+  exactly `X(root) * pinnedMayerSymmetryFactor`; over `ℝ`, the pinned
+  coefficient `X(root) / ∏γ X(γ)!` is exactly the inverse residual orbit
+  factor.  The residual factor is also proved equal to the ordinary symmetry
+  factor of `eraseRootOccurrence X root`, and the sum of the root-deleted
+  child histograms is exactly that residual multi-index.  This removes the
+  root-choice multiplicity from the remaining rooted-tree orbit enumeration.
+  Degree by degree, `sum_pinnedSymmetricMayerDegreeSum` also proves that
+  summing the pinned coefficient over root labels gives exactly `n` times the
+  unpinned symmetric coefficient, providing the finite bridge needed to turn
+  pinned KP bounds into convergence of the full Mayer series.
+  The nonnegative identity `sum_pinnedNormMayerDegreeSum` proves the same
+  statement for absolute degree sums, so no triangle-inequality loss is needed
+  in that final convergence passage.
+  `summable_normMayerDegreeSum_succ_of_pinned` packages the analytic
+  consequence: summability of all positive-degree pinned norm series implies
+  summability of the full positive-degree Mayer norm series.
+- Strengthened the deletion-ordered logarithm with absolute convergence:
+  the norm series of every pinned insertion has sum
+  `-log (1 - ‖u‖)` and is bounded by its explicit Dobrushin weight `a γ`.
+  The corresponding plaquette theorem
+  `plaquetteAbsolutePinnedMayerSeriesBound` holds uniformly on the certified
+  strong-coupling disk.
+- Added the standard (activity-sum) `KoteckyPreissCertificate`, distinct from
+  the deletion-ratio criterion, and proved a genuine rooted-tree fixed-point
+  summability theorem: its nonnegative height layers are summable with total
+  at most `exp (a γ) - 1`.  The existing plaquette animal estimates discharge
+  this standard KP condition at the same explicit lattice radius with
+  `a(γ)=|γ| log 2`, yielding the concrete bound `2^|γ|-1`.
+- Formalized the Boolean-interval cancellation core of the Penrose argument.
+  `PenroseIntervalScheme.abs_signedSum_le_card_trees` and its graph
+  specialization give the sharp signed connected-graph bound by spanning
+  trees, with no all-graphs multiplier, from any concrete interval scheme.
+- Completed an unconditional Whitney broken-circuit proof of the sharp finite
+  tree-graph inequality.  A canonical injective edge rank selects the least
+  active edge; toggling it is a connectedness-preserving, sign-reversing
+  involution, while inactive connected spanning edge sets are proved acyclic
+  by ordered insertion and hence inject into the spanning trees.  The public
+  theorem `Whitney.abs_connectedSpanningGraphSum_le_card_trees` therefore has
+  no Penrose-scheme hypothesis and no all-graphs multiplier.
+- Derived the exact symmetry-normalized, termwise Mayer tree domination
+  `norm_mayerClusterTerm_le_mayerTreeMajorant` from the concrete Whitney
+  theorem, together with its multiplicity-pinned form.  Instantiated these
+  sharp bounds for the one- and two-observable augmented plaquette gases, so
+  the adjoined observable roots now feed the same tree majorant as ordinary
+  bulk polymers.
+- Supplied the formal-power-series inverse identities missing from Mathlib.
+  For complex series, `PowerSeriesBridge.expOf_logOf` proves that formal
+  exponentiation recovers every series with constant coefficient one, and
+  `PowerSeriesBridge.logOf_expOf` proves the converse for zero-constant-term
+  series.  Both are derived from explicit logarithmic-derivative identities,
+  not assumed as an interface.
+- Proved the labelled-set/symmetric-multi-index half of genuine KP tree
+  summation.  The factorially normalized `k`-child layer equals both its
+  symmetric-multiset orbit sum and an actual `MayerMultiIndex` sum with
+  denominator `∏δ X(δ)!`.  The theorem
+  `hasSum_kpMayerForestDegreeSum` sums these degree layers exactly to the next
+  `kpTreeIterate`; under the explicit standard KP certificate,
+  `tsum_kpMayerForestDegreeSum_le_exp_of_koteckyPreiss` bounds the total by
+  `exp (a root)`.
+- Proved the structural root-deletion theorem for finite trees.
+  `IsTree.existsUnique_adj_root_in_awayComponent` says that every connected
+  component left after deleting a tree root contains exactly one vertex
+  adjacent to that root.  Its acyclic uniqueness proof uses two-path
+  cancellation, and its existence proof takes the first edge of a simple path
+  from the root.  This supplies the canonical child root required by the
+  recursive tree-species map.
+- Completed the multiplicity and weight bookkeeping for rooted Mayer-tree
+  deletion.  Connected components form a disjoint cover equivalent to the
+  non-root vertex type; each child carries a canonical `MayerMultiIndex`;
+  their sum plus the root singleton is exactly the original multi-index; and
+  `histogramWeight_mayerChild_factorization` factors the complete activity
+  monomial into the root weight and child monomials.  A child attachment in a
+  Mayer spanning tree is formally incompatible with its parent, so
+  `kpChildWeight_childRoot_eq` discharges both tests in the KP recursion.
+- Defined the uniformly activity-scaled finite partition power series and its
+  canonical formal Mayer logarithm.  The exact identity
+  `expOf_formalMayerLog_eq_partitionPowerSeries` now fixes the branch of the
+  finite logarithm algebraically; injectivity of `expOf` on zero-constant-term
+  series reduces the final Mayer/log identification to the connected
+  coefficient formula.
+  Its coefficients vanish above `S.card`, and their finite sum through that
+  degree is proved equal to `partitionOn S`, so the formal object is tied
+  exactly to the existing scalar finite-volume partition function.
+- Defined the restricted symmetric connected Mayer power series in the same
+  formal variable.  Its constant coefficient is zero, and
+  `restrictedSymmetricMayerPowerSeries_eq_formalMayerLog_of_expOf_eq` proves
+  that the connected exponential formula alone implies equality with the
+  canonical formal logarithm.  Thus branch selection and formal-series
+  injectivity are completely separated from the remaining orbit enumeration.
+- Completed the finite graph side of the rooted-tree orbit enumeration.
+  `rootedGraphEquiv` makes root deletion lossless; valid attachment finsets
+  are exactly componentwise Cartesian choices; and
+  `sum_rootedForestData_eq_sum_forest_prod_component` gives their weighted
+  product formula.  A forest is then mapped injectively to an unordered
+  common-ambient family of `(vertex finset, edge finset)` tree data.  Those
+  vertex finsets are pairwise disjoint and cover the residual occurrence
+  type.  The weighted theorems
+  `sum_rootedForestData_vertex_attachment_prod_le_exp` and
+  `card_spanningTreeGraphs_mul_prod_away_le_exp_rootedChoices` compose root
+  deletion, exact attachment multiplicities, activity monomials, unordered
+  component families, and the finite labelled-set exponential without any
+  dependent connected-component transports.
+- Threaded the new finite enumeration through the actual Mayer majorant.
+  `pinned_norm_mayerClusterTerm_le_componentTreeExp` starts from the sharp
+  Whitney tree bound and retains the exact residual pinned factor
+  `1 / ∏γ (X γ - δγ,root)!`.  Rooted child-component choices have a formally
+  incompatible child label, and their occurrence weights are now rewritten
+  exactly as symmetric label-histogram weights.  Thus the remaining global
+  step is purely the orbit reindexing across varying residual
+  `MayerMultiIndex` values, rather than any graph or weight decomposition.
+- Lifted every full-volume standard KP certificate to any finite family of
+  zero-activity source roots.  The bulk inequalities are unchanged and each
+  root receives exactly its touching tilted bulk mass.  The explicit lattice
+  disk now instantiates genuine one- and two-observable-root KP certificates,
+  together with symmetric forest `tsum` bounds at each root.  This establishes
+  the augmented gas estimates at the expansion point; identifying arbitrary
+  observable marked numerators with those root gases remains part of the
+  concrete linked-cluster certificate work.
+- Completed the symmetric fixed-labelled occurrence normalization.  The
+  histogram fiber of `Fin n → P` is proved to have cardinality
+  `X.toMultiset.countPerms` by extracting the relevant coefficient from
+  Mathlib's multivariate multinomial theorem.  Consequently the literal sum
+  over every rooted labelled tree on `Option (Fin n)`, divided by `n!`, is
+  exactly `residualSymmetricPinnedTreeDegreeSum`; this is then reindexed
+  exactly to the degree-`n+1` multiplicity-pinned Mayer tree majorant.  No
+  informal orbit quotient or varying dependent occurrence type remains.
+- Added the graph-to-labelled-set-partition adapter needed for the remaining
+  rooted-tree species step.  Connected components of a graph on `Fin n` are
+  ordered canonically by their maximum vertices and become Mathlib
+  `OrderedFinpartition` blocks with increasing vertex enumerations.  The
+  construction is also instantiated for the complement of the distinguished
+  `none` root in a graph on `Option (Fin n)`.  Each ordered block is now
+  transported to its literal carrier `Fin (partSize i)`, is proved to be a
+  tree in the restricted labelled incompatibility graph, and carries a
+  canonical local attachment index whose label is incompatible with the
+  parent root.
+- Proved the exact fixed-labelled attached-component normalization.  After
+  selecting one of the `s` possible attachment positions, `finSuccEquiv'`
+  identifies its label tuple with a child root and `s-1` residual labels, and
+  the component spanning-tree count becomes the existing fixed-rooted tree
+  count.  The theorem
+  `factorialNormalizedLabelledAttachedComponentDegreeSum_succ` realizes the
+  crucial `s / s! = 1 / (s-1)!` cancellation and rewrites the result as the
+  KP incompatible-child sum of the preceding rooted-tree degree layer.
+- Isolated the exact final generic hypothesis as
+  `RootedTreeOrbitRecurrence` and proved that it implies
+  `RootedTreeOrbitBound`.  From that bound the existing explicit standard KP
+  certificate now gives genuine summability of the residual pinned tree
+  series, the actual multiplicity-pinned Mayer norm series, and the full
+  positive-degree Mayer norm series.
+- Discharged `RootedTreeOrbitRecurrence` unconditionally by the fixed-labelled
+  rooted-forest species construction.  The resulting certified theorems give
+  genuine pinned and unpinned Mayer summability and the quantitative residual
+  rooted-orbit bound from the standard KP certificate alone; no additional
+  combinatorial premise remains.
+- Completed the symmetric finite connected exponential formula.  Labelled
+  moments are regrouped by their exact multi-index histograms, the connected
+  graph sum is identified with the partition Möbius cumulant, and Mathlib's
+  Faà di Bruno theorem supplies the logarithmic derivative recurrence.  The
+  theorem `restrictedSymmetricMayerPowerSeries_eq_formalMayerLog` now proves
+  that the canonical symmetric Mayer series is exactly the formal logarithm
+  of the finite hard-core partition series.
+- Instantiated the unconditional result for plaquette polymers on the explicit
+  lattice strong-coupling disk: the full positive-degree Mayer majorant is
+  summable and each residual pinned tree orbit sum is bounded by `2^|γ|`.
+  The one- and two-observable augmented gases inherit the exact formal
+  Mayer/log identity, certified residual root-tree summability, and explicit
+  volume-independent root budgets bounded in terms of the observable support.
+  These statements use the cluster expansion and the standard KP certificate,
+  not the Douglas influence-matrix route.
+- Began the exact model-specific marked resummation.  The dynamic coordinate
+  support of a local observable is now explicit, and a marked Haar weight is
+  proved to factor whenever a plaquette block avoids both that support and the
+  remaining marked block.  Splitting the canonical connected components into
+  observable-touching and away families then gives the exact theorem
+  `complexObservableNumerator_eq_sum_rootComponentWeight_mul_awayFamilyWeight`:
+  every away component factors into its ordinary polymer activity while all
+  observable-touching components remain in a single marked root decoration.
+- Promoted those marked decorations to a finite mutually-exclusive source
+  polymer type.  The canonical subset-to-decoration/bulk-family map is proved
+  bijective, so `decoratedObservableRootCoefficient` is exactly the arbitrary
+  local-observable numerator and the resulting decorated source polynomial is
+  exactly `oneObservableSourcePartition`.  The exclusive decorated gas has an
+  explicit zero-source KP certificate, a certified residual Mayer-tree budget
+  at every decoration, and the exact fixed-labelled Mayer/formal-log identity.
+- Proved the generic exclusive-root partition decomposition in the
+  polymer-only layer: every compatible augmented family is uniquely either a
+  bulk family or one root together with an allowed compatible bulk family.
+  Instantiating it shows that the full partition function of
+  `decoratedObservableRootModel` is exactly
+  `oneObservableSourcePartition`, not merely that their displayed linear
+  coefficients agree.  The common source also scales every connected Mayer
+  term by the total multiplicity of all decorated roots, providing the exact
+  multiplicity selector needed for the one-root cluster series.
+- Closed the one-root absolute-summability bridge.  Compatible decorations
+  have additive plaquette cardinality; their KP root weights are bounded by
+  the ordinary observable-root budget plus the weights of the absorbed
+  polymers.  The twice-tilted animal generating function then sums every
+  decoration with a volume-independent observable-support prefactor.  A new
+  polymer-only fixed-labelled reindexing theorem deletes the unique
+  exclusive root and proves that the actual total-root-multiplicity-one Mayer
+  coefficient is dominated degree by degree by those residual tree orbits.
+  Consequently its norm series is genuinely summable on the explicit
+  lattice strong-coupling disk, with an explicit uniform total-mass bound.
+- Closed the exact one-observable connected-series identity.  Observable
+  sources are retained as polynomial coefficients of the total-activity
+  power series; a polymer-independent coefficientwise source derivation
+  satisfies the formal exponential chain rule.  Evaluating the fixed-labelled
+  Mayer exponential at every complex source value proves the pointed
+  exponential formula before source extraction.  Its linear coefficient is
+  the exact identity `root partition coefficient = bulk partition function *
+  tsum multiplicity-one connected Mayer coefficients`.  Instantiating the
+  decorated root identifies the marked numerator with this product, and,
+  whenever the finite vacuum partition function is nonzero, identifies the
+  normalized arbitrary-local-observable Gibbs expectation with the actual
+  absolutely convergent decorated connected cluster series.  No logarithm
+  branch and no Douglas/influence-matrix argument enters this proof.
+- Closed the fixed-labelled two-source algebra.  A bivariate polynomial
+  source power series now has coefficientwise source derivatives and a
+  proved mixed exponential identity
+  `R₀₁ = Z * (C₀₁ + C₀ * C₁)`.  For two mutually compatible labelled roots,
+  source extraction identifies the three connected Mayer sectors exactly;
+  under their absolute-summability hypotheses, evaluation at unit total
+  activity gives the corresponding analytic partition identity.  Every
+  nonzero mixed connected term contains a path between the two nonadjacent
+  labelled roots.
+- Instantiated the exact finite-volume cumulant cancellation for arbitrary
+  bounded local observables.  The degreewise decorated cumulant subtracts
+  the Cauchy product of the two one-root connected series from the connected
+  series of the product observable.  Its norm series is summable on the
+  explicit strong-coupling disk, and the normalized truncated Gibbs
+  correlation is exactly its `tsum`.  This is a cluster-expansion identity;
+  it does not use the Douglas compatibility layer or an influence matrix.
+- Closed the genuine two-root KP/summability gap.  Deleting both labelled
+  occurrences gives an exact degree-`n+2` normalization by a root-free
+  two-pinned symmetric tree orbit.  A quantitative quarter-budget refinement
+  of the lattice KP estimate leaves enough reserve to switch on both roots at
+  explicit nonzero activities.  Source rescaling then proves absolute
+  summability of the first-root, second-root, and genuinely mixed unit-source
+  Mayer sectors, and instantiates the evaluated identity
+  `R₀₁ = Z * (C₀₁ + C₀ * C₁)` without convergence hypotheses.
+  The regularized gas also has genuine pinned spanning-tree summability at
+  either root.  All of these statements are derived from the cluster
+  expansion and the explicit KP certificate.
+- Completed the exact support-graded two-observable reindexing.  The nested
+  exclusive augmented gas has bulk, left-decoration, right-decoration, and
+  intrinsic-bridge polymers with bidegrees `(0,0)`, `(1,0)`, `(0,1)`, and
+  `(1,1)`.  Explicit finite bijections identify its separated and bridge
+  compatible-family sectors with the original marked plaquette-subset
+  expansion, proving that its full partition function is exactly
+  `Z + α N_F + θ N_H + αθ N_{FH}`.
+- Added a polymer-only bigraded source exponential.  Its symmetric
+  multi-index coefficients obey the exact fixed-labelled Mayer exponential,
+  source extraction selects the three bidegree-one sectors, and finite
+  total-activity evaluation proves the honest pointed identities after
+  absolute summability.  This yields
+  `complexGibbsTruncatedCorrelation_eq_tsum_bivariateDecoratedMixed`, an exact
+  representation of the finite-volume truncated correlation by the new
+  support-graded mixed cluster series.
+- Proved a genuine nonzero-source KP certificate for the complete decorated
+  bivariate gas.  A positive explicit common regularization is defined from
+  the finite tilted mass of every left, right, and bridge decoration; the
+  bulk proof spends only the existing quarter-budget lattice reserve.
+  Consequently the full regularized Mayer majorant, every pinned spanning-
+  tree series, and the unit-source first, second, and mixed sectors are
+  genuinely summable.  No convergence premise or Douglas/Dobrushin
+  comparison theorem is used.
+- Closed the remaining mixed-root normalization dichotomy.  Bidegree `(1,1)`
+  is proved to contain either exactly one intrinsic bridge root or exactly
+  one left and one right decoration root.  For every nonzero term in the
+  second case, `bivariateDecorated_mixed_nonzero_spanning_witness` produces a
+  literal simple path between the distinguished occurrences in the actual
+  Mayer incompatibility graph.  Thus the former combinatorial reindexing
+  roadblock is resolved; the remaining work is the spatially weighted tail
+  and centered-box comparison built on this witness.
+- Added the polymer-independent natural-weight scaling needed for that tail.
+  Mayer activities and connected cluster terms scale exactly by total weight;
+  in particular the absolute `(1,1)` sector with an arbitrary natural weight
+  is exactly the unweighted mixed sector of the corresponding tilted gas.
+  This reduces the spatial tail to a model-specific tilted KP certificate,
+  rather than any further symmetric normalization infrastructure.
+- Completed that model-specific analytic step in
+  `StrongCoupling/SpatialClusterExpansion.lean`.  The strict slack in the
+  explicit animal threshold gives a proved factor `plaquetteCardinalityTilt`
+  strictly larger than one.  Multiplying every bulk, left-root, right-root,
+  and bridge-root activity by this factor to the cardinality of its complete
+  plaquette support preserves a genuine KP certificate.  A new positive
+  finite-source regularization proves the certificate for the complete
+  nonzero-source decorated gas.  Consequently its full Mayer majorant, every
+  pinned spanning-tree series, and the exact mixed sector weighted by
+  `t ^ totalPlaquetteCardinality` are genuinely summable.  This proof uses
+  only cluster expansion, the existing explicit KP reserve, and animal
+  counting; it has no Douglas/Dobrushin comparison dependency.
+- Completed the geometric support step in
+  `StrongCoupling/SpatialClusterGeometry.lean`.  The two observable roots are
+  adjoined to the active-plaquette adjacency graph, and every bulk, one-sided,
+  and bridge decoration is proved to have a connected carrier.  Incompatible
+  decorated polymers link their carriers, so induction along the literal
+  Mayer walk produces a connected two-root carrier.  Its cardinality is at
+  most total charged plaquette multiplicity plus the two abstract roots.
+  Therefore every nonzero mixed `(1,1)` Mayer term satisfies the genuine
+  support inequality
+  `observable plaquette separation ≤ total plaquette cardinality`.  This
+  closes the bridge/path combinatorial and geometric roadblock without any
+  Douglas or influence-matrix argument.
+- Summed the spatial support inequality over the complete mixed Mayer sector
+  and evaluated its weighted majorant from the existing explicit KP
+  certificate.  A polymer-only source-pinning inequality charges only the
+  first-coordinate source polymers, and the certified pinned-tree `tsum`
+  bound gives
+  `t^separation * ‖truncated correlation‖ ≤ (ρ^2)⁻¹ * reserve` without a
+  bulk-volume sum.
+- Proved an explicit volume-free lower bound for that regularized source
+  radius.  The tilted mass of a complete decoration is controlled by its
+  linear observable-root touching budget and the weights of its absorbed
+  polymers; animal summation then removes the finite specification and
+  exterior field.  Thus
+  `pow_spatialSeparation_mul_norm_complexGibbsTruncatedCorrelation_le_uniformPinnedTreeBudget`
+  is uniform in every finite volume and boundary condition for each fixed
+  pair of local observables.
+- Completed the symmetric one-root boundary tail in
+  `StrongCoupling/ClusterBoundaryExpansion.lean`.  Mayer degree is proved
+  independent of the extensionally equal finite-type enumerations induced by
+  `withExterior`; clusters avoiding the exact disagreement plaquettes cancel
+  term by term; and every nonzero connected multiplicity-one cluster reaching
+  a defect pays its full plaquette-cardinality distance.  Genuine summability
+  then gives the normalized expectation estimate
+  `t^r * ‖⟨F⟩_η - ⟨F⟩_η'‖ ≤ 2 * observableCardinalityTiltDecorationBudget`.
+  Disconnected defects are correctly excluded from the distance premise,
+  since Mathlib records their graph distance as zero.  This entire proof is
+  the decorated Mayer expansion plus the explicit KP/tree certificate; it
+  imports neither the Dobrushin boundary theorem nor a Douglas compatibility
+  module.
+- Constructed finite ambient observable-root neighborhoods recursively and
+  used centered-box cofinality to prove that every reachable disagreement
+  plaquette eventually lies beyond any prescribed cluster radius.  This
+  yields a uniform inverse-tilt bound for arbitrary pairs of centered exterior
+  fields and the concrete theorem
+  `tendsto_centered_complexGibbsExpectation_boundary_sub_zero` for any two
+  boundary sequences.
+- Instantiated the complete two-root finite-volume estimate as
+  `centeredObservableAmplitudeClusterCertificate` over any centered one-root
+  limit certificate.  The public theorem
+  `centeredClusterLimit_exponential_clustering_exp` has the explicit positive
+  mass `centeredClusterMass = -log plaquetteClusterDecayRate`; overlapping
+  supports receive the harmless distance zero and disjoint supports retain
+  the ambient plaquette-incidence distance.
+- Proved the finite-product Gibbs tower for nested arbitrary specifications.
+  A large-volume Gibbs expectation is exactly an average of smaller-volume
+  Gibbs expectations with induced exterior data, and a uniform small-volume
+  boundary diameter therefore bounds the cross-volume difference.  Its
+  centered specialization closes the Cauchy argument for every local
+  observable using only the one-root cluster tail.
+- Defined `centeredInfiniteVolumeMeasure` at the explicit lattice
+  strong-coupling radius and proved convergence of every centered local
+  expectation, independence of arbitrary exterior sequences, and uniqueness
+  among probability measures representing the local cluster state.
+- Proved gauge invariance of the concrete infinite-volume local state from
+  finite-volume gauge covariance and boundary independence.  Proved
+  translation invariance by embedding a translated centered box into an
+  explicitly enlarged centered box and applying the same Gibbs-tower and
+  one-root KP tail comparison.
+- Registered the concrete infinite-volume measure as a regular Borel
+  probability.  This uses the roadmap's permitted compact weak-limit route;
+  the previously proved Stone--Weierstrass density theorem supplies uniqueness
+  and agreement with all local continuous observables.
+- Passed the uniform two-root covariance estimate to the concrete
+  infinite-volume measure.  The theorem
+  `centeredInfiniteVolume_exponential_clustering` has the explicit amplitude
+  `centeredClusterObservableAmplitude` and the strictly positive mass
+  `centeredClusterMass`, thereby completing the Milestone 13 exit criterion.
+- Completed Milestones 11--13 at the explicit strong-coupling radius.  The
+  thermodynamic-limit, invariance, measure-representation, and clustering
+  proofs use the plaquette polymer cluster expansion and its explicit KP/tree
+  certificate, not the Douglas compatibility layer or the Dobrushin baseline.
 
 ### In progress
 
-- Concrete linked-cluster instantiation of the new certificates for
-  `centeredGibbsSequence`: prove one-root cancellation and its uniform tail,
-  translated/gauge-transformed boundary comparison, and two-root cancellation
-  directly from the plaquette-polymer expansion.
-- Regroup the deletion-ordered normalized Mayer logarithm into the previously
-  defined symmetric multi-index Ursell sum.  The exact log/partition identity,
-  weighted pinned estimate, and observable-root gases are now available; this
-  remaining combinatorial regrouping is needed before the concrete one- and
-  two-root tails can directly consume `mayerClusterTerm`.
-- Milestones 11--13 are not marked complete until those certificate fields are
-  discharged for Yang--Mills at the explicit strong-coupling radius.  The
-  existing Dobrushin boundary theorem remains only a distinct baseline and
-  will not be used to discharge them.
+- None.  Milestones 11--13 meet their roadmap exit criteria; Milestone 14 has
+  not yet started.
 
 ### Not started
 
@@ -403,6 +784,148 @@ Commands are added here only after they succeed.
   Success; 3,753 jobs. Remaining output consists of linter and deprecation
   warnings, mostly replayed from pinned dependencies; there are no build
   errors.
+2026-08-10: lake env lean YangMills/Tests/Milestones11To13Foundations.lean
+  Success. The finite connected-component/Möbius regrouping theorem has axiom
+  footprint `[propext, Classical.choice, Quot.sound]`.
+2026-08-10: lake build
+  Success; 3,755 jobs after adding the finite graph exponential-formula
+  foundation. Remaining output consists of linter and deprecation warnings;
+  there are no build errors.
+2026-08-10: lake build YangMills.Polymer.Penrose
+  YangMills.Polymer.Whitney YangMills.Polymer.KoteckyPreiss
+  Success. The unconditional Whitney sign-reversing involution, sharp finite
+  tree-graph inequality, exact termwise Mayer tree majorant, and standard KP
+  rooted-tree fixed-point bound compile without placeholders.
+2026-08-10: lake build YangMills.StrongCoupling.ObservableRootPolymer
+  YangMills.Tests.Milestones11To13Foundations
+  Success; 2,914 jobs. The one- and two-observable augmented-root pinned tree
+  bounds compile, and the new Whitney/Mayer/KP declarations retain axiom
+  footprint `[propext, Classical.choice, Quot.sound]`.
+2026-08-10: lake build YangMills.Polymer.PowerSeriesLog
+  YangMills.Polymer.LabelledTreeSummation
+  YangMills.Tests.Milestones11To13Foundations
+  Success; 2,995 jobs. Formal `expOf`/`logOf` inversion and exact
+  labelled-set-to-symmetric-`MayerMultiIndex` KP forest summation compile;
+  their regression declarations have footprint
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-10: lake env lean YangMills/Polymer/RootedTreeDecomposition.lean
+  Success.  Every component away from a tree root has a unique adjacent
+  attachment vertex; the proof is placeholder-free and polymer-independent.
+2026-08-10: lake env lean YangMills/Polymer/MayerPowerSeries.lean
+  Success.  The canonical formal finite partition logarithm and its exact
+  exponential identity compile without placeholders.
+2026-08-10: lake build YangMills.Polymer.RootedTreeDecomposition
+  YangMills.Polymer.LabelledTreeSummation YangMills.Polymer.PowerSeriesLog
+  YangMills.Polymer.MayerPowerSeries
+  YangMills.Tests.Milestones11To13Foundations
+  Success; 2,997 jobs.  Root-deleted component histograms, exact activity
+  factorization, pinned-to-unpinned symmetry and norm identities, the
+  Mayer-to-KP child condition, and the formal logarithm regression
+  declarations have footprint `[propext, Classical.choice, Quot.sound]`.
+2026-08-10: lake build
+  Success; 3,796 jobs after integrating the rooted Mayer weight decomposition
+  and formal partition logarithm into the root import.  Remaining output is
+  linter and dependency deprecation warnings; there are no build errors.
+2026-08-10: lake build YangMills.Polymer.RootedForestPartition
+  YangMills.Polymer.LabelledTreeSummation
+  YangMills.StrongCoupling.ObservableRootPolymer
+  YangMills.Tests.Milestones11To13Foundations
+  Success; 2,999 jobs.  Lossless root deletion, exact component attachment
+  products, the common-ambient unordered forest code, its weighted finite
+  exponential bound, the fixed-multi-index pinned Mayer estimate, and the
+  zero-source one-/two-observable KP certificates compile without
+  placeholders.  Regression declarations retain footprint
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-10: lake build
+  Success; 3,798 jobs after integrating the finite rooted-forest orbit bridge
+  and observable-root KP certificates into the root import.  Remaining output
+  consists of linter and pinned-dependency deprecation warnings; there are no
+  build errors.
+2026-08-11: lake build YangMills.StrongCoupling.FiniteClusterExpansion
+  YangMills.Tests.Milestones11To13Foundations
+  Success; 3,015 jobs.  Exact two-root deletion, nonzero-root KP
+  regularization, genuine pinned/tree and three-sector summability, and the
+  concrete mixed connected partition identity compile without placeholders.
+  Their regression declarations have footprint
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-11: lake build
+  Success; 3,814 jobs after integrating the two-root deletion and nonzero KP
+  regularization into the root import.  Remaining output consists of linter
+  and pinned-dependency deprecation warnings; there are no build errors.
+2026-08-11: lake build YangMills.Polymer.BigradedSource
+  YangMills.StrongCoupling.MarkedComponentExpansion
+  YangMills.Tests.Milestones11To13Foundations
+  Success; 3,016 jobs.  The bigraded source exponential and evaluated coefficient
+  identities, exact decorated two-observable partition reindexing, explicit
+  regularized KP certificate, genuine first/second/mixed-sector summability,
+  mixed-root spanning witness, and exact truncated-correlation series compile
+  without placeholders.  The checked declarations have axiom footprint
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-11: lake build
+  Success; 3,815 jobs after integrating the bigraded source and decorated bivariate
+  cluster expansion into the root import.  Remaining output consists of
+  linter and pinned-dependency deprecation warnings; there are no build
+  errors.
+2026-08-11: lake build YangMills.StrongCoupling.SpatialClusterExpansion
+  YangMills.Tests.Milestones11To13Foundations
+  Success; 3,017 jobs.  The explicit greater-than-one cardinality tilt,
+  tilted bulk and full decorated nonzero-source KP certificates, pinned-tree
+  summability, and exponentially weighted mixed-sector summability compile
+  without placeholders.  The checked declarations have axiom footprint
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-11: lake build
+  Success; 3,816 jobs after integrating the spatially weighted cluster
+  expansion into the root import.  Remaining output consists of linter and
+  pinned-dependency deprecation warnings; there are no build errors.
+2026-08-11: lake build YangMills.StrongCoupling.SpatialClusterGeometry
+  YangMills.Tests.Milestones11To13Foundations
+  Success; 3,018 jobs.  Connected spatial carriers for all decorated polymer
+  types, incompatibility linkage, Mayer-walk carrier induction, and the final
+  mixed-term separation-versus-cardinality theorem compile without
+  placeholders.  The checked declaration has axiom footprint
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-11: lake build
+  Success; 3,817 jobs after integrating the spatial support geometry into the
+  root import.  Remaining output consists of linter and pinned-dependency
+  deprecation warnings; there are no build errors.
+2026-08-11: lake build YangMills.StrongCoupling.SpatialClusterGeometry
+  YangMills.Tests.Milestones11To13Foundations
+  Success; 3,018 jobs.  Source-only pinning, quantitative certified
+  pinned-tree summation, the explicit volume-free tilted decoration budget,
+  and the resulting uniform finite-volume covariance estimate compile
+  without placeholders.  The checked declarations have axiom footprint
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-11: lake build
+  Success; 3,817 jobs after integrating the uniform pinned/tree covariance
+  bound.  Remaining output consists of linter and pinned-dependency
+  deprecation warnings; there are no build errors.
+2026-08-11: lake build YangMills.StrongCoupling.ClusterBoundaryExpansion
+  YangMills.StrongCoupling.CenteredBoundaryExpansion
+  YangMills.StrongCoupling.CenteredClusterGeometry
+  YangMills.Tests.Milestones11To13Foundations
+  Success.  Symmetric Mayer degree normalization across exterior instances,
+  the absolutely summable one-root boundary tail, centered finite-neighborhood
+  exhaustion, arbitrary-boundary convergence, and the concrete two-root
+  exponential-clustering certificate compile without placeholders.
+2026-08-11: lake build
+  Success; 3,820 jobs after integrating the one-root centered boundary tail
+  and concrete centered clustering certificate into the root import.
+  Remaining output consists of linter and pinned-dependency deprecation
+  warnings; there are no build errors.
+2026-08-12: lake build YangMills.StrongCoupling.CenteredInfiniteVolume
+  Success.  The generic and centered finite-product Gibbs towers, concrete
+  cross-volume Cauchy theorem, arbitrary-boundary independence, gauge and
+  translation invariance, regular infinite-volume probability, and explicit
+  positive-mass clustering theorem compile at the lattice strong-coupling
+  radius without placeholders.
+2026-08-12: lake env lean YangMills/Tests/Milestones11To13Foundations.lean
+  Success.  The concrete Milestone 11--13 exit declarations, including
+  cofinal-subsequence convergence, have axiom footprint
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-12: lake build
+  Success; 3,824 jobs after exporting the completed Milestone 11--13 theorem
+  family from the package root.  Remaining output consists of linter and
+  pinned-dependency deprecation warnings; there are no build errors.
 ```
 
 ## Conventions fixed so far

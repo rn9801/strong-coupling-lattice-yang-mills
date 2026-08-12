@@ -40,6 +40,63 @@ def markedSubsetIntegrand (F : LocalObservable d G)
     (X : Finset (Plaquette d)) (U : DynamicConfiguration Λ) : ℂ :=
   F (Λ.evaluate U) * subsetIntegrand Λ Φ β X U
 
+/-- Dynamic coordinates on which the glued evaluation of a local observable
+can depend.  Exterior support edges are frozen and therefore do not appear. -/
+def observableCoordinateSupport (F : LocalObservable d G)
+    (Λ : FiniteSpecification d G) : Finset Λ.dynamicEdges :=
+  Finset.univ.filter fun e => e.1 ∈ F.support
+
+omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
+  [SecondCountableTopology G] [GaugeHaarProbability G] in
+/-- The observable after gluing depends only on its dynamic support
+coordinates. -/
+theorem localObservable_evaluate_dependsOn (F : LocalObservable d G)
+    (Λ : FiniteSpecification d G) :
+    DependsOn (fun U : DynamicConfiguration Λ => F (Λ.evaluate U))
+      (observableCoordinateSupport F Λ : Set Λ.dynamicEdges) := by
+  intro U V hUV
+  apply F.dependsOn_support
+  intro e heF
+  by_cases heΛ : e ∈ Λ.dynamicEdges
+  · rw [Λ.evaluate_of_mem U e heΛ, Λ.evaluate_of_mem V e heΛ]
+    apply hUV ⟨e, heΛ⟩
+    simp only [observableCoordinateSupport, Finset.mem_filter,
+      Finset.mem_univ, true_and]
+    simpa using heF
+  · rw [Λ.evaluate_of_not_mem U e heΛ, Λ.evaluate_of_not_mem V e heΛ]
+
+omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
+  [SecondCountableTopology G] [GaugeHaarProbability G] in
+/-- A marked subset integrand reads the union of the observable coordinates
+and the selected plaquette coordinates. -/
+theorem markedSubsetIntegrand_dependsOn (F : LocalObservable d G)
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℂ)
+    (X : Finset (Plaquette d)) :
+    DependsOn (markedSubsetIntegrand F Λ Φ β X)
+      ((observableCoordinateSupport F Λ : Set Λ.dynamicEdges) ∪
+        (subsetCoordinateSupport Λ X : Set Λ.dynamicEdges)) := by
+  intro U V hUV
+  unfold markedSubsetIntegrand
+  have hF := localObservable_evaluate_dependsOn F Λ
+    (fun e he => hUV e (Set.mem_union_left _ he))
+  have hX := subsetIntegrand_dependsOn Λ Φ β X
+    (fun e he => hUV e (Set.mem_union_right _ he))
+  exact congrArg₂ (· * ·) hF hX
+
+omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
+  [SecondCountableTopology G] [GaugeHaarProbability G] in
+/-- Splitting off a disjoint plaquette block factors the marked integrand
+pointwise into a marked part and an unmarked part. -/
+theorem markedSubsetIntegrand_union_of_disjoint (F : LocalObservable d G)
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℂ)
+    (A B : Finset (Plaquette d)) (hAB : Disjoint A B)
+    (U : DynamicConfiguration Λ) :
+    markedSubsetIntegrand F Λ Φ β (A ∪ B) U =
+      markedSubsetIntegrand F Λ Φ β A U * subsetIntegrand Λ Φ β B U := by
+  unfold markedSubsetIntegrand subsetIntegrand
+  rw [Finset.prod_union hAB]
+  ring
+
 /-- Haar-integrated marked weight of a plaquette subset. -/
 def markedSubsetWeight (F : LocalObservable d G)
     (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℂ)
@@ -64,6 +121,72 @@ theorem continuous_markedSubsetIntegrand (F : LocalObservable d G)
     Continuous (markedSubsetIntegrand F Λ Φ β X) := by
   exact (F.toContinuousMap.continuous.comp Λ.continuous_evaluate).mul
     (continuous_subsetIntegrand Λ Φ β X)
+
+/-- A disjoint plaquette block whose dynamic coordinates avoid both the
+observable and the marked block factors completely out of the marked Haar
+weight. -/
+theorem markedSubsetWeight_union_of_disjoint (F : LocalObservable d G)
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℂ)
+    (A B : Finset (Plaquette d)) (hAB : Disjoint A B)
+    (hedges : Disjoint
+      ((observableCoordinateSupport F Λ : Set Λ.dynamicEdges) ∪
+        (subsetCoordinateSupport Λ A : Set Λ.dynamicEdges))
+      (subsetCoordinateSupport Λ B : Set Λ.dynamicEdges)) :
+    markedSubsetWeight F Λ Φ β (A ∪ B) =
+      markedSubsetWeight F Λ Φ β A * subsetWeight Λ Φ β B := by
+  have hfactor := Gauge.ProductHaar.integral_mul_of_disjoint_dependsOn
+    (G := G) (𝕜 := ℂ)
+    (markedSubsetIntegrand F Λ Φ β A) (subsetIntegrand Λ Φ β B)
+    ((observableCoordinateSupport F Λ : Set Λ.dynamicEdges) ∪
+      (subsetCoordinateSupport Λ A : Set Λ.dynamicEdges))
+    (subsetCoordinateSupport Λ B : Set Λ.dynamicEdges)
+    (markedSubsetIntegrand_dependsOn F Λ Φ β A)
+    (subsetIntegrand_dependsOn Λ Φ β B) hedges
+    (continuous_markedSubsetIntegrand F Λ Φ β A).measurable
+    (continuous_subsetIntegrand Λ Φ β B).measurable
+  rw [markedSubsetWeight, markedSubsetWeight, subsetWeight]
+  rw [show markedSubsetIntegrand F Λ Φ β (A ∪ B) =
+      fun U => markedSubsetIntegrand F Λ Φ β A U *
+        subsetIntegrand Λ Φ β B U by
+    funext U
+    exact markedSubsetIntegrand_union_of_disjoint F Λ Φ β A B hAB U]
+  simpa only [FiniteSpecification.haarMeasure] using hfactor
+
+/-- Two marked blocks with disjoint complete coordinate supports factor into
+the product of their separate marked Haar weights.  This is the local
+factorization behind two-observable cluster cancellation. -/
+theorem markedSubsetWeight_mul_union_of_disjoint
+    (F H : LocalObservable d G)
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℂ)
+    (A B : Finset (Plaquette d)) (hAB : Disjoint A B)
+    (hedges : Disjoint
+      ((observableCoordinateSupport F Λ : Set Λ.dynamicEdges) ∪
+        (subsetCoordinateSupport Λ A : Set Λ.dynamicEdges))
+      ((observableCoordinateSupport H Λ : Set Λ.dynamicEdges) ∪
+        (subsetCoordinateSupport Λ B : Set Λ.dynamicEdges))) :
+    markedSubsetWeight (F.mul H) Λ Φ β (A ∪ B) =
+      markedSubsetWeight F Λ Φ β A * markedSubsetWeight H Λ Φ β B := by
+  have hfactor := Gauge.ProductHaar.integral_mul_of_disjoint_dependsOn
+    (G := G) (𝕜 := ℂ)
+    (markedSubsetIntegrand F Λ Φ β A) (markedSubsetIntegrand H Λ Φ β B)
+    ((observableCoordinateSupport F Λ : Set Λ.dynamicEdges) ∪
+      (subsetCoordinateSupport Λ A : Set Λ.dynamicEdges))
+    ((observableCoordinateSupport H Λ : Set Λ.dynamicEdges) ∪
+      (subsetCoordinateSupport Λ B : Set Λ.dynamicEdges))
+    (markedSubsetIntegrand_dependsOn F Λ Φ β A)
+    (markedSubsetIntegrand_dependsOn H Λ Φ β B) hedges
+    (continuous_markedSubsetIntegrand F Λ Φ β A).measurable
+    (continuous_markedSubsetIntegrand H Λ Φ β B).measurable
+  rw [markedSubsetWeight, markedSubsetWeight, markedSubsetWeight]
+  rw [show markedSubsetIntegrand (F.mul H) Λ Φ β (A ∪ B) =
+      fun U => markedSubsetIntegrand F Λ Φ β A U *
+        markedSubsetIntegrand H Λ Φ β B U by
+    funext U
+    unfold markedSubsetIntegrand subsetIntegrand LocalObservable.mul
+    rw [Finset.prod_union hAB]
+    simp only [ContinuousMap.mul_apply]
+    ring]
+  simpa only [FiniteSpecification.haarMeasure] using hfactor
 
 omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
   [SecondCountableTopology G] [GaugeHaarProbability G] in
@@ -149,6 +272,24 @@ theorem complexGibbsExpectation_ofReal_eq_integral_gibbsMeasure
   rw [Complex.real_smul]
   push_cast
   ring
+
+/-- At real coupling, translating the finite specification converts the
+expectation of `F` into the expectation of its inverse-translation pullback.
+This is exact coordinate relabeling, prior to any thermodynamic limit. -/
+theorem complexGibbsExpectation_translate_ofReal
+    (F : LocalObservable d G) (Λ : FiniteSpecification d G)
+    (Φ : RealPlaquettePotential G) (β : ℝ) (v : Site d) :
+    complexGibbsExpectation F (Λ.translate v) Φ (β : ℂ) =
+      complexGibbsExpectation (F.translatePullback (-v)) Λ Φ (β : ℂ) := by
+  rw [complexGibbsExpectation_ofReal_eq_integral_gibbsMeasure,
+    complexGibbsExpectation_ofReal_eq_integral_gibbsMeasure]
+  have htranslate := Gauge.FiniteVolume.integral_gibbsMeasure_translate
+    Λ Φ β v (fun V => F ((Λ.translate v).evaluate V))
+    (F.toContinuousMap.continuous.measurable.comp
+      (Λ.translate v).continuous_evaluate.measurable)
+  simpa only [LocalObservable.translatePullback_apply,
+    Λ.translate_evaluate_translateDynamic,
+    LocalObservable.translateConfiguration] using htranslate
 
 omit [Group G] [IsTopologicalGroup G] [CompactSpace G] [MeasurableSpace G]
   [BorelSpace G] [SecondCountableTopology G] [GaugeHaarProbability G] in

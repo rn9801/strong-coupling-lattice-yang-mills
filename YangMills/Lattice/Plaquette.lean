@@ -93,6 +93,34 @@ namespace Plaquette
 def translate {d : ℕ} (v : Site d) (p : Plaquette d) : Plaquette d :=
   ⟨Cubic.translate v p.base, p.first, p.second, p.distinct⟩
 
+@[simp]
+theorem translate_zero {d : ℕ} (p : Plaquette d) : p.translate 0 = p := by
+  cases p
+  simp [Plaquette.translate]
+
+@[simp]
+theorem translate_translate {d : ℕ} (v w : Site d) (p : Plaquette d) :
+    (p.translate v).translate w = p.translate (v + w) := by
+  cases p
+  simp [Plaquette.translate]
+
+@[simp]
+theorem translate_neg_self {d : ℕ} (v : Site d) (p : Plaquette d) :
+    (p.translate v).translate (-v) = p := by
+  simp
+
+@[simp]
+theorem translate_neg_self' {d : ℕ} (v : Site d) (p : Plaquette d) :
+    (p.translate (-v)).translate v = p := by
+  simp
+
+/-- Translation is a bijection of plaquettes. -/
+def translationEquiv {d : ℕ} (v : Site d) : Plaquette d ≃ Plaquette d where
+  toFun := Plaquette.translate v
+  invFun := Plaquette.translate (-v)
+  left_inv := Plaquette.translate_neg_self v
+  right_inv := Plaquette.translate_neg_self' v
+
 /-- The positively oriented four-edge boundary of a plaquette. -/
 def boundary {d : ℕ} (p : Plaquette d) : Path p.base p.base :=
   Path.rectangleBoundary p.base p.first p.second 1 1

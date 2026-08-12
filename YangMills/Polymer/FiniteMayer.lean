@@ -71,13 +71,13 @@ theorem deletionMayerSum_cons (M : FinitePolymerModel P) (γ : P) (l : List P) :
     M.deletionMayerSum (γ :: l) =
       M.mayerInsertionLog γ l.toFinset + M.deletionMayerSum l := rfl
 
-/-- The explicit certificate places every pinned Mayer variable strictly
-inside the unit disk. -/
-theorem norm_mayerInsertion_lt_one_of_dobrushin
+/-- The explicit certificate bounds a pinned Mayer variable by its local
+Dobrushin budget. -/
+theorem norm_mayerInsertion_le_one_sub_exp_of_dobrushin
     (M : FinitePolymerModel P) (S : Finset P) (a : P → ℝ)
     (hD : M.DobrushinCertificate S a) (T : Finset P) (hTS : T ⊆ S)
     {γ : P} (hγT : γ ∉ T) (hγS : γ ∈ S) :
-    ‖M.mayerInsertion γ T‖ < 1 := by
+    ‖M.mayerInsertion γ T‖ ≤ 1 - Real.exp (-a γ) := by
   have hsub : insert γ T ⊆ S := by
     intro x hx
     rcases Finset.mem_insert.mp hx with rfl | hx
@@ -87,8 +87,78 @@ theorem norm_mayerInsertion_lt_one_of_dobrushin
     S a hD (insert γ T) hsub (Finset.mem_insert_self γ T)
   have herase : (insert γ T).erase γ = T := Finset.erase_insert hγT
   rw [herase] at hpinned
-  change ‖M.mayerInsertion γ T‖ < 1
-  exact hpinned.trans_lt (by linarith [Real.exp_pos (-a γ)])
+  change ‖M.mayerInsertion γ T‖ ≤ 1 - Real.exp (-a γ)
+  exact hpinned
+
+/-- The explicit certificate places every pinned Mayer variable strictly
+inside the unit disk. -/
+theorem norm_mayerInsertion_lt_one_of_dobrushin
+    (M : FinitePolymerModel P) (S : Finset P) (a : P → ℝ)
+    (hD : M.DobrushinCertificate S a) (T : Finset P) (hTS : T ⊆ S)
+    {γ : P} (hγT : γ ∉ T) (hγS : γ ∈ S) :
+    ‖M.mayerInsertion γ T‖ < 1 := by
+  exact (M.norm_mayerInsertion_le_one_sub_exp_of_dobrushin
+    S a hD T hTS hγT hγS).trans_lt
+      (by linarith [Real.exp_pos (-a γ)])
+
+/-- The norm series of one pinned Mayer logarithm converges to the scalar
+majorant `-log (1 - ‖u‖)`.  This records absolute convergence, not merely
+convergence of the alternating complex logarithm. -/
+theorem hasSum_norm_mayerInsertionTerm_of_dobrushin
+    (M : FinitePolymerModel P) (S : Finset P) (a : P → ℝ)
+    (hD : M.DobrushinCertificate S a) (T : Finset P) (hTS : T ⊆ S)
+    {γ : P} (hγT : γ ∉ T) (hγS : γ ∈ S) :
+    HasSum (fun n : ℕ => ‖M.mayerInsertionTerm γ T n‖)
+      (-Real.log (1 - ‖M.mayerInsertion γ T‖)) := by
+  let q : ℝ := ‖M.mayerInsertion γ T‖
+  have hq : q < 1 :=
+    M.norm_mayerInsertion_lt_one_of_dobrushin S a hD T hTS hγT hγS
+  have hs := Real.hasSum_pow_div_log_of_abs_lt_one
+    (show |q| < 1 by simpa [q, abs_of_nonneg (norm_nonneg _)] using hq)
+  rw [← hasSum_nat_add_iff' 1]
+  have htail : HasSum
+      (fun n : ℕ => ‖M.mayerInsertionTerm γ T (n + 1)‖)
+      (-Real.log (1 - q)) := by
+    convert hs using 1
+    funext n
+    simp only [mayerInsertionTerm, norm_div, norm_mul, norm_pow, norm_neg,
+      norm_one, one_pow, one_mul, Complex.norm_natCast]
+    norm_num
+    rfl
+  simpa [mayerInsertionTerm, q] using htail
+
+/-- Absolute summability of every pinned Mayer logarithm under the explicit
+Dobrushin--KP certificate. -/
+theorem summable_norm_mayerInsertionTerm_of_dobrushin
+    (M : FinitePolymerModel P) (S : Finset P) (a : P → ℝ)
+    (hD : M.DobrushinCertificate S a) (T : Finset P) (hTS : T ⊆ S)
+    {γ : P} (hγT : γ ∉ T) (hγS : γ ∈ S) :
+    Summable (fun n : ℕ => ‖M.mayerInsertionTerm γ T n‖) :=
+  (M.hasSum_norm_mayerInsertionTerm_of_dobrushin
+    S a hD T hTS hγT hγS).summable
+
+/-- The full absolute pinned Mayer series fits in the local weight `a γ`.
+This is the quantitative rooted estimate furnished by the existing explicit
+certificate. -/
+theorem tsum_norm_mayerInsertionTerm_le_of_dobrushin
+    (M : FinitePolymerModel P) (S : Finset P) (a : P → ℝ)
+    (hD : M.DobrushinCertificate S a) (T : Finset P) (hTS : T ⊆ S)
+    {γ : P} (hγT : γ ∉ T) (hγS : γ ∈ S) :
+    ∑' n : ℕ, ‖M.mayerInsertionTerm γ T n‖ ≤ a γ := by
+  have hsum := M.hasSum_norm_mayerInsertionTerm_of_dobrushin
+    S a hD T hTS hγT hγS
+  rw [hsum.tsum_eq]
+  have hbudget := M.norm_mayerInsertion_le_one_sub_exp_of_dobrushin
+    S a hD T hTS hγT hγS
+  have hq := M.norm_mayerInsertion_lt_one_of_dobrushin
+    S a hD T hTS hγT hγS
+  have hpositive : 0 < 1 - ‖M.mayerInsertion γ T‖ := sub_pos.mpr hq
+  have hexp : Real.exp (-a γ) ≤ 1 - ‖M.mayerInsertion γ T‖ := by
+    linarith
+  have hlog := Real.strictMonoOn_log.monotoneOn
+    (Real.exp_pos (-a γ)) hpositive hexp
+  rw [Real.log_exp] at hlog
+  linarith
 
 /-- The local Mayer series is exactly the analytic logarithm of its insertion
 ratio. -/

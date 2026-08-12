@@ -87,6 +87,39 @@ theorem continuous_action (Λ : FiniteSpecification d G) (Φ : RealPlaquettePote
   exact continuous_finsetSum Λ.activePlaquettes fun p _ =>
     Φ.toContinuousMap.continuous.comp (continuous_plaquetteHolonomy Λ p)
 
+section TranslationCovariance
+
+/-- Plaquette holonomy is unchanged after translating the specification,
+dynamic variables, and plaquette together. -/
+theorem plaquetteHolonomy_translate
+    (Λ : FiniteSpecification d G) (v : Site d)
+    (U : DynamicConfiguration Λ) (p : Plaquette d) :
+    plaquetteHolonomy (Λ.translate v) (Λ.translateDynamic v U)
+        (p.translate v) =
+      plaquetteHolonomy Λ U p := by
+  unfold plaquetteHolonomy
+  rw [Λ.translate_evaluate_translateDynamic]
+  change holonomy (fun e => Λ.evaluate U (e.translate (-v)))
+      (p.translate v).boundary = holonomy (Λ.evaluate U) p.boundary
+  rw [holonomy_plaquette_translate]
+  rw [Plaquette.translate_neg_self]
+
+/-- The finite-volume action is unchanged by lattice translation. -/
+theorem action_translate
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
+    (v : Site d) (U : DynamicConfiguration Λ) :
+    action (Λ.translate v) Φ (Λ.translateDynamic v U) = action Λ Φ U := by
+  unfold action
+  rw [FiniteSpecification.translate_activePlaquettes,
+    Finset.sum_map]
+  apply Finset.sum_congr rfl
+  intro p hp
+  change Φ (plaquetteHolonomy (Λ.translate v) (Λ.translateDynamic v U)
+      (p.translate v)) = Φ (plaquetteHolonomy Λ U p)
+  rw [plaquetteHolonomy_translate]
+
+end TranslationCovariance
+
 omit [IsTopologicalGroup G] in
 /-- Absolute value of the action is controlled uniformly. -/
 theorem norm_action_le (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
@@ -222,6 +255,37 @@ theorem gibbsExpectation_eq_integral_gibbsMeasure
   funext U
   field_simp
 
+/-- Translation covariance of complex-valued Gibbs integrals. -/
+theorem integral_gibbsMeasure_translate
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℝ)
+    (v : Site d) (F : DynamicConfiguration (Λ.translate v) → ℂ)
+    (hF : Measurable F) :
+    ∫ V, F V ∂gibbsMeasure (Λ.translate v) Φ β =
+      ∫ U, F (Λ.translateDynamic v U) ∂gibbsMeasure Λ Φ β := by
+  let T := Λ.translateDynamic v
+  let e := Λ.translateDynamicEquiv v
+  let Tmeas := ProductHaar.reindexEquiv (G := G) e
+  have hTmeas := ProductHaar.measurePreserving_reindex (G := G) e
+  have hTeq : T = Tmeas := by
+    funext U j
+    change U (e.symm j) = Tmeas U j
+    symm
+    exact ProductHaar.reindex_apply e U j
+  rw [gibbsMeasure, gibbsMeasure, integral_tilted, integral_tilted]
+  let Z := ∫ U, Real.exp (β * action Λ Φ U) ∂Λ.haarMeasure
+  have hZ : (∫ V, Real.exp (β * action (Λ.translate v) Φ V)
+      ∂(Λ.translate v).haarMeasure) = Z := by
+    have hchange := hTmeas.integral_comp'
+      (fun V => Real.exp (β * action (Λ.translate v) Φ V))
+    rw [← hTeq] at hchange
+    simpa only [T, action_translate, Z] using hchange.symm
+  rw [hZ]
+  let H : DynamicConfiguration (Λ.translate v) → ℂ := fun V =>
+    (Real.exp (β * action (Λ.translate v) Φ V) / Z : ℝ) • F V
+  have hchange := hTmeas.integral_comp' H
+  rw [← hTeq] at hchange
+  simpa only [H, T, action_translate] using hchange.symm
+
 /-- Gibbs expectation is normalized on the constant-one observable. -/
 @[simp]
 theorem gibbsExpectation_one
@@ -284,6 +348,31 @@ theorem plaquetteHolonomy_gaugeTransform
   rw [Λ.evaluate_gaugeTransformDynamic g hg U]
   exact holonomy_loop_gaugeTransform g (Λ.evaluate U) p.boundary
 
+/-- Transforming both dynamic and exterior data conjugates every plaquette
+holonomy, without a boundary-compatibility restriction. -/
+theorem plaquetteHolonomy_gaugeTransformExterior
+    (Λ : FiniteSpecification d G) (g : GaugeTransformation d G)
+    (U : DynamicConfiguration Λ) (p : Plaquette d) :
+    plaquetteHolonomy (Λ.gaugeTransformExterior g)
+        (Λ.gaugeTransformDynamic g U) p =
+      g p.base * plaquetteHolonomy Λ U p * (g p.base)⁻¹ := by
+  unfold plaquetteHolonomy
+  rw [Λ.gaugeTransformExterior_evaluate_gaugeTransformDynamic g U]
+  exact holonomy_loop_gaugeTransform g (Λ.evaluate U) p.boundary
+
+/-- The action is covariant when the frozen exterior field is transformed
+together with the dynamic variables. -/
+theorem action_gaugeTransformExterior
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
+    (g : GaugeTransformation d G) (U : DynamicConfiguration Λ) :
+    action (Λ.gaugeTransformExterior g) Φ (Λ.gaugeTransformDynamic g U) =
+      action Λ Φ U := by
+  unfold action
+  apply Finset.sum_congr rfl
+  intro p hp
+  rw [plaquetteHolonomy_gaugeTransformExterior Λ g U p]
+  exact Φ.conj_invariant (g p.base) (plaquetteHolonomy Λ U p)
+
 omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
     [SecondCountableTopology G] [GaugeHaarProbability G] [MeasurableMul G] in
 /-- The finite-volume action is invariant under boundary-compatible gauge transformations. -/
@@ -338,6 +427,81 @@ theorem gibbsExpectation_gaugeTransform
   apply integral_congr_ae
   exact ae_of_all _ fun U => by
     simp only [H, boltzmannWeight_gaugeInvariant Λ Φ β g hg U]
+
+/-- Complex local-observable expectations are invariant under every
+boundary-compatible finite-volume gauge transformation. -/
+theorem integral_gibbsMeasure_gaugeTransform_complex
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℝ)
+    (g : GaugeTransformation d G) (hg : Λ.BoundaryCompatible g)
+    (F : DynamicConfiguration Λ → ℂ)
+    (hF : Measurable F) (C : ℝ) (hC : ∀ U, ‖F U‖ ≤ C) :
+    ∫ U, F (Λ.gaugeTransformDynamic g U) ∂gibbsMeasure Λ Φ β =
+      ∫ U, F U ∂gibbsMeasure Λ Φ β := by
+  rw [gibbsMeasure, integral_tilted, integral_tilted]
+  let Z := ∫ U, Real.exp (β * action Λ Φ U) ∂Λ.haarMeasure
+  let H : DynamicConfiguration Λ → ℂ := fun U =>
+    (Real.exp (β * action Λ Φ U) / Z : ℝ) • F U
+  have hH : AEStronglyMeasurable H Λ.haarMeasure := by
+    exact ((measurable_const.mul (continuous_action Λ Φ).measurable).exp.div_const _)
+      |>.aestronglyMeasurable.smul hF.aestronglyMeasurable
+  rw [← Λ.integral_gaugeTransformDynamic_complex g H hH]
+  apply integral_congr_ae
+  exact ae_of_all _ fun U => by
+    change (Real.exp (β * action Λ Φ U) / Z : ℝ) •
+        F (Λ.gaugeTransformDynamic g U) =
+      (Real.exp (β * action Λ Φ (Λ.gaugeTransformDynamic g U)) / Z : ℝ) •
+        F (Λ.gaugeTransformDynamic g U)
+    rw [action_gaugeInvariant Λ Φ g hg U]
+
+/-- Gauge covariance of complex local-observable expectations when the
+frozen exterior field is transformed together with the observable. -/
+theorem integral_gibbsMeasure_gaugeTransformExterior_complex
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℝ)
+    (g : GaugeTransformation d G)
+    (F : Configuration d G → ℂ) (hF : Measurable F) :
+    ∫ V, F ((Λ.gaugeTransformExterior g).evaluate V)
+        ∂gibbsMeasure (Λ.gaugeTransformExterior g) Φ β =
+      ∫ U, F (gaugeTransform g (Λ.evaluate U))
+        ∂gibbsMeasure Λ Φ β := by
+  let T := Λ.gaugeTransformDynamic g
+  have hT := Λ.measurePreserving_gaugeTransformDynamic g
+  rw [gibbsMeasure, gibbsMeasure, integral_tilted, integral_tilted]
+  let Z := ∫ U, Real.exp (β * action Λ Φ U) ∂Λ.haarMeasure
+  have hZ : (∫ V, Real.exp
+      (β * action (Λ.gaugeTransformExterior g) Φ V)
+        ∂(Λ.gaugeTransformExterior g).haarMeasure) = Z := by
+    have hmeas : AEStronglyMeasurable
+        (fun V => Real.exp (β * action (Λ.gaugeTransformExterior g) Φ V))
+        (Λ.gaugeTransformExterior g).haarMeasure :=
+      (measurable_const.mul
+        (continuous_action (Λ.gaugeTransformExterior g) Φ).measurable).exp
+        |>.aestronglyMeasurable
+    have hchange := Λ.integral_gaugeTransformDynamic g
+      (fun V => Real.exp
+        (β * action (Λ.gaugeTransformExterior g) Φ V)) hmeas
+    simpa only [FiniteSpecification.gaugeTransformExterior_dynamicEdges,
+      FiniteSpecification.haarMeasure, T,
+      action_gaugeTransformExterior Λ Φ g] using hchange.symm
+  rw [hZ]
+  have hmeas : AEStronglyMeasurable
+      (fun V : DynamicConfiguration (Λ.gaugeTransformExterior g) =>
+        (Real.exp (β * action (Λ.gaugeTransformExterior g) Φ V) / Z : ℝ) •
+          F ((Λ.gaugeTransformExterior g).evaluate V))
+      (Λ.gaugeTransformExterior g).haarMeasure := by
+    exact ((measurable_const.mul
+      (continuous_action (Λ.gaugeTransformExterior g) Φ).measurable).exp.div_const _)
+      |>.aestronglyMeasurable.smul
+        ((hF.comp (Λ.gaugeTransformExterior g).continuous_evaluate.measurable)
+          |>.aestronglyMeasurable)
+  have hchange := Λ.integral_gaugeTransformDynamic_complex g
+    (fun V : DynamicConfiguration (Λ.gaugeTransformExterior g) =>
+      (Real.exp (β * action (Λ.gaugeTransformExterior g) Φ V) / Z : ℝ) •
+        F ((Λ.gaugeTransformExterior g).evaluate V)) hmeas
+  simpa only [FiniteSpecification.gaugeTransformExterior_dynamicEdges,
+    FiniteSpecification.haarMeasure, T,
+    action_gaugeTransformExterior Λ Φ g,
+    FiniteSpecification.gaugeTransformExterior_evaluate_gaugeTransformDynamic]
+    using hchange.symm
 
 end GaugeInvariance
 

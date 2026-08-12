@@ -79,6 +79,25 @@ theorem signedEdgeValue_eq_of_eq_positive
           | forward => exact h
           | backward => exact congrArg Inv.inv h
 
+/-- Relabeling stored positive edges by a translation relabels every signed
+edge value by the same translation. -/
+theorem signedEdgeValue_translate
+    (v : Site d) (A : Configuration d G) (e : SignedEdge d) :
+    signedEdgeValue (fun a => A (a.translate v)) e =
+      signedEdgeValue A (e.translate v) := by
+  cases e with
+  | mk source direction =>
+      cases direction with
+      | mk axis orientation =>
+          cases orientation with
+          | forward => rfl
+          | backward =>
+              simp only [signedEdgeValue, SignedEdge.translate,
+                PositiveEdge.translate, SignedEdge.target]
+              congr 2
+              exact congrArg (fun x => PositiveEdge.mk x axis)
+                (translate_step v source (.backward axis))
+
 /-- Apply a site gauge transformation to every stored positive edge. -/
 def gaugeTransform (g : GaugeTransformation d G) (A : Configuration d G) :
     Configuration d G :=

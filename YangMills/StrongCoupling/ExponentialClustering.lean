@@ -137,6 +137,85 @@ theorem exponential_clustering_exp
 
 end TwoRootClusterCertificate
 
+/-! ## Exponential clustering with an explicit observable amplitude -/
+
+/-- A two-root cluster certificate in which the distance-independent
+amplitude is allowed to depend explicitly on the two finite observables.
+This is the natural interface for complete marked-root decorations: the
+amplitude may grow with support size, while the decay rate remains uniform in
+the observables, volume, and boundary condition. -/
+structure ObservableAmplitudeClusterCertificate
+    (measure : ℕ → ProbabilityMeasure (Configuration d G))
+    extends ClusterLimitCertificate measure where
+  supportDistance : Finset (PositiveEdge d) → Finset (PositiveEdge d) → ℕ
+  amplitude : LocalObservable d G → LocalObservable d G → ℝ
+  amplitude_nonneg : ∀ F H, 0 ≤ amplitude F H
+  rate : ℝ
+  rate_pos : 0 < rate
+  rate_lt_one : rate < 1
+  eventual_truncatedCorrelation_bound : ∀ F H, ∃ N, ∀ n, N ≤ n →
+    ‖truncatedCorrelation (measure n) F H‖ ≤
+      amplitude F H * rate ^ supportDistance F.support H.support
+
+namespace ObservableAmplitudeClusterCertificate
+
+variable {measure : ℕ → ProbabilityMeasure (Configuration d G)}
+
+theorem tendsto_truncatedCorrelation
+    (C : ObservableAmplitudeClusterCertificate measure)
+    (F H : LocalObservable d G) :
+    Tendsto (fun n => truncatedCorrelation (measure n) F H) atTop
+      (nhds (C.toClusterLimitCertificate.stateTruncatedCorrelation F H)) := by
+  exact (C.toClusterLimitCertificate.tendsto_localState (F.mul H)).sub
+    ((C.toClusterLimitCertificate.tendsto_localState F).mul
+      (C.toClusterLimitCertificate.tendsto_localState H))
+
+/-- Infinite-volume exponential clustering with an explicit finite-support
+amplitude. -/
+theorem exponential_clustering
+    (C : ObservableAmplitudeClusterCertificate measure)
+    (F H : LocalObservable d G) :
+    ‖C.toClusterLimitCertificate.stateTruncatedCorrelation F H‖ ≤
+      C.amplitude F H *
+        C.rate ^ C.supportDistance F.support H.support := by
+  apply le_of_tendsto (C.tendsto_truncatedCorrelation F H).norm
+  obtain ⟨N, hN⟩ := C.eventual_truncatedCorrelation_bound F H
+  exact eventually_atTop.2 ⟨N, fun n hn => hN n hn⟩
+
+/-- Positive mass associated with the uniform geometric decay rate. -/
+def clusteringMass (C : ObservableAmplitudeClusterCertificate measure) : ℝ :=
+  -Real.log C.rate
+
+theorem clusteringMass_pos
+    (C : ObservableAmplitudeClusterCertificate measure) :
+    0 < C.clusteringMass := by
+  exact neg_pos.mpr (Real.log_neg C.rate_pos C.rate_lt_one)
+
+theorem rate_pow_eq_exp_neg_mass
+    (C : ObservableAmplitudeClusterCertificate measure) (n : ℕ) :
+    C.rate ^ n = Real.exp (-C.clusteringMass * (n : ℝ)) := by
+  calc
+    C.rate ^ n = (Real.exp (Real.log C.rate)) ^ n := by
+      rw [Real.exp_log C.rate_pos]
+    _ = Real.exp ((n : ℝ) * Real.log C.rate) := by
+      rw [← Real.exp_nat_mul]
+    _ = Real.exp (-C.clusteringMass * (n : ℝ)) := by
+      congr 1
+      simp only [clusteringMass]
+      ring
+
+theorem exponential_clustering_exp
+    (C : ObservableAmplitudeClusterCertificate measure)
+    (F H : LocalObservable d G) :
+    ‖C.toClusterLimitCertificate.stateTruncatedCorrelation F H‖ ≤
+      C.amplitude F H *
+        Real.exp (-C.clusteringMass *
+          (C.supportDistance F.support H.support : ℝ)) := by
+  rw [← C.rate_pow_eq_exp_neg_mass]
+  exact C.exponential_clustering F H
+
+end ObservableAmplitudeClusterCertificate
+
 end
 
 end YangMills.StrongCoupling

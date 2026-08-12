@@ -6,6 +6,7 @@ Authors: The Strong-Coupling Lattice Yang--Mills contributors
 
 import YangMills.StrongCoupling.ClusterState
 import Mathlib.MeasureTheory.Measure.Prokhorov
+import Mathlib.MeasureTheory.Measure.RegularityCompacts
 import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed

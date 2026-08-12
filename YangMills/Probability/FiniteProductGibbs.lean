@@ -753,6 +753,267 @@ theorem cancellation_identity
       exact ae_of_all _ fun σ => by ring
     _ = ∫ σ, h σ ∂productMeasure (I := I) ν := hmain.symm
 
+/-- Finite-product Gibbs tower identity for bounded real observables.  A
+global Gibbs expectation is the Gibbs average of its normalized conditional
+expectations in any finite coordinate region. -/
+theorem integral_conditionalMeasure_gibbsMeasure
+    (region : Finset I) (f : (I → S) → ℝ)
+    (hf : Measurable f) (B : ℝ) (hB : ∀ σ, |f σ| ≤ B) :
+    ∫ σ, (∫ τ, f τ ∂E.conditionalMeasure ν region σ)
+        ∂E.gibbsMeasure ν =
+      ∫ σ, f σ ∂E.gibbsMeasure ν := by
+  let μ := productMeasure (I := I) ν
+  let W : (I → S) → ℝ := fun U => Real.exp (E U)
+  let Z : ℝ := ∫ U, W U ∂μ
+  let inner : (I → S) → ℝ := fun σ =>
+    ∫ u, W (glue region u σ) * f (glue region u σ) ∂μ
+  have hW_meas : Measurable W := E.measurable_energy.exp
+  have hW_int : Integrable W μ := by
+    apply Integrable.of_bound hW_meas.aestronglyMeasurable (Real.exp E.bound)
+    exact ae_of_all _ fun U => by
+      rw [Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)]
+      exact Real.exp_le_exp.mpr ((le_abs_self _).trans (by
+        simpa only [Real.norm_eq_abs] using E.norm_energy_le U))
+  have hWf_int : Integrable (fun U => W U * f U) μ := by
+    apply Integrable.of_bound (hW_meas.mul hf).aestronglyMeasurable
+      (Real.exp E.bound * max 0 B)
+    exact ae_of_all _ fun U => by
+      rw [Real.norm_eq_abs, abs_mul, abs_of_pos (Real.exp_pos _)]
+      gcongr
+      · exact (le_abs_self _).trans (by
+          simpa only [Real.norm_eq_abs] using E.norm_energy_le U)
+      · exact (hB U).trans (le_max_right _ _)
+  have hinner_meas : Measurable inner := by
+    let J : ((I → S) × (I → S)) → I → S :=
+      fun p => glue region p.2 p.1
+    have hJ : Measurable J := measurable_glue_joint region
+    exact ((hW_meas.mul hf).comp hJ).stronglyMeasurable
+      |>.integral_prod_right' |>.measurable
+  have hinner_ext : ExteriorMeasurable region inner := by
+    intro u σ
+    apply integral_congr_ae
+    exact ae_of_all _ fun v => by
+      apply congrArg (fun U => W U * f U)
+      ext i
+      by_cases hi : i ∈ region <;> simp [glue, hi]
+  have hinner_bound : ∀ σ, |inner σ| ≤ Real.exp E.bound * max 0 B := by
+    intro σ
+    rw [← Real.norm_eq_abs]
+    change ‖∫ u, W (glue region u σ) * f (glue region u σ) ∂μ‖ ≤
+      Real.exp E.bound * max 0 B
+    calc
+      ‖∫ u, W (glue region u σ) * f (glue region u σ) ∂μ‖ ≤
+          (Real.exp E.bound * max 0 B) * μ.real Set.univ := by
+        apply norm_integral_le_of_norm_le_const
+        exact ae_of_all μ fun u => by
+          rw [Real.norm_eq_abs, abs_mul, abs_of_pos (Real.exp_pos _)]
+          exact mul_le_mul
+            (Real.exp_le_exp.mpr ((le_abs_self _).trans (by
+              simpa only [Real.norm_eq_abs] using
+                E.norm_energy_le (glue region u σ))))
+            ((hB (glue region u σ)).trans (le_max_right _ _))
+            (abs_nonneg _) (Real.exp_pos _).le
+      _ = Real.exp E.bound * max 0 B := by simp [μ]
+  have hcancel :
+      ∫ σ, inner σ * W σ / E.conditionalZ ν region σ ∂μ =
+        ∫ σ, inner σ ∂μ := by
+    simpa only [W] using E.cancellation_identity ν region inner
+      hinner_ext hinner_meas (Real.exp E.bound * max 0 B) hinner_bound
+  have hsplit : ∫ σ, inner σ ∂μ = ∫ U, W U * f U ∂μ := by
+    simpa only [inner, W] using
+      integral_glue (I := I) ν region (fun U => W U * f U) hWf_int
+  have hcond : ∀ σ,
+      ∫ τ, f τ ∂E.conditionalMeasure ν region σ =
+        inner σ / E.conditionalZ ν region σ := by
+    intro σ
+    let g : (I → S) → I → S := fun u => glue region u σ
+    have hg : Measurable g := measurable_glue region σ
+    have hden : (∫ U, Real.exp (E U)
+        ∂μ.map g) = E.conditionalZ ν region σ := by
+      rw [integral_map hg.aemeasurable
+        E.measurable_energy.exp.aestronglyMeasurable]
+      rfl
+    rw [conditionalMeasure, integral_tilted]
+    rw [integral_map hg.aemeasurable]
+    · rw [hden]
+      change (∫ u, Real.exp (E (g u)) / E.conditionalZ ν region σ *
+        f (g u) ∂μ) = inner σ / E.conditionalZ ν region σ
+      rw [← integral_div]
+      apply integral_congr_ae
+      exact ae_of_all _ fun u => by
+        simp only [inner, W, g]
+        ring
+    · exact ((E.measurable_energy.exp.div_const _).mul hf).aestronglyMeasurable
+  have hZpos : 0 < Z := integral_exp_pos hW_int
+  rw [gibbsMeasure, integral_tilted, integral_tilted]
+  simp_rw [hcond]
+  change (∫ σ, (W σ / Z) *
+      (inner σ / E.conditionalZ ν region σ) ∂μ) =
+    ∫ σ, (W σ / Z) * f σ ∂μ
+  calc
+    (∫ σ, (W σ / Z) *
+        (inner σ / E.conditionalZ ν region σ) ∂μ) =
+        (∫ σ, inner σ * W σ /
+          E.conditionalZ ν region σ ∂μ) / Z := by
+      rw [← integral_div]
+      apply integral_congr_ae
+      exact ae_of_all _ fun σ => by ring
+    _ = (∫ σ, inner σ ∂μ) / Z := by rw [hcancel]
+    _ = (∫ U, W U * f U ∂μ) / Z := by rw [hsplit]
+    _ = ∫ σ, (W σ / Z) * f σ ∂μ := by
+      rw [← integral_div]
+      apply integral_congr_ae
+      exact ae_of_all _ fun σ => by ring
+
+/-- Measurability of a normalized conditional expectation. -/
+theorem measurable_integral_conditionalMeasure
+    (region : Finset I) (f : (I → S) → ℝ) (hf : Measurable f) :
+    Measurable fun σ => ∫ τ, f τ ∂E.conditionalMeasure ν region σ := by
+  let μ := productMeasure (I := I) ν
+  let inner : (I → S) → ℝ := fun σ =>
+    ∫ u, Real.exp (E (glue region u σ)) * f (glue region u σ) ∂μ
+  have hinner_meas : Measurable inner := by
+    let J : ((I → S) × (I → S)) → I → S :=
+      fun p => glue region p.2 p.1
+    have hJ : Measurable J := measurable_glue_joint region
+    exact ((E.measurable_energy.exp.mul hf).comp hJ).stronglyMeasurable
+      |>.integral_prod_right' |>.measurable
+  have hcond : (fun σ => ∫ τ, f τ ∂E.conditionalMeasure ν region σ) =
+      fun σ => inner σ / E.conditionalZ ν region σ := by
+    funext σ
+    let g : (I → S) → I → S := fun u => glue region u σ
+    have hg : Measurable g := measurable_glue region σ
+    have hden : (∫ U, Real.exp (E U) ∂μ.map g) =
+        E.conditionalZ ν region σ := by
+      rw [integral_map hg.aemeasurable
+        E.measurable_energy.exp.aestronglyMeasurable]
+      rfl
+    rw [conditionalMeasure, integral_tilted]
+    rw [integral_map hg.aemeasurable]
+    · rw [hden]
+      change (∫ u, Real.exp (E (g u)) /
+        E.conditionalZ ν region σ * f (g u) ∂μ) =
+          inner σ / E.conditionalZ ν region σ
+      rw [← integral_div]
+      apply integral_congr_ae
+      exact ae_of_all _ fun u => by
+        simp only [inner, g]
+        ring
+    · exact ((E.measurable_energy.exp.div_const _).mul hf).aestronglyMeasurable
+  rw [hcond]
+  exact hinner_meas.div (E.conditionalZ_measurable ν region)
+
+/-- Complex-valued form of the finite-product Gibbs tower identity. -/
+theorem integral_conditionalMeasure_gibbsMeasure_complex
+    (region : Finset I) (f : (I → S) → ℂ)
+    (hf : Measurable f) (B : ℝ) (hB : ∀ σ, ‖f σ‖ ≤ B) :
+    ∫ σ, (∫ τ, f τ ∂E.conditionalMeasure ν region σ)
+        ∂E.gibbsMeasure ν =
+      ∫ σ, f σ ∂E.gibbsMeasure ν := by
+  let g : (I → S) → ℂ := fun σ =>
+    ∫ τ, f τ ∂E.conditionalMeasure ν region σ
+  let gr : (I → S) → ℝ := fun σ =>
+    ∫ τ, (f τ).re ∂E.conditionalMeasure ν region σ
+  let gi : (I → S) → ℝ := fun σ =>
+    ∫ τ, (f τ).im ∂E.conditionalMeasure ν region σ
+  have hfr : Measurable fun σ => (f σ).re := Complex.measurable_re.comp hf
+  have hfi : Measurable fun σ => (f σ).im := Complex.measurable_im.comp hf
+  have hfcond : ∀ σ, Integrable f (E.conditionalMeasure ν region σ) := by
+    intro σ
+    apply Integrable.of_bound hf.aestronglyMeasurable B
+    exact ae_of_all _ hB
+  have hgre : (fun σ => (g σ).re) = gr := by
+    funext σ
+    exact (integral_re (hfcond σ)).symm
+  have hgim : (fun σ => (g σ).im) = gi := by
+    funext σ
+    exact (integral_im (hfcond σ)).symm
+  have hgr_meas : Measurable gr := by
+    exact E.measurable_integral_conditionalMeasure ν region
+      (fun σ => (f σ).re) hfr
+  have hgi_meas : Measurable gi := by
+    exact E.measurable_integral_conditionalMeasure ν region
+      (fun σ => (f σ).im) hfi
+  have hg_repr : g = fun σ => (gr σ : ℂ) + (gi σ : ℂ) * Complex.I := by
+    funext σ
+    apply Complex.ext
+    · simpa using congrFun hgre σ
+    · simpa using congrFun hgim σ
+  have hg_meas : Measurable g := by
+    rw [hg_repr]
+    exact hgr_meas.complex_ofReal.add
+      (hgi_meas.complex_ofReal.mul measurable_const)
+  have hg_bound : ∀ σ, ‖g σ‖ ≤ B := by
+    intro σ
+    change ‖∫ τ, f τ ∂E.conditionalMeasure ν region σ‖ ≤ B
+    simpa using norm_integral_le_of_norm_le_const
+      (μ := E.conditionalMeasure ν region σ) (ae_of_all _ hB)
+  have hg_int : Integrable g (E.gibbsMeasure ν) := by
+    apply Integrable.of_bound hg_meas.aestronglyMeasurable B
+    exact ae_of_all _ hg_bound
+  have hf_int : Integrable f (E.gibbsMeasure ν) := by
+    apply Integrable.of_bound hf.aestronglyMeasurable B
+    exact ae_of_all _ hB
+  apply Complex.ext
+  · change (∫ σ, g σ ∂E.gibbsMeasure ν).re =
+      (∫ σ, f σ ∂E.gibbsMeasure ν).re
+    calc
+      (∫ σ, g σ ∂E.gibbsMeasure ν).re =
+          ∫ σ, (g σ).re ∂E.gibbsMeasure ν := (integral_re hg_int).symm
+      _ = ∫ σ, gr σ ∂E.gibbsMeasure ν := by rw [hgre]
+      _ = ∫ σ, (f σ).re ∂E.gibbsMeasure ν := by
+        simpa only [gr] using
+          E.integral_conditionalMeasure_gibbsMeasure ν region
+            (fun σ => (f σ).re) hfr B
+            (fun σ => (Complex.abs_re_le_norm (f σ)).trans (hB σ))
+      _ = (∫ σ, f σ ∂E.gibbsMeasure ν).re := integral_re hf_int
+  · change (∫ σ, g σ ∂E.gibbsMeasure ν).im =
+      (∫ σ, f σ ∂E.gibbsMeasure ν).im
+    calc
+      (∫ σ, g σ ∂E.gibbsMeasure ν).im =
+          ∫ σ, (g σ).im ∂E.gibbsMeasure ν := (integral_im hg_int).symm
+      _ = ∫ σ, gi σ ∂E.gibbsMeasure ν := by rw [hgim]
+      _ = ∫ σ, (f σ).im ∂E.gibbsMeasure ν := by
+        simpa only [gi] using
+          E.integral_conditionalMeasure_gibbsMeasure ν region
+            (fun σ => (f σ).im) hfi B
+            (fun σ => (Complex.abs_im_le_norm (f σ)).trans (hB σ))
+      _ = (∫ σ, f σ ∂E.gibbsMeasure ν).im := integral_im hf_int
+
+/-- Explicit ratio-of-integrals formula for a bounded complex observable in
+a normalized conditional law. -/
+theorem integral_conditionalMeasure_complex_eq_div
+    (region : Finset I) (σ : I → S) (f : (I → S) → ℂ)
+    (hf : Measurable f) (B : ℝ) (hB : ∀ τ, ‖f τ‖ ≤ B) :
+    ∫ τ, f τ ∂E.conditionalMeasure ν region σ =
+      (∫ u, (Real.exp (E (glue region u σ)) : ℂ) *
+          f (glue region u σ) ∂productMeasure (I := I) ν) /
+        E.conditionalZ ν region σ := by
+  let μ := productMeasure (I := I) ν
+  let g : (I → S) → I → S := fun u => glue region u σ
+  have hg : Measurable g := measurable_glue region σ
+  have hden : (∫ U, Real.exp (E U) ∂μ.map g) =
+      E.conditionalZ ν region σ := by
+    rw [integral_map hg.aemeasurable
+      E.measurable_energy.exp.aestronglyMeasurable]
+    rfl
+  rw [conditionalMeasure, integral_tilted]
+  rw [integral_map hg.aemeasurable]
+  · rw [hden]
+    rw [← integral_div]
+    apply integral_congr_ae
+    exact ae_of_all _ fun u => by
+      change (Real.exp (E (glue region u σ)) /
+          E.conditionalZ ν region σ : ℝ) • f (glue region u σ) =
+        (Real.exp (E (glue region u σ)) : ℂ) *
+          f (glue region u σ) / E.conditionalZ ν region σ
+      rw [Complex.real_smul]
+      push_cast
+      ring
+  · apply AEStronglyMeasurable.smul
+    · exact (E.measurable_energy.exp.div_const _).aestronglyMeasurable
+    · exact hf.aestronglyMeasurable
+
 /-- The unnormalized conditional numerator of a measurable event. -/
 def conditionalNumerator (region : Finset I) (A : Set (I → S))
     (σ : I → S) : ℝ :=

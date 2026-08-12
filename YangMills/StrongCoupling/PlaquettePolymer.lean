@@ -72,6 +72,33 @@ instance (Λ : FiniteSpecification d G) : Fintype (PlaquettePolymer Λ) := by
 instance (Λ : FiniteSpecification d G) : DecidableEq (PlaquettePolymer Λ) :=
   Classical.decEq _
 
+/-- The one-plaquette polymer rooted at an active plaquette. -/
+def singletonPlaquettePolymer (Λ : FiniteSpecification d G)
+    (p : ActivePlaquette Λ) : PlaquettePolymer Λ :=
+  ⟨{p}, Finset.singleton_nonempty p, by
+    letI : Nonempty {q // q ∈ ({p} : Finset (ActivePlaquette Λ))} :=
+      ⟨⟨p, Finset.mem_singleton_self p⟩⟩
+    letI : Subsingleton {q // q ∈ ({p} : Finset (ActivePlaquette Λ))} :=
+      ⟨fun q r => Subtype.ext <|
+        (Finset.mem_singleton.mp q.2).trans (Finset.mem_singleton.mp r.2).symm⟩
+    exact SimpleGraph.Connected.of_subsingleton⟩
+
+omit [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [MeasurableSpace G]
+  [BorelSpace G] [SecondCountableTopology G] [GaugeHaarProbability G] in
+@[simp]
+theorem mem_singletonPlaquettePolymer (Λ : FiniteSpecification d G)
+    (p q : ActivePlaquette Λ) :
+    q ∈ (singletonPlaquettePolymer Λ p).1 ↔ q = p := by
+  simp [singletonPlaquettePolymer]
+
+omit [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [MeasurableSpace G]
+  [BorelSpace G] [SecondCountableTopology G] [GaugeHaarProbability G] in
+@[simp]
+theorem card_singletonPlaquettePolymer (Λ : FiniteSpecification d G)
+    (p : ActivePlaquette Λ) :
+    (singletonPlaquettePolymer Λ p).1.card = 1 := by
+  simp [singletonPlaquettePolymer]
+
 /-- Underlying untyped plaquette set of a connected polymer. -/
 def PlaquettePolymer.support {Λ : FiniteSpecification d G} (γ : PlaquettePolymer Λ) :
     Finset (Plaquette d) :=
@@ -91,6 +118,16 @@ theorem PlaquettePolymer.support_subset_active {Λ : FiniteSpecification d G}
   intro p hp
   rcases Finset.mem_map.mp hp with ⟨q, _, rfl⟩
   exact q.2
+
+omit [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [MeasurableSpace G]
+  [BorelSpace G] [SecondCountableTopology G] [GaugeHaarProbability G] in
+/-- Forgetting the active-plaquette subtype is injective on plaquette
+polymers. -/
+theorem PlaquettePolymer.support_injective {Λ : FiniteSpecification d G} :
+    Function.Injective (PlaquettePolymer.support (Λ := Λ)) := by
+  intro γ δ h
+  apply Subtype.ext
+  exact Finset.map_injective ⟨Subtype.val, Subtype.val_injective⟩ h
 
 /-- Polymer incompatibility: some members coincide or are adjacent. -/
 def plaquettePolymerIncompatible (Λ : FiniteSpecification d G)
@@ -126,6 +163,16 @@ def plaquettePolymerModel (Λ : FiniteSpecification d G)
   symmetric_incompatible := plaquettePolymerIncompatible_symmetric Λ
   self_incompatible := plaquettePolymerIncompatible_self Λ
   activity γ := subsetWeight Λ Φ β γ.support
+
+omit [IsTopologicalGroup G] [BorelSpace G] [SecondCountableTopology G] in
+/-- A polymer containing `p` is incompatible with the singleton polymer at
+`p`. -/
+theorem singletonPlaquettePolymer_incompatible_of_mem
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℂ)
+    (p : ActivePlaquette Λ) (γ : PlaquettePolymer Λ) (hp : p ∈ γ.1) :
+    (plaquettePolymerModel Λ Φ β).incompatible
+      (singletonPlaquettePolymer Λ p) γ := by
+  exact ⟨p, by simp [singletonPlaquettePolymer], p, hp, Or.inl rfl⟩
 
 omit [IsTopologicalGroup G] [BorelSpace G] [SecondCountableTopology G] in
 /-- Connected plaquette activities inherit the subset cardinality bound. -/

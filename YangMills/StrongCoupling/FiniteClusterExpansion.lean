@@ -5,15 +5,21 @@ Authors: The Strong-Coupling Lattice Yang--Mills contributors
 -/
 
 import YangMills.Polymer.FiniteMayer
+import YangMills.Polymer.LabelledMayerExponential
+import YangMills.Polymer.LabelledRootedForestSpecies
 import YangMills.StrongCoupling.ObservableRootPolymer
 
 /-!
 # Finite strong-coupling cluster expansion
 
-This file instantiates the abstract finite Mayer logarithm and its weighted
-pinned estimate with the explicit plaquette-animal Dobrushin certificate.  It
+This file instantiates the symmetric finite Mayer logarithm and its genuine
+weighted KP/tree estimate with the explicit plaquette-animal certificate.  It
 is the cluster-expansion bridge used by the thermodynamic-limit and
 correlation layers; it does not use the Douglas influence-matrix baseline.
+
+The older deletion-ratio consequences are retained below as a separately
+named finite-volume baseline.  The symmetric logarithm and summability
+theorems do not depend on that route.
 -/
 
 namespace YangMills.StrongCoupling
@@ -37,6 +43,88 @@ theorem plaquettePolymerModel_dobrushin_of_norm_lt_latticeRadius
     (cubicPlaquetteAnimalCertificate Λ)
   exact perturbationMajorant_lt_dobrushinThreshold_of_norm_lt_radius Φ
     (16 * d) (2 ^ (16 * d)) hβ
+
+/-- The explicit lattice disk also supplies the genuine Kotecký--Preiss
+activity-sum certificate used by the Penrose/rooted-tree expansion. -/
+theorem plaquettePolymerModel_koteckyPreiss_of_norm_lt_latticeRadius
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) {β : ℂ}
+    (hβ : ‖β‖ < latticeStrongCouplingRadius d Φ.bound) :
+    (plaquettePolymerModel Λ Φ β).KoteckyPreissCertificate Finset.univ
+      plaquetteKPWeight := by
+  apply plaquettePolymerModel_koteckyPreiss Λ Φ β
+    (cubicPlaquetteAnimalCertificate Λ)
+  exact perturbationMajorant_lt_dobrushinThreshold_of_norm_lt_radius Φ
+    (16 * d) (2 ^ (16 * d)) hβ
+
+/-- Absolute summability of the genuine rooted-tree height layers on the
+explicit strong-coupling disk. -/
+theorem summable_plaquetteKPTreeLayer
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) {β : ℂ}
+    (hβ : ‖β‖ < latticeStrongCouplingRadius d Φ.bound)
+    (γ : PlaquettePolymer Λ) :
+    Summable ((plaquettePolymerModel Λ Φ β).kpTreeLayer Finset.univ γ) := by
+  exact (plaquettePolymerModel Λ Φ β).summable_kpTreeLayer_of_koteckyPreiss
+      Finset.univ plaquetteKPWeight
+      (plaquettePolymerModel_koteckyPreiss_of_norm_lt_latticeRadius Λ Φ hβ)
+      γ (Finset.mem_univ γ)
+
+/-- Explicit rooted-tree KP budget.  Since `a(γ)=|γ| log 2`, the total
+tree layer mass is at most `2^|γ|-1`. -/
+theorem tsum_plaquetteKPTreeLayer_le
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) {β : ℂ}
+    (hβ : ‖β‖ < latticeStrongCouplingRadius d Φ.bound)
+    (γ : PlaquettePolymer Λ) :
+    ∑' n : ℕ,
+        (plaquettePolymerModel Λ Φ β).kpTreeLayer Finset.univ γ n ≤
+      (2 : ℝ) ^ γ.1.card - 1 := by
+  have h := (plaquettePolymerModel Λ Φ β).tsum_kpTreeLayer_le_exp_sub_one_of_koteckyPreiss
+      Finset.univ
+      plaquetteKPWeight
+      (plaquettePolymerModel_koteckyPreiss_of_norm_lt_latticeRadius Λ Φ hβ)
+      γ (Finset.mem_univ γ)
+  simpa [plaquetteKPWeight, Real.exp_nat_mul,
+    Real.exp_log (by norm_num : (0 : ℝ) < 2)] using h
+
+/-- Genuine KP/tree absolute summability of the full positive-degree
+plaquette Mayer expansion, uniformly in the finite specification and frozen
+exterior field. -/
+theorem summable_plaquetteNormMayerDegreeSum_succ
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) {β : ℂ}
+    (hβ : ‖β‖ < latticeStrongCouplingRadius d Φ.bound) :
+    Summable (fun n : ℕ ↦
+      (plaquettePolymerModel Λ Φ β).normMayerDegreeSum (n + 1)) := by
+  exact (plaquettePolymerModel Λ Φ β).summable_normMayerDegreeSum_succ_of_koteckyPreiss_certified
+      plaquetteKPWeight
+      (plaquettePolymerModel_koteckyPreiss_of_norm_lt_latticeRadius
+        Λ Φ hβ)
+
+/-- Explicit symmetry-normalized pinned tree budget supplied by the genuine
+KP certificate.  The left side is the residual rooted Mayer-tree orbit sum,
+not a deletion ratio. -/
+theorem plaquetteWeightedPinnedTreeOrbitBound
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) {β : ℂ}
+    (hβ : ‖β‖ < latticeStrongCouplingRadius d Φ.bound)
+    (γ : PlaquettePolymer Λ) :
+    ∑' n : ℕ,
+        (plaquettePolymerModel Λ Φ β).residualSymmetricPinnedTreeDegreeSum γ n ≤
+      (2 : ℝ) ^ γ.1.card := by
+  have h := (plaquettePolymerModel Λ Φ β).tsum_residualSymmetricPinnedTreeDegreeSum_le_of_koteckyPreiss_certified
+      plaquetteKPWeight
+      (plaquettePolymerModel_koteckyPreiss_of_norm_lt_latticeRadius
+        Λ Φ hβ) γ
+  simpa [plaquetteKPWeight, Real.exp_nat_mul,
+    Real.exp_log (by norm_num : (0 : ℝ) < 2)] using h
+
+/-- Exact finite connected Mayer/log identity in the canonical formal
+branch.  Unlike the deletion-ordered scalar theorem below, this theorem is
+purely the fixed-labelled cluster exponential formula and has no Dobrushin
+hypothesis. -/
+theorem plaquetteRestrictedSymmetricMayerPowerSeries_eq_formalMayerLog
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℂ) :
+    (plaquettePolymerModel Λ Φ β).restrictedSymmetricMayerPowerSeries Finset.univ =
+      (plaquettePolymerModel Λ Φ β).formalMayerLog Finset.univ := by
+  exact (plaquettePolymerModel Λ Φ β).restrictedSymmetricMayerPowerSeries_eq_formalMayerLog
+    Finset.univ
 
 /-- Finite-volume Mayer/log-partition identity for the plaquette gas at the
 explicit strong-coupling radius.  The right side is the exact Yang--Mills
@@ -69,6 +157,24 @@ theorem plaquetteWeightedPinnedTreeBound
       (plaquetteDobrushinWeight (perturbationMajorant Φ β))
       (plaquettePolymerModel_dobrushin_of_norm_lt_latticeRadius Λ Φ hβ)
       Finset.univ (Finset.Subset.rfl) (Finset.mem_univ γ)
+
+/-- Absolute pinned Mayer-series bound on the explicit lattice disk.  Unlike
+the pointwise partition-ratio estimate above, this controls the sum of the
+norms of every repeated insertion term and places the whole rooted logarithm
+inside its Dobrushin weight budget. -/
+theorem plaquetteAbsolutePinnedMayerSeriesBound
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) {β : ℂ}
+    (hβ : ‖β‖ < latticeStrongCouplingRadius d Φ.bound)
+    (T : Finset (PlaquettePolymer Λ)) {γ : PlaquettePolymer Λ}
+    (hγT : γ ∉ T) :
+    ∑' n : ℕ,
+        ‖(plaquettePolymerModel Λ Φ β).mayerInsertionTerm γ T n‖ ≤
+      plaquetteDobrushinWeight (perturbationMajorant Φ β) γ := by
+  exact (plaquettePolymerModel Λ Φ β).tsum_norm_mayerInsertionTerm_le_of_dobrushin
+      Finset.univ
+      (plaquetteDobrushinWeight (perturbationMajorant Φ β))
+      (plaquettePolymerModel_dobrushin_of_norm_lt_latticeRadius Λ Φ hβ)
+      T (Finset.subset_univ T) hγT (Finset.mem_univ γ)
 
 /-- Weighted telescope form used when a rooted connected tree deletes a
 finite set of polymers. -/

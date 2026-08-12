@@ -6,6 +6,7 @@ Authors: The Strong-Coupling Lattice Yang--Mills contributors
 
 import YangMills.Gauge.Configuration
 import YangMills.Lattice.Path
+import YangMills.Lattice.Plaquette
 import Mathlib.Data.Finset.Insert
 import Mathlib.Topology.Algebra.Group.Basic
 
@@ -81,6 +82,13 @@ theorem holonomy_toPath (A : Configuration d G) {x y : Site d} (e : EdgeBetween 
     holonomy A e.toPath = signedEdgeValue A e.1 := by
   simp [Quiver.Hom.toPath]
 
+@[simp]
+theorem holonomy_castTarget (A : Configuration d G) {x y z : Site d}
+    (p : Path x y) (h : y = z) :
+    holonomy A (YangMills.Basic.OrientedPath.castTarget p h) = holonomy A p := by
+  subst h
+  rfl
+
 /-- Holonomy turns path concatenation into group multiplication. -/
 @[simp]
 theorem holonomy_comp (A : Configuration d G) {x y z : Site d}
@@ -102,6 +110,43 @@ theorem holonomy_reverse (A : Configuration d G) {x y : Site d} (p : Path x y) :
         (holonomy A p * signedEdgeValue A e.1)⁻¹
       rw [signedEdgeValue_reverse]
       group
+
+/-- Relabeling a configuration by a lattice translation translates the path
+whose holonomy is read. -/
+theorem holonomy_translateConfiguration
+    (v : Site d) (A : Configuration d G) {x y : Site d} (p : Path x y) :
+    holonomy (fun e => A (e.translate v)) p =
+      holonomy A (p.translate v) := by
+  induction p with
+  | nil => rfl
+  | cons p e ih =>
+      change holonomy (fun a => A (a.translate v)) p *
+          signedEdgeValue (fun a => A (a.translate v)) e.1 =
+        holonomy A ((Path.translate v p).cons
+          ((translationPrefunctor v).map e))
+      rw [holonomy_cons, ih, signedEdgeValue_translate]
+      rfl
+
+@[simp]
+theorem holonomy_translate_castTarget
+    (v : Site d) (A : Configuration d G) {x y z : Site d}
+    (p : Path x y) (h : y = z) :
+    holonomy A (Path.translate v
+      (YangMills.Basic.OrientedPath.castTarget p h)) =
+      holonomy A (Path.translate v p) := by
+  subst h
+  rfl
+
+/-- Translation covariance specialized to a plaquette boundary. -/
+theorem holonomy_plaquette_translate
+    (v : Site d) (A : Configuration d G) (p : Plaquette d) :
+    holonomy (fun e => A (e.translate v)) p.boundary =
+      holonomy A (p.translate v).boundary := by
+  cases p
+  simp [Plaquette.boundary, Plaquette.translate, Path.rectangleBoundary,
+    Path.rectangleRaw, Path.straight, Lattice.Cubic.translate, Path.advance,
+    signedEdgeValue, edgeFrom, SignedEdge.toArrow, PositiveEdge.translate,
+    SignedEdge.target, step, add_assoc, add_left_comm, add_comm]
 
 /-- Path holonomy reads only the finite positive-edge support of the path. -/
 theorem holonomy_eq_of_eqOn_edgeSupport

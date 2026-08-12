@@ -193,6 +193,32 @@ section Translation
 def translateConfiguration (v : Site d) (A : Configuration d G) : Configuration d G :=
   fun e => A (e.translate v)
 
+@[simp]
+theorem translateConfiguration_zero (A : Configuration d G) :
+    translateConfiguration 0 A = A := by
+  funext e
+  simp [translateConfiguration]
+
+@[simp]
+theorem translateConfiguration_translateConfiguration
+    (v w : Site d) (A : Configuration d G) :
+    translateConfiguration v (translateConfiguration w A) =
+      translateConfiguration (v + w) A := by
+  funext e
+  simp [translateConfiguration, add_comm]
+
+@[simp]
+theorem translateConfiguration_neg_self (v : Site d) (A : Configuration d G) :
+    translateConfiguration (-v) (translateConfiguration v A) = A := by
+  funext e
+  simp [translateConfiguration]
+
+@[simp]
+theorem translateConfiguration_neg_self' (v : Site d) (A : Configuration d G) :
+    translateConfiguration v (translateConfiguration (-v) A) = A := by
+  funext e
+  simp [translateConfiguration]
+
 /-- Translation pullback is continuous in the product topology. -/
 theorem continuous_translateConfiguration (v : Site d) :
     Continuous (translateConfiguration (G := G) v) :=
@@ -208,6 +234,12 @@ def translatePullback (v : Site d) (F : LocalObservable d G) : LocalObservable d
     apply F.dependsOn_support
     intro e he
     exact h (e.translate v) (Finset.mem_image.mpr ⟨e, he, rfl⟩)
+
+@[simp]
+theorem translatePullback_apply (v : Site d) (F : LocalObservable d G)
+    (A : Configuration d G) :
+    F.translatePullback v A = F (translateConfiguration v A) :=
+  rfl
 
 end Translation
 
