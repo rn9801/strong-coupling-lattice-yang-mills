@@ -2,9 +2,32 @@
 
 Last updated: 2026-08-13
 
-## Next milestone: 18 -- Half-integer/link-hyperplane reflection positivity
+## Next milestone: 19 -- Infinite-volume reflection positivity
 
 ### Completed
+
+- Completed Milestone 18 (half-integer/link-hyperplane reflection
+  positivity).  Added the reflection normal form with crossing-link fields,
+  two strict-half fields, the crossing-edge inversion, and a simultaneous
+  crossing-forest gauge fix whose induced side transformations are
+  coordinatewise left/right multiplications.
+- Proved product-Haar preservation of the forest gauge fix and identified the
+  exact gauge-invariance condition on the positive algebra that sets all
+  crossing links to `1`.  Unlike Milestone 17, link reflection positivity is
+  deliberately stated only for gauge-invariant positive observables.
+- Expanded every cross-plane Wilson potential into both orientations of the
+  unitary-representation matrix coefficients.  The resulting cross action is
+  exactly the normalized finite rank-one kernel
+  `sum_a conj(feature_a Uminus) * feature_a Uplus`.
+- Proved the normally convergent exponential Taylor expansion in the uniform
+  norm, exchanged the series with product-Haar integration, expanded each
+  kernel power into labelled Taylor words, and used Fubini to identify every
+  coefficient with a finite Gram sum of half-volume amplitudes.
+- Proved `linkReflectionPositivity` for `β ≥ 0`, Hermitian
+  sesquilinearity, partition-function positivity, and Cauchy--Schwarz for
+  both the unnormalized Gibbs pairing and normalized reflection inner
+  product.  No Douglas compatibility module or Dobrushin theorem enters the
+  proof.
 
 - Completed the first documentation and build-dependency cleanup pass after
   Milestone 17.  The public `YangMills` root now exports the project-native
@@ -768,13 +791,13 @@ Last updated: 2026-08-13
 
 ### In progress
 
-- None.  The first cleanup pass and Milestones 0--17 meet their stated exit
+- None.  The first cleanup pass and Milestones 0--18 meet their stated exit
   criteria.
 
 ### Not started
 
-- Milestones 18--20: link-hyperplane reflection positivity, infinite-volume
-  reflection positivity, and the optional Osterwalder--Schrader construction.
+- Milestones 19--20: infinite-volume reflection positivity and the optional
+  Osterwalder--Schrader construction.
 
 ## Verification log
 
@@ -1119,6 +1142,25 @@ Commands are added here only after they succeed.
   Success.  Representative empty-volume, direct Mayer-log normalization,
   infinite-volume gauge, reflection-normalization, and zero-area corollaries
   have the expected footprint `[propext, Classical.choice, Quot.sound]`.
+2026-08-13: lake build +YangMills.Gauge.LinkReflectionPositivity
+  Success; 2,697 jobs.  Crossing-forest product-Haar gauge fixing, the exact
+  oriented matrix-coefficient trace kernel, normally convergent labelled
+  Taylor/Fubini Gram expansion, half-integer reflection positivity at
+  nonnegative coupling, and unnormalized/normalized Cauchy--Schwarz compile
+  without placeholders.
+2026-08-13: lake build +YangMills.Tests.Milestone18
+  Success; 2,698 jobs.  Public-shape examples for the gauge-invariant
+  positive subspace, degree-zero Taylor word, exact Taylor pairing,
+  positivity, and both Cauchy--Schwarz forms compile.  The five principal
+  declarations have axiom footprint `[propext, Classical.choice, Quot.sound]`.
+2026-08-13: lake build
+  Success; 3,090 jobs after exporting the completed Milestone 18 theorem
+  family from the project-native public root.  Remaining output consists of
+  linter and pinned-dependency warnings; there are no build errors.
+2026-08-13: lake build +YangMills.Regression
+  Success; 3,882 jobs.  The full milestone suite, reviewer smoke tests,
+  project-native theorem graph, Douglas baseline audits, and optional older
+  Dobrushin comparison route remain green after Milestone 18.
 ```
 
 ## Conventions fixed so far

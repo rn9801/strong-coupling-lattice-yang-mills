@@ -25,6 +25,7 @@ import YangMills.Tests.Milestones11To13Foundations
 import YangMills.Tests.Milestone14
 import YangMills.Tests.Milestone16
 import YangMills.Tests.Milestone17
+import YangMills.Tests.Milestone18
 import YangMills.Tests.ReviewerSmoke
 
 /-!

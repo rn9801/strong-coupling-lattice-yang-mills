@@ -1,6 +1,6 @@
 # Lean Formalization Roadmap for Strong-Coupling Lattice Yang–Mills Theory
 
-**Status:** historical implementation plan; Milestones 0--17 are now
+**Status:** historical implementation plan; Milestones 0--18 are now
 implemented, and the current theorem scope and remaining work are recorded in
 `../README.md`, `../STATUS.md`, and `ROADMAP.md`.  Some aspirational wording
 below (notably uniqueness among all DLR measures and automatic identification

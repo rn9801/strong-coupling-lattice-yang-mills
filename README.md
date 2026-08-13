@@ -6,7 +6,7 @@ coupling in Lean 4.  The project works on the infinite cubic lattice
 fields, and derives the thermodynamic results from a convergent plaquette
 polymer/Mayer expansion.
 
-Milestones 0--17 are complete.  The principal proved results are:
+Milestones 0--18 are complete.  The principal proved results are:
 
 - finite-volume gauge invariance and finite-volume DLR consistency;
 - an exact plaquette-polymer representation of the partition function;
@@ -24,12 +24,16 @@ Milestones 0--17 are complete.  The principal proved results are:
 - reflection positivity and reflection Cauchy--Schwarz for an
   integer-hyperplane, reflection-adapted finite Wilson action decomposition,
   with no gauge-invariance assumption on the positive-side observables.
+- reflection positivity and normalized reflection Cauchy--Schwarz for a
+  half-integer/link-hyperplane decomposition at `β ≥ 0`; here the
+  positive-side observables are gauge invariant because the proof fixes all
+  crossing-forest links to the identity.
 
 The thermodynamic limit, clustering, analyticity, pressure, and area-law
 proofs use the cluster expansion and its explicit KP/tree bounds.  They do not
 use the separate periodic-torus Dobrushin regression theorem.
 
-The next target is half-integer/link-hyperplane reflection positivity.  See
+The next target is infinite-volume reflection positivity.  See
 [`STATUS.md`](STATUS.md) for the exact declaration-level progress and
 [`docs/ROADMAP.md`](docs/ROADMAP.md) for the remaining milestones.
 
@@ -562,9 +566,13 @@ are not repeated throughout unrelated cluster-expansion modules.
   ```
 
 - Integer/site-hyperplane reflection positivity is proved for a supplied
-  reflection-adapted Wilson action split.  Link-hyperplane positivity, the
-  general symmetric-box identification, infinite-volume reflection
-  positivity, and optional OS reconstruction remain future milestones.
+  reflection-adapted Wilson action split.  Half-integer/link-hyperplane
+  positivity is proved for a supplied crossing-forest gauge-fixing normal
+  form and gauge-invariant positive observables: product-Haar gauge fixing,
+  the explicit matrix-coefficient trace contraction, the normally convergent
+  Taylor expansion, and Fubini give a labelled Gram sum.  The general
+  symmetric-box identification, infinite-volume reflection positivity, and
+  optional OS reconstruction remain future milestones.
 
 ## Documentation and license
 
