@@ -88,6 +88,8 @@ theorem disjoint_observableComponentFamily_awayComponentFamily
 
 /-! ## Two-observable component classes -/
 
+omit [Group G] [IsTopologicalGroup G] [CompactSpace G] [MeasurableSpace G]
+  [BorelSpace G] [SecondCountableTopology G] [GaugeHaarProbability G] in
 /-- A polymer touches the union support of a product observable exactly when
 it touches at least one factor. -/
 theorem observableRootTouches_mul_iff
@@ -234,6 +236,8 @@ def ObservableRootDecoration.support
     (D : ObservableRootDecoration F Λ) : Finset (Plaquette d) :=
   polymerFamilySupport Λ D.1
 
+omit [Group G] [IsTopologicalGroup G] [CompactSpace G] [MeasurableSpace G]
+  [BorelSpace G] [SecondCountableTopology G] [GaugeHaarProbability G] in
 /-- Compatibility makes the untyped plaquette supports in a complete root
 decoration pairwise disjoint. -/
 theorem ObservableRootDecoration.pairwiseDisjoint_support
@@ -250,6 +254,8 @@ theorem ObservableRootDecoration.pairwiseDisjoint_support
   have hqr : q = r := Subtype.ext (hqp.trans hrp.symm)
   exact (D.2.1 hγ hδ hγδ) ⟨q, hqγ, r, hrδ, Or.inl hqr⟩
 
+omit [Group G] [IsTopologicalGroup G] [CompactSpace G] [MeasurableSpace G]
+  [BorelSpace G] [SecondCountableTopology G] [GaugeHaarProbability G] in
 /-- The size of a compatible decoration is the sum of the sizes of its
 connected polymer members. -/
 theorem ObservableRootDecoration.card_support
@@ -476,12 +482,12 @@ theorem bivariateDecorated_mixed_root_pattern
     have hleftExists : ∃ D : ObservableRootDecoration F Λ,
         X (Sum.inl (Sum.inl (Sum.inr D))) ≠ 0 := by
       by_contra h
-      push_neg at h
+      push Not at h
       simp [h] at hleftSum
     have hrightExists : ∃ E : ObservableRootDecoration H Λ,
         X (Sum.inl (Sum.inr E)) ≠ 0 := by
       by_contra h
-      push_neg at h
+      push Not at h
       simp [h] at hrightSum
     rcases hleftExists with ⟨D, hD⟩
     rcases hrightExists with ⟨E, hE⟩
@@ -564,10 +570,12 @@ theorem bivariateDecorated_mixed_nonzero_spanning_witness
   · right
     refine ⟨D, E, hD, hE, ?_⟩
     have hconnected :
-        ((bivariateDecoratedObservableRootModel F H Λ Φ β 1 1).mayerIncompatibilityGraph X).Connected := by
+        ((bivariateDecoratedObservableRootModel
+          F H Λ Φ β 1 1).mayerIncompatibilityGraph X).Connected := by
       by_contra hnot
       exact hterm
-        ((bivariateDecoratedObservableRootModel F H Λ Φ β 1 1).mayerClusterTerm_eq_zero_of_not_connected X hnot)
+        ((bivariateDecoratedObservableRootModel
+          F H Λ Φ β 1 1).mayerClusterTerm_eq_zero_of_not_connected X hnot)
     exact hconnected.preconnected.exists_isPath
       (bivariateDecoratedLeftRootVertex F H Λ X D hD)
       (bivariateDecoratedRightRootVertex F H Λ X E hE)
@@ -1054,8 +1062,7 @@ theorem bivariateDecoratedObservableSourceTiltedMass_regularized_le
               (norm_bivariateDecoratedObservableRootModel_regularized_source_activity_le
                 F H Λ Φ β q hq) (Real.exp_pos _).le
           _ = _ := by ring
-      · simp [hq, (bivariateDecoratedObservableRootRegularization_pos
-          F H Λ Φ β).le]
+      · simp [hq]
     _ ≤ _ :=
       bivariateDecoratedObservableRootRegularization_mul_mass_le F H Λ Φ β
 
@@ -1383,14 +1390,16 @@ theorem bivariateDecoratedObservableRootModel_regularized_summable_normMayerDegr
           (bivariateObservableSourceValues ρ ρ)).normMayerDegreeSum
             (n + 1)) := by
   dsimp only
-  exact ((bivariateDecoratedObservableRootModel F H Λ Φ β 1 1).scaleByBigradedSource
-      (bivariateDecoratedObservableRootGrading F H Λ)
+  let A := (bivariateDecoratedObservableRootModel F H Λ Φ β 1 1).scaleByBigradedSource
+    (bivariateDecoratedObservableRootGrading F H Λ)
       (bivariateObservableSourceValues
         (bivariateDecoratedObservableRootRegularization F H Λ Φ β)
-        (bivariateDecoratedObservableRootRegularization F H Λ Φ β))).summable_normMayerDegreeSum_succ_of_koteckyPreiss_certified
-        (bivariateDecoratedObservableRootRegularizedKPWeight F H Λ Φ β)
-        (bivariateDecoratedObservableRootModel_scaled_koteckyPreiss_regularized
-          F H Λ Φ hβ)
+        (bivariateDecoratedObservableRootRegularization F H Λ Φ β))
+  change Summable (fun n : ℕ => A.normMayerDegreeSum (n + 1))
+  exact A.summable_normMayerDegreeSum_succ_of_koteckyPreiss_certified
+    (bivariateDecoratedObservableRootRegularizedKPWeight F H Λ Φ β)
+    (bivariateDecoratedObservableRootModel_scaled_koteckyPreiss_regularized
+      F H Λ Φ hβ)
 
 /-- Genuine pinned spanning-tree summability at every polymer of the complete
 regularized decorated gas. -/
@@ -1452,6 +1461,8 @@ theorem summable_norm_bivariateDecoratedObservableMixedMayerDegreeSum_succ
     M.summable_norm_bigradedMixedMayerDegreeSum_succ_of_scaled
       grading alpha halpha0 halpha1 hscaled
 
+omit [IsTopologicalGroup G] [CompactSpace G] [BorelSpace G]
+  [SecondCountableTopology G] in
 /-- The KP weight of a complete decoration is bounded by the ordinary
 observable-root tilted mass plus the KP weights of the polymers absorbed into
 the decoration. -/
@@ -1831,7 +1842,8 @@ theorem decoratedObservableRootModel_tsum_residualSymmetricPinnedTreeDegreeSum_l
         (decoratedObservableRootModel F Λ Φ β 0).residualSymmetricPinnedTreeDegreeSum
           (Sum.inr D) n ≤
       Real.exp (decoratedObservableRootKPWeight F Λ Φ β (Sum.inr D)) := by
-  exact (decoratedObservableRootModel F Λ Φ β 0).tsum_residualSymmetricPinnedTreeDegreeSum_le_of_koteckyPreiss_certified
+  exact (decoratedObservableRootModel
+    F Λ Φ β 0).tsum_residualSymmetricPinnedTreeDegreeSum_le_of_koteckyPreiss_certified
       (decoratedObservableRootKPWeight F Λ Φ β)
       (decoratedObservableRootModel_koteckyPreiss_zero F Λ Φ hβ) (Sum.inr D)
 
@@ -1845,7 +1857,8 @@ theorem decoratedObservableRootModel_summable_residualSymmetricPinnedTreeDegreeS
     Summable
       ((decoratedObservableRootModel F Λ Φ β 0).residualSymmetricPinnedTreeDegreeSum
         (Sum.inr D)) := by
-  exact (decoratedObservableRootModel F Λ Φ β 0).summable_residualSymmetricPinnedTreeDegreeSum_of_koteckyPreiss
+  exact (decoratedObservableRootModel
+    F Λ Φ β 0).summable_residualSymmetricPinnedTreeDegreeSum_of_koteckyPreiss
     (decoratedObservableRootKPWeight F Λ Φ β)
     (decoratedObservableRootModel F Λ Φ β 0).rootedTreeOrbitBound
     (decoratedObservableRootModel_koteckyPreiss_zero F Λ Φ hβ)
@@ -1928,7 +1941,8 @@ theorem decoratedObservableRootModel_restrictedSymmetricMayerPowerSeries_eq_form
     (decoratedObservableRootModel F Λ Φ β α).restrictedSymmetricMayerPowerSeries
         Finset.univ =
       (decoratedObservableRootModel F Λ Φ β α).formalMayerLog Finset.univ := by
-  exact (decoratedObservableRootModel F Λ Φ β α).restrictedSymmetricMayerPowerSeries_eq_formalMayerLog
+  exact (decoratedObservableRootModel
+    F Λ Φ β α).restrictedSymmetricMayerPowerSeries_eq_formalMayerLog
     Finset.univ
 
 /-- Scaling the common observable source records the total multiplicity of
@@ -2120,6 +2134,9 @@ theorem observableComponentSupport_union_awayComponentSupport
     observableComponentFamily_union_awayComponentFamily F Λ X]
   exact polymerFamilySupport_componentFamily_eq Λ X hX
 
+omit [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
+  [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [GaugeHaarProbability G] in
 /-- Distinct members of a canonical component family read disjoint dynamic
 coordinate sets. -/
 theorem componentFamily_coordinateSupport_disjoint
@@ -2139,6 +2156,9 @@ theorem componentFamily_coordinateSupport_disjoint
     hγδ (PlaquettePolymer.support_injective h)
   exact pairwise_disjoint_componentCoordinateSupports Λ X hγS hδS hsupport
 
+omit [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
+  [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [GaugeHaarProbability G] in
 /-- Distinct canonical components have disjoint untyped plaquette supports. -/
 theorem componentFamily_support_disjoint
     (Λ : FiniteSpecification d G) (X : Finset (Plaquette d))
@@ -2156,6 +2176,9 @@ theorem componentFamily_support_disjoint
     hγδ (PlaquettePolymer.support_injective h)
   exact pairwise_disjoint_componentSupports Λ X hγS hδS hsupport
 
+omit [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
+  [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [GaugeHaarProbability G] in
 /-- Dynamic-coordinate membership in a polymer-family support can be exposed
 at one member of the family. -/
 theorem mem_subsetCoordinateSupport_polymerFamilySupport_iff
@@ -2172,6 +2195,9 @@ theorem mem_subsetCoordinateSupport_polymerFamilySupport_iff
   · rintro ⟨gamma, hgamma, p, hpgamma, hep⟩
     exact ⟨p, ⟨gamma, hgamma, hpgamma⟩, hep⟩
 
+omit [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
+  [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [GaugeHaarProbability G] in
 @[simp]
 theorem mem_polymerFamilySupport_iff
     (Λ : FiniteSpecification d G) (Gamma : Finset (PlaquettePolymer Λ))
@@ -2180,6 +2206,9 @@ theorem mem_polymerFamilySupport_iff
   classical
   simp [polymerFamilySupport]
 
+omit [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
+  [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [GaugeHaarProbability G] in
 /-- Two disjoint subfamilies of one canonical component family read disjoint
 dynamic coordinate sets. -/
 theorem componentSubfamilies_coordinateSupport_disjoint
@@ -2208,6 +2237,9 @@ theorem componentSubfamilies_coordinateSupport_disjoint
     (componentFamily_coordinateSupport_disjoint Λ X
       (hGamma hgamma) (hDelta hdelta) hne) hegamma hedelta
 
+omit [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
+  [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [GaugeHaarProbability G] in
 /-- The underlying plaquette unions of two disjoint canonical component
 subfamilies are disjoint as well. -/
 theorem componentSubfamilies_support_disjoint
@@ -2261,6 +2293,8 @@ theorem disjoint_observableCoordinateSupport_componentSubfamily
     exact hep'
   · simpa [observableCoordinateSupport] using heF
 
+omit [Group G] [IsTopologicalGroup G] [CompactSpace G] [MeasurableSpace G]
+  [BorelSpace G] [SecondCountableTopology G] [GaugeHaarProbability G] in
 /-- Disjoint recorded supports give disjoint dynamic observable-coordinate
 supports in every finite specification. -/
 theorem disjoint_observableCoordinateSupport_of_disjoint_support
@@ -2274,6 +2308,9 @@ theorem disjoint_observableCoordinateSupport_of_disjoint_support
     (by simpa [observableCoordinateSupport] using heF)
     (by simpa [observableCoordinateSupport] using heH)
 
+omit [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [CompactSpace G]
+  [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [GaugeHaarProbability G] in
 theorem subsetCoordinateSupport_union
     (Λ : FiniteSpecification d G) (A B : Finset (Plaquette d)) :
     subsetCoordinateSupport Λ (A ∪ B) =
@@ -2290,6 +2327,8 @@ theorem subsetCoordinateSupport_union
     · exact ⟨p, Or.inl hpA, hep⟩
     · exact ⟨p, Or.inr hpB, hep⟩
 
+omit [Group G] [IsTopologicalGroup G] [CompactSpace G] [MeasurableSpace G]
+  [BorelSpace G] [SecondCountableTopology G] [GaugeHaarProbability G] in
 theorem observableCoordinateSupport_mul
     (F H : LocalObservable d G) (Λ : FiniteSpecification d G) :
     observableCoordinateSupport (F.mul H) Λ =
@@ -2992,7 +3031,7 @@ theorem separatedObservableRootTripleOfSubset_mem
     (F H : LocalObservable d G) (Λ : FiniteSpecification d G)
     (Φ : RealPlaquettePotential G) (β : ℂ)
     (X : Finset (Plaquette d))
-    (hjoint : jointlyObservableComponentFamily F H Λ X = ∅) :
+    (_hjoint : jointlyObservableComponentFamily F H Λ X = ∅) :
     separatedObservableRootTripleOfSubset F H Λ Φ β X ∈
       separatedObservableRootTriples F H Λ Φ β := by
   classical
@@ -3352,7 +3391,7 @@ theorem bridgeObservableRootPairOfSubset_surjective
       Finset (PlaquettePolymer Λ))
     (hpair : pair ∈ bridgeObservableRootPairs F H Λ Φ β) :
     ∃ (X : Finset (Plaquette d))
-        (hX : X ∈ Λ.activePlaquettes.powerset)
+        (_hX : X ∈ Λ.activePlaquettes.powerset)
         (hjoint : jointlyObservableComponentFamily F H Λ X ≠ ∅),
       bridgeObservableRootPairOfSubset F H Λ Φ β X hjoint = pair := by
   classical
@@ -3454,7 +3493,7 @@ def rightStageDecoratedIndices
 family of the already left-augmented gas. -/
 def rightStagePairOfIndex
     (F H : LocalObservable d G) (Λ : FiniteSpecification d G)
-    (Φ : RealPlaquettePotential G) (β : ℂ) :
+    (_Φ : RealPlaquettePotential G) (_β : ℂ) :
     (ObservableRootDecoration H Λ × Finset (PlaquettePolymer Λ)) ⊕
       ((ObservableRootDecoration F Λ × ObservableRootDecoration H Λ) ×
         Finset (PlaquettePolymer Λ)) →
@@ -3493,8 +3532,8 @@ theorem rightStagePairOfIndex_mem
       · have hγ : γ ∈ Γ := by
           simpa only [rightStagePairOfIndex, Finset.inl_mem_disjSum] using hx
         exact (Finset.mem_filter.mp (hdata.2 hγ)).2
-      · simpa only [rightStagePairOfIndex, Finset.inr_mem_disjSum,
-          Finset.notMem_empty] using hx
+      · simp only [rightStagePairOfIndex, Finset.inr_mem_disjSum,
+          Finset.notMem_empty] at hx
   · have htriple : triple ∈ separatedObservableRootTriples F H Λ Φ β := by
       simpa [rightStageDecoratedIndices] using hindex
     rcases triple with ⟨⟨D, E⟩, Γ⟩
@@ -3542,14 +3581,14 @@ theorem rightStagePairOfIndex_injectiveOn
     have hfamily : Γ.disjSum (∅ : Finset (ObservableRootDecoration F Λ)) =
         Γ'.disjSum {D'} := congrArg Prod.snd hij
     have hright := (Finset.disjSum_inj.mp hfamily).2
-    simpa using hright
+    simp at hright
   · rcases triple with ⟨⟨D, E⟩, Γ⟩
     rcases other with ⟨E', Γ'⟩
     have hfamily : Γ.disjSum {D} =
         Γ'.disjSum (∅ : Finset (ObservableRootDecoration F Λ)) :=
       congrArg Prod.snd hij
     have hright := (Finset.disjSum_inj.mp hfamily).2
-    simpa using hright
+    simp at hright
   · rcases triple with ⟨⟨D, E⟩, Γ⟩
     rcases otherTriple with ⟨⟨D', E'⟩, Γ'⟩
     have hroot : E = E' := congrArg Prod.fst hij
@@ -3729,7 +3768,7 @@ theorem rightStageExclusiveRootSum_eq
 the intermediate one-sided root families are both empty. -/
 def bridgeStagePairOfPair
     (F H : LocalObservable d G) (Λ : FiniteSpecification d G)
-    (Φ : RealPlaquettePotential G) (β : ℂ) :
+    (_Φ : RealPlaquettePotential G) (_β : ℂ) :
     TwoObservableBridgeDecoration F H Λ × Finset (PlaquettePolymer Λ) →
       TwoObservableBridgeDecoration F H Λ ×
         Finset ((PlaquettePolymer Λ ⊕ ObservableRootDecoration F Λ) ⊕
@@ -3785,6 +3824,8 @@ theorem bridgeStagePairOfPair_mem
         simpa only [bridgeStagePairOfPair, Finset.inr_mem_disjSum] using hx
       simp at this
 
+omit [IsTopologicalGroup G] [CompactSpace G] [MeasurableSpace G]
+  [BorelSpace G] [SecondCountableTopology G] [GaugeHaarProbability G] in
 theorem bridgeStagePairOfPair_injective
     (F H : LocalObservable d G) (Λ : FiniteSpecification d G)
     (Φ : RealPlaquettePotential G) (β : ℂ) :
@@ -4136,7 +4177,7 @@ theorem complexGibbsTruncatedCorrelation_eq_tsum_bivariateDecoratedMixed
     rfl]
   unfold complexGibbsExpectation
   rw [hfirst, hsecond, hmixed]
-  field_simp [hZ] <;> ring
+  field_simp [hZ]; ring
 
 /-! ## Exact two-observable cumulant series -/
 

@@ -49,6 +49,7 @@ def observableCoordinateSupport (F : LocalObservable d G)
 
 omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
   [SecondCountableTopology G] [GaugeHaarProbability G] in
+omit [Group G] [CompactSpace G] in
 /-- The observable after gluing depends only on its dynamic support
 coordinates. -/
 theorem localObservable_evaluate_dependsOn (F : LocalObservable d G)
@@ -61,13 +62,12 @@ theorem localObservable_evaluate_dependsOn (F : LocalObservable d G)
   by_cases heΛ : e ∈ Λ.dynamicEdges
   · rw [Λ.evaluate_of_mem U e heΛ, Λ.evaluate_of_mem V e heΛ]
     apply hUV ⟨e, heΛ⟩
-    simp only [observableCoordinateSupport, Finset.mem_filter,
-      Finset.mem_univ, true_and]
+    simp only [observableCoordinateSupport]
     simpa using heF
   · rw [Λ.evaluate_of_not_mem U e heΛ, Λ.evaluate_of_not_mem V e heΛ]
 
 omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
-  [SecondCountableTopology G] [GaugeHaarProbability G] in
+  [SecondCountableTopology G] [GaugeHaarProbability G] [CompactSpace G] in
 /-- A marked subset integrand reads the union of the observable coordinates
 and the selected plaquette coordinates. -/
 theorem markedSubsetIntegrand_dependsOn (F : LocalObservable d G)
@@ -85,7 +85,7 @@ theorem markedSubsetIntegrand_dependsOn (F : LocalObservable d G)
   exact congrArg₂ (· * ·) hF hX
 
 omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
-  [SecondCountableTopology G] [GaugeHaarProbability G] in
+  [SecondCountableTopology G] [GaugeHaarProbability G] [CompactSpace G] in
 /-- Splitting off a disjoint plaquette block factors the marked integrand
 pointwise into a marked part and an unmarked part. -/
 theorem markedSubsetIntegrand_union_of_disjoint (F : LocalObservable d G)
@@ -128,7 +128,7 @@ def complexObservableNumeratorDerivative (F : LocalObservable d G)
   complexBoltzmannDerivative Λ Φ β U * F (Λ.evaluate U)
 
 omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
-    [SecondCountableTopology G] [GaugeHaarProbability G] in
+    [SecondCountableTopology G] [GaugeHaarProbability G] [CompactSpace G] in
 theorem hasDerivAt_complexObservableIntegrand (F : LocalObservable d G)
     (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
     (β : ℂ) (U : DynamicConfiguration Λ) :
@@ -240,6 +240,7 @@ theorem continuous_markedSubsetIntegrand (F : LocalObservable d G)
   exact (F.toContinuousMap.continuous.comp Λ.continuous_evaluate).mul
     (continuous_subsetIntegrand Λ Φ β X)
 
+omit [CompactSpace G] in
 /-- A disjoint plaquette block whose dynamic coordinates avoid both the
 observable and the marked block factors completely out of the marked Haar
 weight. -/
@@ -270,6 +271,7 @@ theorem markedSubsetWeight_union_of_disjoint (F : LocalObservable d G)
     exact markedSubsetIntegrand_union_of_disjoint F Λ Φ β A B hAB U]
   simpa only [FiniteSpecification.haarMeasure] using hfactor
 
+omit [CompactSpace G] in
 /-- Two marked blocks with disjoint complete coordinate supports factor into
 the product of their separate marked Haar weights.  This is the local
 factorization behind two-observable cluster cancellation. -/
@@ -435,6 +437,7 @@ theorem complexGibbsExpectation_eq_markedExpansion
         ∑ X ∈ Λ.activePlaquettes.powerset, markedSubsetWeight F Λ Φ β X := by
   rw [complexGibbsExpectation, complexObservableNumerator_eq_sum_markedSubsetWeight]
 
+omit [CompactSpace G] in
 /-- At real coupling, the complex marked expectation is the ordinary
 Bochner integral of the local observable against the Gibbs probability
 measure. -/
@@ -445,8 +448,8 @@ theorem complexGibbsExpectation_ofReal_eq_integral_gibbsMeasure
       ∫ U, F (Λ.evaluate U) ∂gibbsMeasure Λ Φ β := by
   rw [complexGibbsExpectation, complexPartitionFunction_ofReal,
     gibbsMeasure, integral_tilted]
-  simp only [smul_eq_mul, Complex.ofReal_inv, complexObservableNumerator,
-    complexBoltzmannWeight_ofReal, boltzmannWeight, partitionFunction]
+  simp only [complexObservableNumerator, complexBoltzmannWeight_ofReal,
+    boltzmannWeight, partitionFunction]
   rw [← integral_const_mul]
   congr 1
   funext U
@@ -454,6 +457,7 @@ theorem complexGibbsExpectation_ofReal_eq_integral_gibbsMeasure
   push_cast
   ring
 
+omit [CompactSpace G] in
 /-- At real coupling, translating the finite specification converts the
 expectation of `F` into the expectation of its inverse-translation pullback.
 This is exact coordinate relabeling, prior to any thermodynamic limit. -/

@@ -141,6 +141,7 @@ def labelingsWithHistogram (n : ℕ) (X : MayerMultiIndex P) :
     Finset (Fin n → P) :=
   Finset.univ.filter fun label => labelHistogram label = X
 
+omit [Fintype P] [DecidableEq P] in
 /-- The monomial carried by a labelled tuple is the monomial of its
 histogram. -/
 theorem prod_X_label_eq_monomial_labelHistogram
@@ -180,9 +181,6 @@ theorem card_labelingsWithHistogram_eq_countPerms
   have hcoeffFiber : MvPolynomial.coeff X polynomial =
       (labelingsWithHistogram n X).card := by
     rw [hexpand]
-    change MvPolynomial.coeff X
-      (∑ label ∈ (Finset.univ : Finset (Fin n → P)),
-        MvPolynomial.monomial (labelHistogram label) 1) = _
     rw [MvPolynomial.coeff_sum]
     simp only [MvPolynomial.coeff_monomial]
     rw [labelingsWithHistogram, Finset.card_filter]
@@ -277,6 +275,7 @@ noncomputable def histogramVertexEquiv {V : Type*} [Fintype V]
         simpa only [Fintype.card_fin] using
           Fintype.card_subtype (fun v => label v = child)
 
+omit [Fintype P] in
 @[simp]
 theorem histogramVertexEquiv_fst {V : Type*} [Fintype V]
     (label : V → P) (v : V) :
@@ -287,8 +286,8 @@ theorem histogramVertexEquiv_fst {V : Type*} [Fintype V]
 def labelledIncompatibilityGraph {V : Type*}
     (M : FinitePolymerModel P) (label : V → P) : SimpleGraph V where
   Adj v w := v ≠ w ∧ M.incompatible (label v) (label w)
-  symm v w h := ⟨Ne.symm h.1, M.symmetric_incompatible h.2⟩
-  loopless := ⟨fun v h => h.1 rfl⟩
+  symm _v _w h := ⟨Ne.symm h.1, M.symmetric_incompatible h.2⟩
+  loopless := ⟨fun _v h => h.1 rfl⟩
 
 @[simp]
 theorem labelledIncompatibilityGraph_adj {V : Type*}
@@ -374,6 +373,7 @@ def fixedRootedMayerLabel
   | none => root
   | some i => label i
 
+omit [Fintype P] [DecidableEq P] in
 /-- The root-extended fixed label has residual histogram plus one root
 occurrence. -/
 theorem labelHistogram_fixedRootedMayerLabel
@@ -570,7 +570,6 @@ def histogramWeight {R : Type*} [CommMonoid R]
     (w : P → R) (X : MayerMultiIndex P) : R :=
   X.prod fun γ n => w γ ^ n
 
-omit [DecidableEq P] in
 @[simp]
 theorem histogramWeight_eq_prod {R : Type*} [CommMonoid R]
     (w : P → R) (X : MayerMultiIndex P) :
@@ -737,7 +736,6 @@ theorem histogramWeight_mayerChild_factorization
       rw [histogramWeight_add, histogramWeight_sum]
       simp [histogramWeight, mul_comm]
 
-omit [DecidableEq P] in
 /-- If a spanning tree of a Mayer incompatibility graph is cut at a root,
 the canonical root of every resulting child component has a polymer label
 incompatible with the parent label.  This is the precise graph-to-KP edge
@@ -1182,12 +1180,14 @@ def labelAtEraseEquiv (n : ℕ) (j : Fin (n + 1)) :
   ((finSuccEquiv' j).arrowCongr (Equiv.refl P)).trans
     Equiv.piOptionEquivProd
 
+omit [Fintype P] [DecidableEq P] in
 @[simp]
 theorem labelAtEraseEquiv_fst {n : ℕ} (j : Fin (n + 1))
     (label : Fin (n + 1) → P) :
     (labelAtEraseEquiv (P := P) n j label).1 = label j := by
   simp [labelAtEraseEquiv]
 
+omit [Fintype P] [DecidableEq P] in
 @[simp]
 theorem labelAtEraseEquiv_snd {n : ℕ} (j : Fin (n + 1))
     (label : Fin (n + 1) → P) :
@@ -1195,6 +1195,7 @@ theorem labelAtEraseEquiv_snd {n : ℕ} (j : Fin (n + 1))
   funext k
   simp [labelAtEraseEquiv, eraseFinLabel]
 
+omit [Fintype P] [DecidableEq P] in
 /-- Transporting a label tuple along `finSuccEquiv'` produces exactly the
 fixed-root label convention. -/
 theorem comp_finSuccEquiv_symm_eq_fixedRootedMayerLabel
@@ -1203,7 +1204,7 @@ theorem comp_finSuccEquiv_symm_eq_fixedRootedMayerLabel
       fixedRootedMayerLabel (label j) (eraseFinLabel label j) := by
   funext o
   cases o with
-  | none => simp [eraseFinLabel, fixedRootedMayerLabel]
+  | none => simp [fixedRootedMayerLabel]
   | some k => simp [eraseFinLabel, fixedRootedMayerLabel]
 
 /-- After selecting one vertex, the full activity monomial splits into its
@@ -1569,6 +1570,7 @@ theorem factorialNormalizedLabelledPinnedTreeDegreeSum_eq_residual
   (M.factorialNormalizedLabelledPinnedTreeDegreeSum_eq_fixedOrbit root n).trans
     (M.fixedLabelledPinnedTreeOrbitDegreeSum_eq_residual root n)
 
+omit [Fintype P] [DecidableEq P] in
 /-- Deleting the distinguished occurrence from a root-augmented residual
 multi-index recovers that residual multi-index exactly. -/
 theorem eraseRootOccurrence_add_single
@@ -1628,7 +1630,6 @@ theorem root_mul_residualTreeTerm_eq_pinned_mayerTreeMajorant
     prod_norm_activity_add_single]
   push_cast
   field_simp
-  <;> ring
 
 /-- Adding one occurrence raises the total Mayer degree by one. -/
 theorem mayerDegree_add_single
@@ -1640,6 +1641,7 @@ theorem mayerDegree_add_single
   rw [Finset.sum_add_distrib]
   simp
 
+omit [Fintype P] in
 /-- Adding back a deleted root occurrence recovers any multi-index in which
 that root occurs. -/
 theorem eraseRootOccurrence_add_single_eq
@@ -1649,9 +1651,9 @@ theorem eraseRootOccurrence_add_single_eq
   ext child
   by_cases hchild : child = root
   · subst child
-    simp [eraseRootOccurrence, Finsupp.update_apply]
+    simp [eraseRootOccurrence]
     omega
-  · simp [eraseRootOccurrence, Finsupp.update_apply, hchild]
+  · simp [eraseRootOccurrence, hchild]
 
 /-- Deleting an occurring root from degree `n+1` leaves degree `n`. -/
 theorem mayerDegree_eraseRootOccurrence
@@ -1717,7 +1719,7 @@ theorem pinnedMayerTreeDegreeSum_succ_eq_residual
         by_cases hroot : X root ≠ 0
         · simp [hroot]
         · have hzero : X root = 0 := not_ne_iff.mp hroot
-          simp [hroot, hzero]
+          simp [hzero]
     _ = ∑ Y ∈ source,
         (((Y + Finsupp.single root 1 : MayerMultiIndex P) root : ℕ) : ℝ) *
           M.mayerTreeMajorant (Y + Finsupp.single root 1) := hreindex.symm
@@ -1843,12 +1845,12 @@ theorem summable_residualSymmetricPinnedTreeDegreeSum_of_koteckyPreiss
     (hKP : M.KoteckyPreissCertificate Finset.univ a)
     (root : P) :
     Summable (M.residualSymmetricPinnedTreeDegreeSum root) := by
-  apply summable_of_sum_range_le
-    (M.residualSymmetricPinnedTreeDegreeSum_nonneg root)
-  intro N
-  exact (hOrbit root N).trans
-    (M.kpTreeIterate_le_exp_of_koteckyPreiss Finset.univ a hKP N root
-      (Finset.mem_univ root))
+  apply summable_of_sum_range_le (c := Real.exp (a root))
+  · exact M.residualSymmetricPinnedTreeDegreeSum_nonneg root
+  · intro N
+    exact (hOrbit root N).trans
+      (M.kpTreeIterate_le_exp_of_koteckyPreiss Finset.univ a hKP N root
+        (Finset.mem_univ root))
 
 theorem tsum_residualSymmetricPinnedTreeDegreeSum_le_of_koteckyPreiss
     (M : FinitePolymerModel P) (a : P → ℝ)

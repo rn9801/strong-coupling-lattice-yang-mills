@@ -193,26 +193,30 @@ section Translation
 def translateConfiguration (v : Site d) (A : Configuration d G) : Configuration d G :=
   fun e => A (e.translate v)
 
+omit [TopologicalSpace G] in
 @[simp]
 theorem translateConfiguration_zero (A : Configuration d G) :
     translateConfiguration 0 A = A := by
   funext e
   simp [translateConfiguration]
 
+omit [TopologicalSpace G] in
 @[simp]
 theorem translateConfiguration_translateConfiguration
     (v w : Site d) (A : Configuration d G) :
     translateConfiguration v (translateConfiguration w A) =
       translateConfiguration (v + w) A := by
   funext e
-  simp [translateConfiguration, add_comm]
+  simp [translateConfiguration]
 
+omit [TopologicalSpace G] in
 @[simp]
 theorem translateConfiguration_neg_self (v : Site d) (A : Configuration d G) :
     translateConfiguration (-v) (translateConfiguration v A) = A := by
   funext e
   simp [translateConfiguration]
 
+omit [TopologicalSpace G] in
 @[simp]
 theorem translateConfiguration_neg_self' (v : Site d) (A : Configuration d G) :
     translateConfiguration v (translateConfiguration (-v) A) = A := by

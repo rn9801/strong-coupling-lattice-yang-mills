@@ -66,7 +66,7 @@ def mayerIncompatibilityGraph (M : FinitePolymerModel P)
     (X : MayerMultiIndex P) : SimpleGraph (MayerVertex X) where
   Adj i j := i ≠ j ∧ M.incompatible i.1 j.1
   symm _ _ h := ⟨h.1.symm, M.symmetric_incompatible h.2⟩
-  loopless := ⟨fun i h => h.1 rfl⟩
+  loopless := ⟨fun _i h => h.1 rfl⟩
 
 /-- Connected spanning subgraphs of a graph on an arbitrary finite vertex
 type. -/

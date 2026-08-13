@@ -36,6 +36,8 @@ def complexBoltzmannWeight
     (β : ℂ) (U : DynamicConfiguration Λ) : ℂ :=
   Complex.exp (β * (action Λ Φ U : ℂ))
 
+omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
+  [SecondCountableTopology G] [GaugeHaarProbability G] in
 @[simp]
 theorem complexBoltzmannWeight_ofReal
     (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)

@@ -221,6 +221,7 @@ noncomputable abbrev haarMeasure (Λ : FiniteSpecification d G) :
 
 variable [MeasurableMul G]
 
+omit [MeasurableMul G] in
 /-- Translation relabeling preserves finite product Haar probability. -/
 theorem measurePreserving_translateDynamic
     (Λ : FiniteSpecification d G) (v : Site d) :

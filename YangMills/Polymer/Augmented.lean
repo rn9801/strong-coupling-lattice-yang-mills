@@ -108,6 +108,7 @@ def augmentTwoColorExclusiveRoots {S : Type*} [Fintype S] [DecidableEq S]
   (M.augmentExclusiveRoots touchesLeft leftActivity).augmentExclusiveRoots
     (twoColorRightTouches touchesRight crossIncompatible) rightActivity
 
+omit [DecidableEq P] [DecidableEq R] in
 @[simp]
 theorem augmentTwoColorExclusiveRoots_incompatible_left_left
     {S : Type*} [Fintype S] [DecidableEq S]
@@ -121,6 +122,7 @@ theorem augmentTwoColorExclusiveRoots_incompatible_left_left
         (Sum.inl (Sum.inr r)) (Sum.inl (Sum.inr r')) := by
   trivial
 
+omit [DecidableEq P] [DecidableEq R] in
 @[simp]
 theorem augmentTwoColorExclusiveRoots_incompatible_right_right
     {S : Type*} [Fintype S] [DecidableEq S]
@@ -134,6 +136,7 @@ theorem augmentTwoColorExclusiveRoots_incompatible_right_right
         (Sum.inr s) (Sum.inr s') := by
   trivial
 
+omit [DecidableEq P] [DecidableEq R] in
 @[simp]
 theorem augmentTwoColorExclusiveRoots_incompatible_left_right
     {S : Type*} [Fintype S] [DecidableEq S]
@@ -147,6 +150,7 @@ theorem augmentTwoColorExclusiveRoots_incompatible_left_right
         (Sum.inl (Sum.inr r)) (Sum.inr s) ↔
       crossIncompatible r s := Iff.rfl
 
+omit [DecidableEq P] [DecidableEq R] in
 @[simp]
 theorem augmentTwoColorExclusiveRoots_incompatible_left_bulk
     {S : Type*} [Fintype S] [DecidableEq S]
@@ -160,6 +164,7 @@ theorem augmentTwoColorExclusiveRoots_incompatible_left_bulk
         (Sum.inl (Sum.inr r)) (Sum.inl (Sum.inl gamma)) ↔
       touchesLeft r gamma := Iff.rfl
 
+omit [DecidableEq P] [DecidableEq R] in
 @[simp]
 theorem augmentTwoColorExclusiveRoots_incompatible_right_bulk
     {S : Type*} [Fintype S] [DecidableEq S]
@@ -209,6 +214,7 @@ def augmentBivariateExclusiveRoots {S T : Type*}
       leftActivity rightActivity).augmentExclusiveRoots
     (bivariateBridgeTouches touchesBridge) bridgeActivity
 
+omit [DecidableEq P] [DecidableEq R] in
 @[simp]
 theorem augmentBivariateExclusiveRoots_incompatible_left_right
     {S T : Type*} [Fintype S] [DecidableEq S]
@@ -225,6 +231,7 @@ theorem augmentBivariateExclusiveRoots_incompatible_left_right
         (Sum.inl (Sum.inl (Sum.inr r)))
         (Sum.inl (Sum.inr s)) ↔ crossIncompatible r s := Iff.rfl
 
+omit [DecidableEq P] [DecidableEq R] in
 @[simp]
 theorem augmentBivariateExclusiveRoots_incompatible_bridge_left
     {S T : Type*} [Fintype S] [DecidableEq S]
@@ -241,6 +248,7 @@ theorem augmentBivariateExclusiveRoots_incompatible_bridge_left
         (Sum.inr t) (Sum.inl (Sum.inl (Sum.inr r))) := by
   trivial
 
+omit [DecidableEq P] [DecidableEq R] in
 @[simp]
 theorem augmentBivariateExclusiveRoots_incompatible_bridge_right
     {S T : Type*} [Fintype S] [DecidableEq S]
@@ -257,6 +265,7 @@ theorem augmentBivariateExclusiveRoots_incompatible_bridge_right
         (Sum.inr t) (Sum.inl (Sum.inr s)) := by
   trivial
 
+omit [DecidableEq P] [DecidableEq R] in
 @[simp]
 theorem augmentBivariateExclusiveRoots_incompatible_bridge_bulk
     {S T : Type*} [Fintype S] [DecidableEq S]
@@ -273,6 +282,7 @@ theorem augmentBivariateExclusiveRoots_incompatible_bridge_bulk
         (Sum.inr t) (Sum.inl (Sum.inl (Sum.inl gamma))) ↔
       touchesBridge t gamma := Iff.rfl
 
+omit [DecidableEq P] [DecidableEq R] in
 @[simp]
 theorem augmentExclusiveRoots_incompatible_root_root
     (M : FinitePolymerModel P) (touches : R → P → Prop)
@@ -281,6 +291,7 @@ theorem augmentExclusiveRoots_incompatible_root_root
       (Sum.inr r) (Sum.inr s) := by
   trivial
 
+omit [DecidableEq P] [DecidableEq R] in
 @[simp]
 theorem augmentExclusiveRoots_incompatible_root_bulk
     (M : FinitePolymerModel P) (touches : R → P → Prop)
@@ -288,6 +299,7 @@ theorem augmentExclusiveRoots_incompatible_root_bulk
     (M.augmentExclusiveRoots touches rootActivity).incompatible
       (Sum.inr r) (Sum.inl γ) ↔ touches r γ := Iff.rfl
 
+omit [DecidableEq P] [DecidableEq R] in
 @[simp]
 theorem augmentExclusiveRoots_activity_root
     (M : FinitePolymerModel P) (touches : R → P → Prop)
@@ -295,6 +307,7 @@ theorem augmentExclusiveRoots_activity_root
     (M.augmentExclusiveRoots touches rootActivity).activity (Sum.inr r) =
       rootActivity r := rfl
 
+omit [DecidableEq P] [DecidableEq R] in
 @[simp]
 theorem augmentExclusiveRoots_activity_bulk
     (M : FinitePolymerModel P) (touches : R → P → Prop)
@@ -317,6 +330,7 @@ def exclusiveRootMultiplicity
     (X : MayerMultiIndex (AugmentedPolymer P R)) : ℕ :=
   ∑ r : R, X (Sum.inr r)
 
+omit [Fintype P] [DecidableEq P] [DecidableEq R] in
 /-- Adjoining one occurrence of a specified exclusive root raises the total
 exclusive-root multiplicity by one. -/
 theorem exclusiveRootMultiplicity_add_single_root
@@ -333,11 +347,12 @@ theorem exclusiveRootMultiplicity_add_single_root
         (Finsupp.single (Sum.inr r) 1) (Sum.inr r) := by
       apply Finset.sum_eq_single r
       · intro s _ hrs
-        simp [Finsupp.single_apply, hrs.symm]
+        simp [hrs.symm]
       · intro hr
         exact (hr (Finset.mem_univ r)).elim
-    _ = 1 := by simp [Finsupp.single_apply]
+    _ = 1 := by simp
 
+omit [Fintype P] [DecidableEq P] [DecidableEq R] in
 /-- Total exclusive-root multiplicity zero means that every root coordinate
 vanishes. -/
 theorem exclusiveRootMultiplicity_eq_zero_apply
@@ -348,6 +363,7 @@ theorem exclusiveRootMultiplicity_eq_zero_apply
   exact (Finset.sum_eq_zero_iff_of_nonneg
     (fun _ _ => Nat.zero_le _)).mp hX r (Finset.mem_univ r)
 
+omit [DecidableEq P] [DecidableEq R] in
 /-- Multiplying every exclusive-root activity by one source variable records
 the total root multiplicity in the activity monomial. -/
 theorem mayerActivityMonomial_augmentExclusiveRoots_mul
@@ -423,6 +439,7 @@ def exclusiveRootSourceFamilyWeight
     | Sum.inl γ => Polynomial.C (M.activity γ)
     | Sum.inr r => Polynomial.X * Polynomial.C (rootActivity r)
 
+omit [DecidableEq P] [DecidableEq R] in
 /-- Evaluating the polynomial source recovers the corresponding scaled
 exclusive-root family weight. -/
 theorem eval_exclusiveRootSourceFamilyWeight
@@ -483,6 +500,7 @@ theorem constantCoeff_exclusiveRootSourceMayerPowerSeries
   rw [← PowerSeries.coeff_zero_eq_constantCoeff_apply]
   simp [exclusiveRootSourceMayerPowerSeries]
 
+omit [DecidableEq P] [DecidableEq R] in
 /-- Evaluating the polynomial source in the partition series gives the
 ordinary complex partition power series of the scaled augmented model. -/
 theorem map_exclusiveRootSourcePartitionPowerSeries_eval
@@ -741,7 +759,7 @@ theorem exclusiveRoot_linearPinnedMayerTreeDegreeSum_le
     · by_cases hr : X root ≠ 0
       · simp [hm, hr]
       · have hrzero : X root = 0 := not_ne_iff.mp hr
-        simp [hm, hr, hrzero]
+        simp [hm, hrzero]
     · simp [hm]
   have hresidual (Y : MayerMultiIndex (AugmentedPolymer P R))
       (hYzero : exclusiveRootMultiplicity Y = 0) :
@@ -897,6 +915,7 @@ theorem exclusiveRootLinearNormMayerDegreeSum_succ_le
         M.exclusiveRoot_linearPinnedMayerTreeDegreeSum_le
           touches rootActivity r n
 
+omit [DecidableEq P] [DecidableEq R] in
 /-- Compatibility of a split augmented family is exactly bulk compatibility,
 at most one exclusive root, and absence of root--bulk contacts. -/
 theorem augmentExclusiveRoots_compatible_disjSum_iff
@@ -946,6 +965,7 @@ theorem augmentExclusiveRoots_compatible_disjSum_iff
         (Finset.card_le_one.mp hDelta) r (by simpa using hx) s (by simpa using hy)
       exact (hxy (by simpa using hrs)).elim
 
+omit [DecidableEq P] [DecidableEq R] in
 /-- Activities factor over the bulk and root parts of an augmented family. -/
 theorem augmentExclusiveRoots_familyWeight_disjSum
     (M : FinitePolymerModel P) (touches : R → P → Prop)
@@ -956,6 +976,7 @@ theorem augmentExclusiveRoots_familyWeight_disjSum
       M.familyWeight Gamma * ∏ r ∈ Delta, rootActivity r := by
   simp [familyWeight, Finset.prod_disjSum, augmentExclusiveRoots]
 
+omit [DecidableEq R] in
 /-- The partition function of an exclusive-root augmentation is affine in
 the root activities.  Its constant term is the bulk partition function, and
 its root term is indexed by a unique root together with an allowed compatible
@@ -1034,7 +1055,7 @@ theorem augmentExclusiveRoots_partitionFunction
     have heq : Gamma.disjSum (∅ : Finset R) =
         pair.2.disjSum {pair.1} := hGammaXi.trans hpairXi.symm
     have hright := (Finset.disjSum_inj.mp heq).2
-    simpa using hright
+    simp at hright
   have hbulkSum :
       ∑ Xi ∈ bulkFamilies, A.familyWeight Xi = M.partitionFunction := by
     unfold bulkFamilies
@@ -1078,6 +1099,7 @@ def exclusiveRootPartitionCoefficient
   ∑ pair ∈ M.exclusiveRootPairs touches,
     rootActivity pair.1 * M.familyWeight pair.2
 
+omit [DecidableEq P] [DecidableEq R] in
 /-- The polynomial-source partition series is supported in the same finite
 total-activity range as the augmented hard-core gas. -/
 theorem coeff_exclusiveRootSourcePartitionPowerSeries_eq_zero_of_card_lt
@@ -1107,6 +1129,7 @@ theorem coeff_exclusiveRootSourcePartitionPowerSeries_eq_zero_of_card_lt
           Finset.univ hcard
     _ = Polynomial.eval α 0 := by simp
 
+omit [DecidableEq R] in
 /-- Summing every total-activity coefficient while retaining the polynomial
 source gives the affine exclusive-root partition polynomial. -/
 theorem sum_coeff_exclusiveRootSourcePartitionPowerSeries
@@ -1166,6 +1189,7 @@ theorem sum_coeff_exclusiveRootSourcePartitionPowerSeries
       simp only [Polynomial.eval_add, Polynomial.eval_C,
         Polynomial.eval_mul, Polynomial.eval_X]
 
+omit [DecidableEq R] in
 /-- The finite sum of the source-linear partition coefficients is the exact
 exclusive-root coefficient. -/
 theorem sum_coeff_linearCoefficient_exclusiveRootSourcePartitionPowerSeries
@@ -1184,6 +1208,7 @@ theorem sum_coeff_linearCoefficient_exclusiveRootSourcePartitionPowerSeries
   rw [Polynomial.coeff_add, Polynomial.coeff_C_of_ne_zero one_ne_zero,
     Polynomial.coeff_X_mul, Polynomial.coeff_C_zero, zero_add]
 
+omit [DecidableEq P] [DecidableEq R] in
 /-- The finite sum of the zero-source partition coefficients is the bulk
 partition function. -/
 theorem sum_coeff_constantSource_exclusiveRootSourcePartitionPowerSeries
@@ -1195,6 +1220,7 @@ theorem sum_coeff_constantSource_exclusiveRootSourcePartitionPowerSeries
         (SourcePowerSeries.constantSource
           (M.exclusiveRootSourcePartitionPowerSeries touches rootActivity))) =
       M.partitionFunction := by
+  classical
   unfold SourcePowerSeries.constantSource
   simp_rw [PowerSeries.coeff_map]
   change (∑ n ∈ Finset.range
@@ -1310,6 +1336,7 @@ theorem exclusiveRootPartitionCoefficient_eq_partitionFunction_mul_tsum
       exact M.coeff_linearCoefficient_exclusiveRootSourceMayerPowerSeries
         touches rootActivity n
 
+omit [DecidableEq P] in
 @[simp]
 theorem augmentRoots_incompatible_bulk_bulk
     (M : FinitePolymerModel P) (touches : R → P → Prop)
@@ -1317,6 +1344,7 @@ theorem augmentRoots_incompatible_bulk_bulk
     (M.augmentRoots touches rootActivity).incompatible (Sum.inl γ) (Sum.inl δ) ↔
       M.incompatible γ δ := Iff.rfl
 
+omit [DecidableEq P] in
 @[simp]
 theorem augmentRoots_incompatible_root_bulk
     (M : FinitePolymerModel P) (touches : R → P → Prop)
@@ -1324,6 +1352,7 @@ theorem augmentRoots_incompatible_root_bulk
     (M.augmentRoots touches rootActivity).incompatible (Sum.inr r) (Sum.inl γ) ↔
       touches r γ := Iff.rfl
 
+omit [DecidableEq P] in
 @[simp]
 theorem augmentRoots_incompatible_bulk_root
     (M : FinitePolymerModel P) (touches : R → P → Prop)
@@ -1331,6 +1360,7 @@ theorem augmentRoots_incompatible_bulk_root
     (M.augmentRoots touches rootActivity).incompatible (Sum.inl γ) (Sum.inr r) ↔
       touches r γ := Iff.rfl
 
+omit [DecidableEq P] in
 @[simp]
 theorem augmentRoots_incompatible_root_root
     (M : FinitePolymerModel P) (touches : R → P → Prop)
@@ -1338,12 +1368,14 @@ theorem augmentRoots_incompatible_root_root
     (M.augmentRoots touches rootActivity).incompatible (Sum.inr r) (Sum.inr s) ↔
       r = s := Iff.rfl
 
+omit [DecidableEq P] in
 @[simp]
 theorem augmentRoots_activity_bulk
     (M : FinitePolymerModel P) (touches : R → P → Prop)
     [DecidableRel touches] (rootActivity : R → ℂ) (γ : P) :
     (M.augmentRoots touches rootActivity).activity (Sum.inl γ) = M.activity γ := rfl
 
+omit [DecidableEq P] in
 @[simp]
 theorem augmentRoots_activity_root
     (M : FinitePolymerModel P) (touches : R → P → Prop)
@@ -1363,6 +1395,7 @@ def augmentRootKPWeight (M : FinitePolymerModel P)
       ∑ γ : P, if touches r γ then
         ‖M.activity γ‖ * Real.exp (a γ) else 0
 
+omit [Fintype R] [DecidableEq P] [DecidableEq R] in
 theorem augmentRootKPWeight_nonneg
     (M : FinitePolymerModel P)
     (touches : R → P → Prop) [DecidableRel touches]
@@ -1375,6 +1408,7 @@ theorem augmentRootKPWeight_nonneg
       · exact mul_nonneg (norm_nonneg _) (Real.exp_pos _).le
       · exact le_rfl
 
+omit [DecidableEq P] in
 /-- A full-volume KP certificate lifts to finitely many zero-activity source
 roots.  Bulk inequalities are unchanged because source activities vanish;
 the source inequality is an equality by the definition of
@@ -1398,6 +1432,7 @@ theorem koteckyPreissCertificate_augmentRoots_zero
     rw [Fintype.sum_sum_type]
     simp [augmentRootKPWeight]
 
+omit [DecidableEq P] [DecidableEq R] in
 /-- A KP certificate also lifts to mutually exclusive zero-activity roots.
 Root exclusivity changes only root--root incompatibilities, whose summands
 vanish at the zero-source expansion point. -/

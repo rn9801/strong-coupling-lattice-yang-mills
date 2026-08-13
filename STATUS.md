@@ -33,6 +33,16 @@ Last updated: 2026-08-13
   Milestone 17.  The public `YangMills` root now exports the project-native
   headline theorem families without importing milestone tests, audits, the
   periodic Douglas baseline, or the older Dobrushin comparison modules.
+- Completed the first Lean-warning cleanup pass on the dedicated
+  `cleanup/lean-warnings` branch.  The full regression warning baseline fell
+  from 715 to 511 project-owned messages.  The site/link reflection chain,
+  augmented-polymer API, and concrete observable-root/KP module now compile
+  without their own warnings.  The pass removes stale `simp` arguments,
+  deprecated tactics, unused binders and section assumptions, and brittle
+  definitional-equality reductions; it does not silence linters.  A global
+  replacement of model-level `DecidableEq` instances was deliberately
+  rejected after downstream elaboration showed that those instances are part
+  of the computational behavior of `FinitePolymerModel`.
 - Added the opt-in `YangMills.Regression` root and a declaration/import audit.
   The audit found no production proof block that can safely be deleted: every
   native module is reached by a headline theorem, a foundational result, or a
@@ -1161,6 +1171,18 @@ Commands are added here only after they succeed.
   Success; 3,882 jobs.  The full milestone suite, reviewer smoke tests,
   project-native theorem graph, Douglas baseline audits, and optional older
   Dobrushin comparison route remain green after Milestone 18.
+2026-08-13: lake build +YangMills.Regression
+  Success; 3,882 jobs after the first warning-cleanup pass.  Project-owned
+  warning messages fell from 715 to 511 without disabling linters.  The
+  reflection-positivity chain, `Polymer.Augmented`,
+  `StrongCoupling.ObservableRootPolymer`, and the newly touched portions of
+  `StrongCoupling.MarkedComponentExpansion` compile from source; there are no
+  errors, `sorry`, or admitted obligations.
+2026-08-13: lake build
+  Success; 3,090 jobs after the same cleanup pass.  The project-native public
+  root remains green and emits 461 project-owned linter messages, concentrated
+  primarily in older labelled-tree, Whitney, countable-Mayer, spatial-cluster,
+  and thermodynamic modules queued for later cleanup.
 ```
 
 ## Conventions fixed so far

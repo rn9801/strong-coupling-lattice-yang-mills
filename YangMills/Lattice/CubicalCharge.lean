@@ -110,7 +110,7 @@ theorem edgeChain_apply_eq_zero_of_not_mem_edgeSupport
       rw [edgeChain_cons, Finsupp.add_apply, ih he.2]
       have hne : q.1.positive ≠ e := fun h ↦ he.1 h.symm
       cases hq : q.1.direction.orientation <;>
-        simp [SignedEdge.edgeChain, hq, Finsupp.single_apply, hne]
+        simp [SignedEdge.edgeChain, hq, hne]
 
 /-- The integer incidence number of a path at one stored positive edge. -/
 def edgeIncidence {x y : Site d} (p : Path x y) (e : PositiveEdge d) : ℤ :=

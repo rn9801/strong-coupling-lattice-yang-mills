@@ -89,6 +89,7 @@ theorem continuous_action (Λ : FiniteSpecification d G) (Φ : RealPlaquettePote
 
 section TranslationCovariance
 
+omit [TopologicalSpace G] [IsTopologicalGroup G] in
 /-- Plaquette holonomy is unchanged after translating the specification,
 dynamic variables, and plaquette together. -/
 theorem plaquetteHolonomy_translate
@@ -99,11 +100,10 @@ theorem plaquetteHolonomy_translate
       plaquetteHolonomy Λ U p := by
   unfold plaquetteHolonomy
   rw [Λ.translate_evaluate_translateDynamic]
-  change holonomy (fun e => Λ.evaluate U (e.translate (-v)))
-      (p.translate v).boundary = holonomy (Λ.evaluate U) p.boundary
   rw [holonomy_plaquette_translate]
   rw [Plaquette.translate_neg_self]
 
+omit [IsTopologicalGroup G] in
 /-- The finite-volume action is unchanged by lattice translation. -/
 theorem action_translate
     (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
@@ -255,11 +255,12 @@ theorem gibbsExpectation_eq_integral_gibbsMeasure
   funext U
   field_simp
 
+omit [IsTopologicalGroup G] [BorelSpace G] [SecondCountableTopology G] in
 /-- Translation covariance of complex-valued Gibbs integrals. -/
 theorem integral_gibbsMeasure_translate
     (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℝ)
     (v : Site d) (F : DynamicConfiguration (Λ.translate v) → ℂ)
-    (hF : Measurable F) :
+    (_hF : Measurable F) :
     ∫ V, F V ∂gibbsMeasure (Λ.translate v) Φ β =
       ∫ U, F (Λ.translateDynamic v U) ∂gibbsMeasure Λ Φ β := by
   let T := Λ.translateDynamic v
@@ -348,6 +349,9 @@ theorem plaquetteHolonomy_gaugeTransform
   rw [Λ.evaluate_gaugeTransformDynamic g hg U]
   exact holonomy_loop_gaugeTransform g (Λ.evaluate U) p.boundary
 
+omit [TopologicalSpace G] [IsTopologicalGroup G] [MeasurableSpace G]
+  [BorelSpace G] [SecondCountableTopology G] [GaugeHaarProbability G]
+  [MeasurableMul G] in
 /-- Transforming both dynamic and exterior data conjugates every plaquette
 holonomy, without a boundary-compatibility restriction. -/
 theorem plaquetteHolonomy_gaugeTransformExterior
@@ -360,6 +364,8 @@ theorem plaquetteHolonomy_gaugeTransformExterior
   rw [Λ.gaugeTransformExterior_evaluate_gaugeTransformDynamic g U]
   exact holonomy_loop_gaugeTransform g (Λ.evaluate U) p.boundary
 
+omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
+  [SecondCountableTopology G] [GaugeHaarProbability G] [MeasurableMul G] in
 /-- The action is covariant when the frozen exterior field is transformed
 together with the dynamic variables. -/
 theorem action_gaugeTransformExterior
@@ -434,7 +440,7 @@ theorem integral_gibbsMeasure_gaugeTransform_complex
     (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℝ)
     (g : GaugeTransformation d G) (hg : Λ.BoundaryCompatible g)
     (F : DynamicConfiguration Λ → ℂ)
-    (hF : Measurable F) (C : ℝ) (hC : ∀ U, ‖F U‖ ≤ C) :
+    (hF : Measurable F) (C : ℝ) (_hC : ∀ U, ‖F U‖ ≤ C) :
     ∫ U, F (Λ.gaugeTransformDynamic g U) ∂gibbsMeasure Λ Φ β =
       ∫ U, F U ∂gibbsMeasure Λ Φ β := by
   rw [gibbsMeasure, integral_tilted, integral_tilted]

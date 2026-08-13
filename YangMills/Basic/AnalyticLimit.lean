@@ -38,7 +38,7 @@ variable {f : ℕ → ℂ → ℂ} {domain : Set ℂ}
 
 /-- The limiting function selected by completeness of `ℂ`. -/
 noncomputable def limit
-    (h : LocallyUniformAnalyticLimitCertificate f domain) (z : ℂ) : ℂ :=
+    (_h : LocallyUniformAnalyticLimitCertificate f domain) (z : ℂ) : ℂ :=
   limUnder atTop (fun n ↦ f n z)
 
 theorem tendsto_limit (h : LocallyUniformAnalyticLimitCertificate f domain)

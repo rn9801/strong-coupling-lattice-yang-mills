@@ -59,7 +59,7 @@ theorem signedEdgeValue_twistEdge
               by_cases h : q = e
               · subst e
                 simp [twistEdge]
-              · simp [twistEdge, h, Ne.symm h, Finsupp.single_apply]
+              · simp [twistEdge, h, Ne.symm h]
           | backward =>
               let q : PositiveEdge d :=
                 (SignedEdge.mk source (.backward axis)).positive
@@ -71,9 +71,8 @@ theorem signedEdgeValue_twistEdge
                 rw [twistEdge_same]
                 rw [Finsupp.single_eq_same]
                 rw [mul_inv_rev, zpow_neg_one, hc.inv_inv.eq]
-              ·
-                rw [twistEdge_of_ne z h A]
-                simp [Finsupp.single_apply, h, Ne.symm h]
+              · rw [twistEdge_of_ne z h A]
+                simp [Ne.symm h]
 
 /-- A center twist of one stored edge multiplies path holonomy by the center
 element raised to that edge's signed incidence number. -/
@@ -172,7 +171,7 @@ theorem star_omega_zpow (kappa : CenterChargeData rho) (q : ℤ) :
   have hstar : star kappa.omega = kappa.omega⁻¹ := by
     apply (mul_left_cancel₀ homega)
     rw [mul_inv_cancel₀ homega]
-    simpa [Complex.mul_conj', kappa.norm_omega]
+    simp [Complex.mul_conj', kappa.norm_omega]
   cases q with
   | ofNat k =>
       simp [zpow_natCast, hstar, zpow_neg, inv_pow]

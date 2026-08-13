@@ -91,7 +91,7 @@ theorem hasDerivAt_plaquettePerturbation
         (Φ (plaquetteHolonomy Λ U p) : ℂ)) β := by
   unfold plaquettePerturbation
   convert (((hasDerivAt_id β).mul_const
-    (Φ (plaquetteHolonomy Λ U p) : ℂ)).cexp.sub_const 1) using 1 <;>
+    (Φ (plaquetteHolonomy Λ U p) : ℂ)).cexp.sub_const 1) using 1;
     simp [mul_comm]
 
 omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
@@ -412,7 +412,8 @@ theorem subsetWeight_entire
 
 /-! ## Translation covariance -/
 
-omit [BorelSpace G] [SecondCountableTopology G] in
+omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
+  [SecondCountableTopology G] [GaugeHaarProbability G] in
 /-- Translating the plaquette set and relabeling all dynamic variables leaves
 the subset integrand unchanged. -/
 theorem subsetIntegrand_translate
@@ -433,6 +434,7 @@ theorem subsetIntegrand_translate
   unfold plaquettePerturbation
   rw [Gauge.FiniteVolume.plaquetteHolonomy_translate]
 
+omit [IsTopologicalGroup G] [BorelSpace G] [SecondCountableTopology G] in
 /-- Haar-integrated subset weights are invariant under simultaneous lattice
 translation of the finite specification and the plaquette support. -/
 theorem subsetWeight_translate

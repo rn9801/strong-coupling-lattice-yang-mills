@@ -388,9 +388,7 @@ theorem sum_finpartitionCoarsening_topMobiusWeight
   classical
   let e := finpartitionCoarseningEquivOrdered Q
   rw [← e.symm.sum_comp]
-  simp only [Equiv.symm_apply_apply, e,
-    card_parts_eq_length_finpartitionCoarseningEquivOrdered,
-    orderedFinpartitionTopMobiusWeight]
+  simp only [e, card_parts_eq_length_finpartitionCoarseningEquivOrdered]
   simpa using
     sum_orderedFinpartitionTopMobiusWeight (Fintype.card Q.parts)
 

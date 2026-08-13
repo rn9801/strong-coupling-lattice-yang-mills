@@ -96,6 +96,7 @@ def reflect (U : ReflectedConfiguration G P O) :
     ReflectedConfiguration G P O :=
   (U.1, (U.2.2, U.2.1))
 
+omit [TopologicalSpace G] in
 @[simp]
 theorem reflect_reflect (U : ReflectedConfiguration G P O) :
     reflect (reflect U) = U := by
@@ -267,6 +268,7 @@ abbrev reflectedHaar : Measure (ReflectedConfiguration G P O) :=
   (planeHaar (G := G) (O := O)).prod
     ((sideHaar (G := G) (P := P)).prod (sideHaar (G := G) (P := P)))
 
+omit [BorelSpace G] [CompactSpace G] in
 /-- The explicit variable partition preserves finite product Haar. -/
 theorem measurePreserving_reflectedVariableEquiv :
     MeasurePreserving (reflectedVariableEquiv (G := G) (P := P) (O := O))
@@ -282,6 +284,8 @@ variable (D : WilsonActionDecomposition G P O)
 
 namespace WilsonActionDecomposition
 
+omit [Group G] [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [GaugeHaarProbability G] [Fintype P] [Fintype O] in
 /-- Reflection preserves the uniform norm of every continuous full-volume
 observable. -/
 theorem theta_preserves_norm
@@ -302,6 +306,8 @@ theorem theta_preserves_norm
 def boltzmannWeight (β : ℝ) (U : ReflectedConfiguration G P O) : ℝ :=
   Real.exp (β * D.action U)
 
+omit [Group G] [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [CompactSpace G] [GaugeHaarProbability G] [Fintype P] [Fintype O] in
 theorem continuous_boltzmannWeight (β : ℝ) :
     Continuous (D.boltzmannWeight β) := by
   exact Real.continuous_exp.comp (continuous_const.mul D.continuous_action)
@@ -348,6 +354,7 @@ theorem integrable_gibbsReflectionIntegrand (β : ℝ)
   exact ((Complex.continuous_ofReal.comp (D.continuous_boltzmannWeight β)).mul
     (theta (liftPositive F)).continuous).mul (liftPositive H).continuous
 
+omit [BorelSpace G] [SecondCountableTopology G] [CompactSpace G] [Fintype O] in
 /-- At fixed plane field the two strict-side Haar integrals factor. -/
 theorem integral_sidePair_eq_halfAmplitude (β : ℝ)
     (F H : PositiveObservable G P O) (Uzero : PlaneConfiguration G O) :
@@ -376,7 +383,6 @@ theorem integral_sidePair_eq_halfAmplitude (β : ℝ)
       β * D.positiveAction (Uzero, V.1) + β * D.planeAction Uzero +
         β * D.positiveAction (Uzero, V.2) by ring]
     rw [Real.exp_add, Real.exp_add]
-    norm_cast
     simp only [map_mul, Complex.conj_ofReal]
     push_cast
     ring
@@ -431,6 +437,7 @@ def weightedAmplitude (β : ℝ) (F : PositiveObservable G P O) :
       intro Uzero
       exact hA Uzero
 
+omit [Fintype O] in
 @[simp]
 theorem weightedAmplitude_apply (β : ℝ) (F : PositiveObservable G P O)
     (Uzero : PlaneConfiguration G O) :
@@ -462,6 +469,7 @@ theorem factorizedPairing_eq_inner (β : ℝ)
   push_cast
   ring
 
+omit [BorelSpace G] [SecondCountableTopology G] [CompactSpace G] in
 /-- The reflection pairing before normalization is a weighted square modulus. -/
 theorem factorizedPairing_self_eq_squareModulus (β : ℝ)
     (F : PositiveObservable G P O) :

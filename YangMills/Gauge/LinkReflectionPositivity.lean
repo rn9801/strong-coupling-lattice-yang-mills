@@ -116,7 +116,7 @@ theorem fixSide_apply (D : CrossingForestGaugeFix G C P)
       D.leftMultiplier Ucross e * U e * D.rightMultiplier Ucross e := rfl
 
 theorem continuous_fixSide (D : CrossingForestGaugeFix G C P)
-    [Fintype P] [IsTopologicalGroup G] :
+    [IsTopologicalGroup G] :
     Continuous (fun U : CrossingConfiguration G C × SideConfiguration G P ↦
       D.fixSide U.1 U.2) := by
   apply continuous_pi
@@ -266,7 +266,7 @@ def crossKernel [Fintype Q]
     (V : SideConfiguration G P × SideConfiguration G P) : ℂ :=
   ∑ a : CrossLetter Q n, conj (D.crossFeature a V.1) * D.crossFeature a V.2
 
-theorem continuous_crossFeature [Fintype P] [IsTopologicalGroup G]
+theorem continuous_crossFeature [IsTopologicalGroup G]
     (a : CrossLetter Q n) : Continuous (D.crossFeature a) := by
   unfold crossFeature orientedMatrixCoefficient
   have hentry (i j : Fin n) : Continuous fun g : G ↦
@@ -278,7 +278,7 @@ theorem continuous_crossFeature [Fintype P] [IsTopologicalGroup G]
       (D.crossHolonomy a.1).continuous
   · exact hentry _ _ |>.comp (D.crossHolonomy a.1).continuous
 
-theorem continuous_crossKernel [Fintype P] [Fintype Q]
+theorem continuous_crossKernel [Fintype Q]
     [IsTopologicalGroup G] : Continuous D.crossKernel := by
   unfold crossKernel
   apply continuous_finsetSum Finset.univ
@@ -341,7 +341,7 @@ theorem sum_wilsonPotential_eq_crossKernel [Fintype Q]
     exact Complex.ofReal_inv (n : ℝ)]
   rw [show (2 * (n : ℂ))⁻¹ = ((2 * (n : ℝ))⁻¹ : ℝ) by
     symm
-    convert Complex.ofReal_inv (2 * (n : ℝ)) using 1 <;> norm_num]
+    convert Complex.ofReal_inv (2 * (n : ℝ)) using 1; norm_num]
   push_cast
   apply Complex.ext
   · simp
@@ -355,7 +355,7 @@ def gaugeFixedAction [Fintype Q]
     ∑ q : Q, D.representation.wilsonPotential
       (D.crossHolonomy q U.2 * (D.crossHolonomy q U.1)⁻¹)
 
-theorem continuous_gaugeFixedAction [Fintype P] [Fintype Q]
+theorem continuous_gaugeFixedAction [Fintype Q]
     [IsTopologicalGroup G] : Continuous D.gaugeFixedAction := by
   unfold gaugeFixedAction
   fun_prop
@@ -368,7 +368,7 @@ def action [Fintype Q] (U : ReflectedConfiguration G C P) : ℝ :=
     (D.gaugeFix.fixSide (invertCrossing U.1) U.2.1,
       D.gaugeFix.fixSide U.1 U.2.2)
 
-theorem continuous_action [Fintype C] [Fintype P] [Fintype Q]
+theorem continuous_action [Fintype Q]
     [IsTopologicalGroup G] : Continuous D.action := by
   unfold action
   apply D.continuous_gaugeFixedAction.comp
@@ -396,7 +396,7 @@ theorem action_reflect [Fintype Q] (U : ReflectedConfiguration G C P) :
   simp only [action, reflect, invertCrossing_invertCrossing,
     gaugeFixedAction]
   congr 1
-  rw [add_comm (D.positiveAction _) (D.positiveAction _)]
+  · rw [add_comm (D.positiveAction _) (D.positiveAction _)]
   apply Finset.sum_congr rfl
   intro q _hq
   rw [← D.representation.wilsonPotential.inv_invariant]
@@ -448,7 +448,7 @@ def liftPositive (F : PositiveObservable G C P) :
   continuous_toFun := by fun_prop
 
 /-- Anti-linear half-integer reflection. -/
-def theta [Fintype C] [IsTopologicalGroup G]
+def theta [IsTopologicalGroup G]
     (F : C(ReflectedConfiguration G C P, ℂ)) :
     C(ReflectedConfiguration G C P, ℂ) where
   toFun U := conj (F (reflect U))
@@ -463,7 +463,7 @@ def theta [Fintype C] [IsTopologicalGroup G]
           (continuous_fst.comp continuous_snd))
 
 @[simp]
-theorem theta_liftPositive_apply [Fintype C] [IsTopologicalGroup G]
+theorem theta_liftPositive_apply [IsTopologicalGroup G]
     (F : PositiveObservable G C P) (U : ReflectedConfiguration G C P) :
     theta (liftPositive F) U = conj (F (invertCrossing U.1, U.2.1)) := rfl
 
@@ -491,6 +491,8 @@ def boltzmannWeight (D : WilsonActionDecomposition G n C P Q) (β : ℝ)
     (U : ReflectedConfiguration G C P) : ℝ :=
   Real.exp (β * D.action U)
 
+omit [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [CompactSpace G] [GaugeHaarProbability G] [Fintype C] [Fintype P] in
 theorem continuous_boltzmannWeight (D : WilsonActionDecomposition G n C P Q) (β : ℝ) :
     Continuous (D.boltzmannWeight β) := by
   exact Real.continuous_exp.comp (continuous_const.mul D.continuous_action)
@@ -539,6 +541,8 @@ def crossMonomial (D : WilsonActionDecomposition G n C P Q) {m : ℕ}
     (w : CrossWord Q n m) (U : SideConfiguration G P) : ℂ :=
   ∏ r, D.crossFeature (w r) U
 
+omit [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [CompactSpace G] [GaugeHaarProbability G] [Fintype C] [Fintype P] [Fintype Q] in
 theorem continuous_crossMonomial
     (D : WilsonActionDecomposition G n C P Q) {m : ℕ}
     (w : CrossWord Q n m) : Continuous (D.crossMonomial w) := by
@@ -554,7 +558,7 @@ def taylorAmplitude (D : WilsonActionDecomposition G n C P Q) (β : ℝ)
       D.crossMonomial w U ∂sideHaar
 
 /-- The positive Taylor coefficient of degree `m`. -/
-def taylorCoefficient (D : WilsonActionDecomposition G n C P Q)
+def taylorCoefficient (_D : WilsonActionDecomposition G n C P Q)
     (β : ℝ) (m : ℕ) : ℝ :=
   (β / (2 * n : ℝ)) ^ m / m.factorial
 
@@ -566,6 +570,9 @@ def taylorPairing (D : WilsonActionDecomposition G n C P Q) (β : ℝ)
     ∑ w : CrossWord Q n m,
       conj (D.taylorAmplitude β F w) * D.taylorAmplitude β H w
 
+omit [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [IsTopologicalGroup G] [CompactSpace G] [GaugeHaarProbability G]
+  [Fintype C] [Fintype P] in
 /-- Powers of the rank-one cross kernel expand as a finite sum over labelled
 Taylor words. -/
 theorem crossKernel_pow_eq_sum_words
@@ -604,6 +611,8 @@ def taylorIntegrand (D : WilsonActionDecomposition G n C P Q) (β : ℝ)
   D.sidePairingFactor β F H *
     ((m.factorial : ℂ)⁻¹ • (D.crossExponentArgument β) ^ m)
 
+omit [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [GaugeHaarProbability G] [Fintype C] in
 /-- The Taylor integrands are normally summable in the uniform norm.  This is
 the analytic justification for exchanging the exponential series and Haar
 integration below. -/
@@ -622,6 +631,8 @@ theorem summable_norm_taylorIntegrand
   unfold taylorIntegrand
   exact norm_mul_le _ _
 
+omit [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [GaugeHaarProbability G] [Fintype C] in
 /-- Pointwise summation of the cross-plane Taylor integrands. -/
 theorem tsum_taylorIntegrand_apply
     (D : WilsonActionDecomposition G n C P Q) (β : ℝ)
@@ -637,6 +648,7 @@ theorem tsum_taylorIntegrand_apply
   simp [taylorIntegrand]
   ring
 
+omit [Fintype C] in
 /-- The normally convergent Taylor series may be integrated term by term
 against product Haar. -/
 theorem tsum_integral_taylorIntegrand
@@ -666,6 +678,8 @@ theorem tsum_integral_taylorIntegrand
           exact (D.taylorIntegrand β F H m).norm_coe_le_norm V
       _ = ‖D.taylorIntegrand β F H m‖ := by simp [μ]
 
+omit [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [GaugeHaarProbability G] [Fintype C] in
 /-- For a gauge-fixed cross-plane action, the Boltzmann integrand equals the
 summed Taylor integrand pointwise. -/
 theorem gaugeFixedIntegrand_eq_tsum
@@ -695,6 +709,7 @@ theorem gaugeFixedIntegrand_eq_tsum
   push_cast
   ring
 
+omit [Fintype C] in
 /-- Exact Taylor expansion of the gauge-fixed reflection pairing. -/
 theorem gaugeFixedPairing_eq_tsum_integrals
     (D : WilsonActionDecomposition G n C P Q) (β : ℝ)
@@ -708,6 +723,8 @@ theorem gaugeFixedPairing_eq_tsum_integrals
   filter_upwards with V
   exact D.gaugeFixedIntegrand_eq_tsum β F H V
 
+omit [BorelSpace G] [SecondCountableTopology G] [IsTopologicalGroup G]
+  [Fintype C] [Fintype Q] in
 /-- Fubini factorization for one labelled Taylor word. -/
 theorem integral_word_eq_amplitudes
     (D : WilsonActionDecomposition G n C P Q) (β : ℝ)
@@ -741,6 +758,8 @@ theorem integral_word_eq_amplitudes
     rfl]
   rfl
 
+omit [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [GaugeHaarProbability G] [Fintype C] in
 /-- Pointwise degree-`m` expansion into a finite Gram kernel. -/
 theorem taylorIntegrand_eq_sum_words
     (D : WilsonActionDecomposition G n C P Q) (β : ℝ)
@@ -759,6 +778,7 @@ theorem taylorIntegrand_eq_sum_words
   push_cast
   ring
 
+omit [Fintype C] in
 /-- Each integrated Taylor coefficient is an explicit finite Gram sum. -/
 theorem integral_taylorIntegrand_eq_gram
     (D : WilsonActionDecomposition G n C P Q) (β : ℝ)
@@ -770,7 +790,7 @@ theorem integral_taylorIntegrand_eq_gram
           conj (D.taylorAmplitude β F w) * D.taylorAmplitude β H w := by
   simp_rw [D.taylorIntegrand_eq_sum_words β F H m]
   rw [integral_const_mul]
-  rw [integral_finset_sum Finset.univ]
+  rw [integral_finsetSum Finset.univ]
   · apply congrArg ((D.taylorCoefficient β m : ℂ) * ·)
     apply Finset.sum_congr rfl
     intro w _hw
@@ -782,6 +802,7 @@ theorem integral_taylorIntegrand_eq_gram
           ((D.continuous_crossMonomial w).comp continuous_snd))).integrable_of_hasCompactSupport
             (HasCompactSupport.of_compactSpace _)
 
+omit [Fintype C] in
 /-- The gauge-fixed pairing is exactly its labelled Taylor/Fubini Gram
 expansion. -/
 theorem gaugeFixedPairing_eq_taylorPairing
@@ -794,6 +815,7 @@ theorem gaugeFixedPairing_eq_taylorPairing
   intro m
   exact D.integral_taylorIntegrand_eq_gram β F H m
 
+omit [Fintype C] in
 /-- Absolute summability of the integrated Taylor coefficients. -/
 theorem summable_integral_taylorIntegrand
     (D : WilsonActionDecomposition G n C P Q) (β : ℝ)
@@ -818,12 +840,17 @@ theorem summable_integral_taylorIntegrand
         exact (D.taylorIntegrand β F H m).norm_coe_le_norm V
     _ = ‖D.taylorIntegrand β F H m‖ := by simp [μ]
 
+omit [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [IsTopologicalGroup G] [CompactSpace G] [GaugeHaarProbability G]
+  [Fintype C] [Fintype P] [Fintype Q] in
 theorem taylorCoefficient_nonneg
     (D : WilsonActionDecomposition G n C P Q) {β : ℝ} (hβ : 0 ≤ β) (m : ℕ) :
     0 ≤ D.taylorCoefficient β m := by
   unfold taylorCoefficient
   positivity [D.representation.dimension_pos]
 
+omit [BorelSpace G] [SecondCountableTopology G] [IsTopologicalGroup G]
+  [CompactSpace G] [Fintype C] in
 /-- Every diagonal Taylor coefficient is a nonnegative real number. -/
 theorem taylorGramTerm_self_nonneg
     (D : WilsonActionDecomposition G n C P Q) {β : ℝ} (hβ : 0 ≤ β)
@@ -855,6 +882,7 @@ theorem taylorGramTerm_self_nonneg
     exact mul_nonneg (D.taylorCoefficient_nonneg hβ m) <|
       Finset.sum_nonneg fun _ _ ↦ sq_nonneg _
 
+omit [Fintype C] in
 /-- The exact Taylor/Fubini Gram expansion is positive on the diagonal for
 `beta ≥ 0`. -/
 theorem taylorPairing_self_nonneg
@@ -888,6 +916,7 @@ theorem integrable_gibbsReflectionIntegrand
   exact ((Complex.continuous_ofReal.comp (D.continuous_boltzmannWeight β)).mul
     (theta (liftPositive F)).continuous).mul (liftPositive H).continuous
 
+omit [Fintype C] in
 /-- At fixed crossing field, gauge invariance of both observables and
 coordinatewise Haar invariance remove that crossing field from the reflected
 integral.  This is the finite crossing-forest gauge-fixing step. -/
@@ -957,6 +986,9 @@ theorem linkReflectionPositivity
     D.gaugeFixedPairing_eq_taylorPairing]
   exact D.taylorPairing_self_nonneg hβ F
 
+omit [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [IsTopologicalGroup G] [CompactSpace G] [GaugeHaarProbability G]
+  [Fintype C] [Fintype P] in
 /-- The gauge-fixed action is symmetric under exchange of the two strict
 halves. -/
 theorem gaugeFixedAction_swap
@@ -972,6 +1004,7 @@ theorem gaugeFixedAction_swap
   rw [← D.representation.wilsonPotential.inv_invariant]
   simp only [mul_inv_rev, inv_inv]
 
+omit [Fintype C] in
 theorem integrable_gaugeFixedPairingIntegrand
     (D : WilsonActionDecomposition G n C P Q) (β : ℝ)
     (F H : PositiveObservable G C P) :
@@ -986,6 +1019,7 @@ theorem integrable_gaugeFixedPairingIntegrand
         (continuous_const.prodMk continuous_fst))).mul <|
           H.continuous.comp (continuous_const.prodMk continuous_snd)
 
+omit [Fintype C] in
 theorem gaugeFixedPairing_add_left
     (D : WilsonActionDecomposition G n C P Q) (β : ℝ)
     (F K H : PositiveObservable G C P) :
@@ -999,6 +1033,8 @@ theorem gaugeFixedPairing_add_left
   simp only [ContinuousMap.add_apply, map_add]
   ring
 
+omit [BorelSpace G] [SecondCountableTopology G] [IsTopologicalGroup G]
+  [CompactSpace G] [Fintype C] in
 theorem gaugeFixedPairing_smul_left
     (D : WilsonActionDecomposition G n C P Q) (β : ℝ) (c : ℂ)
     (F H : PositiveObservable G C P) :
@@ -1013,6 +1049,8 @@ theorem gaugeFixedPairing_smul_left
   rw [map_mul]
   ring
 
+omit [BorelSpace G] [SecondCountableTopology G] [IsTopologicalGroup G]
+  [CompactSpace G] [Fintype C] in
 /-- Hermitian symmetry of the gauge-fixed pairing. -/
 theorem gaugeFixedPairing_conj_symm
     (D : WilsonActionDecomposition G n C P Q) (β : ℝ)
@@ -1045,6 +1083,7 @@ theorem gaugeFixedPairing_conj_symm
       integral_prod_swap K
     _ = D.gaugeFixedPairing β F H := rfl
 
+omit [Fintype C] in
 /-- Cauchy--Schwarz for the unnormalized gauge-fixed reflection form. -/
 theorem normSq_gaugeFixedPairing_le
     (D : WilsonActionDecomposition G n C P Q) {β : ℝ} (hβ : 0 ≤ β)

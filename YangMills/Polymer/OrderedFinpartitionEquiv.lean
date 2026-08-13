@@ -241,7 +241,7 @@ theorem orderedFinpartitionToFinpartition_finpartitionToOrderedFinpartition
     let i := (orderedFinpartitionPartEquiv Q).symm ⟨b, hb⟩
     refine ⟨i, ?_⟩
     rw [orderedFinpartitionBlock_finpartitionToOrderedFinpartition]
-    simpa [i]
+    simp [i]
 
 private theorem orderedFinpartitionBlock_max {n : ℕ}
     (c : OrderedFinpartition n) (i : Fin c.length) :

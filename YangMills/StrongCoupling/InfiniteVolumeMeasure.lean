@@ -65,6 +65,8 @@ def localRealContinuousSubalgebra :
       hg (fun e he => hAB e (Finset.mem_union_right S he))]
   algebraMap_mem' := fun _ => ⟨∅, fun _ _ _ => rfl⟩
 
+omit [Group G] [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
+  [SecondCountableTopology G] [GaugeHaarProbability G] in
 /-- Cylinder functions separate full configurations: a differing edge is
 detected by a real continuous function on the compact Hausdorff gauge group. -/
 theorem localRealContinuousSubalgebra_separatesPoints :
@@ -107,6 +109,9 @@ def localObservableOfLocalReal
     exact congrArg (fun x : ℝ => (x : ℂ))
       (Classical.choose_spec g.2 hAB)
 
+omit [Group G] [IsTopologicalGroup G] [CompactSpace G] [T2Space G]
+  [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+  [GaugeHaarProbability G] in
 @[simp]
 theorem localObservableOfLocalReal_apply
     (g : localRealContinuousSubalgebra (d := d) (G := G))
@@ -177,6 +182,7 @@ namespace ClusterLimitCertificate
 
 variable {measure : ℕ → ProbabilityMeasure (Configuration d G)}
 
+omit [Group G] [IsTopologicalGroup G] [T2Space G] [GaugeHaarProbability G] in
 /-- The local expectation is continuous for the weak topology on probability
 measures. -/
 theorem continuous_localExpectation (F : LocalObservable d G) :
@@ -189,12 +195,13 @@ theorem continuous_localExpectation (F : LocalObservable d G) :
     tendsto_id F.toBoundedContinuousMap
 
 /-- A weak cluster point of the full-space finite-volume Gibbs laws. -/
-def infiniteVolumeProbability (C : ClusterLimitCertificate measure) :
+def infiniteVolumeProbability (_C : ClusterLimitCertificate measure) :
     ProbabilityMeasure (Configuration d G) := by
   let h := isCompact_univ.exists_mapClusterPt
     (f := atTop) (u := measure) (by simp)
   exact Classical.choose h
 
+omit [Group G] [IsTopologicalGroup G] [GaugeHaarProbability G] in
 /-- The selected probability is indeed a weak cluster point. -/
 theorem infiniteVolumeProbability_isClusterPoint
     (C : ClusterLimitCertificate measure) :

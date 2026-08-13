@@ -97,7 +97,7 @@ theorem siteReflection_step {d : ℕ} (τ : Fin d) (k : ℤ)
               unitVector] <;> abel
         · cases orientation <;>
             simp [step, SignedDirection.siteReflect, SignedDirection.delta,
-              unitVector, ha, Ne.symm ha] <;> abel
+              unitVector, ha, Ne.symm ha]
   · cases s with
     | mk axis orientation =>
         by_cases ha : axis = τ
@@ -186,8 +186,7 @@ theorem siteReflect_siteReflect {d : ℕ} (τ : Fin d) (k : ℤ)
               rfl]
             exact step_reverse (siteReflection τ k x) (.backward τ)
       _ = x := siteReflection_involutive τ k x
-  · congr 1
-    simp [siteReflect, h]
+  · simp [siteReflect, h]
 
 /-- Site reflection as an involutive equivalence of stored positive edges. -/
 def siteReflectionEquiv {d : ℕ} (τ : Fin d) (k : ℤ) :
@@ -312,7 +311,7 @@ theorem signedEdgeValue_siteReflectConfiguration
           rfl]
       · simp [signedEdgeValue, siteReflectConfiguration,
           PositiveEdge.siteReflect, SignedEdge.siteReflect,
-          SignedDirection.siteReflect, SignedEdge.target, h]
+          SignedDirection.siteReflect, h]
   | backward =>
       by_cases h : i = τ
       · subst i
@@ -341,8 +340,6 @@ theorem signedEdgeValue_siteReflectConfiguration
           unfold SignedEdge.siteReflect SignedDirection.siteReflect
           simp only [SignedDirection.backward, h, if_false]]
         rw [signedEdgeValue_backward]
-        change (A ⟨siteReflection τ k (step x (.backward i)), i⟩)⁻¹ =
-          (A ⟨step (siteReflection τ k x) (.backward i), i⟩)⁻¹
         congr 2
         rw [siteReflection_step]
         congr 1
@@ -384,17 +381,17 @@ theorem holonomy_plaquette_boundary (A : Configuration d G) (p : Plaquette d) :
       (A ⟨step p.base (.forward p.second), p.first⟩)⁻¹ *
       (A ⟨p.base, p.second⟩)⁻¹ := by
   rcases p with ⟨x, i, j, hij⟩
-  simp [Plaquette.boundary, Path.rectangleBoundary, Path.rectangleRaw,
-    Path.straight, Path.advance, signedEdgeValue, edgeFrom,
-    SignedEdge.toArrow, SignedEdge.target, SignedDirection.forward,
-    SignedDirection.backward]
+  simp only [Plaquette.boundary, Path.rectangleBoundary, SignedDirection.forward,
+    Path.advance, SignedDirection.backward, Path.rectangleRaw, Path.straight,
+    Nat.reduceAdd, edgeFrom, SignedEdge.toArrow, SignedEdge.target,
+    Quiver.Path.comp_cons, Quiver.Path.comp_nil, holonomy_castTarget,
+    holonomy_cons, holonomy_nil, signedEdgeValue, one_mul]
   congr 4
   · congr 1
     ext a
     simp [step, SignedDirection.delta, unitVector]
     abel
-  · congr 1
-    ext a
+  · ext a
     simp [step, SignedDirection.delta, unitVector]
     abel
 
@@ -412,9 +409,8 @@ theorem RealPlaquettePotential.apply_holonomy_siteReflectConfiguration
     have hi : τ = τ := rfl
     have hj : j ≠ τ := fun h ↦ hij h.symm
     rw [holonomy_plaquette_boundary, holonomy_plaquette_boundary]
-    simp only [siteReflectConfiguration, Plaquette.siteReflect, hi, true_or,
-      if_pos, Plaquette.base, Plaquette.first, Plaquette.second]
-    simp only [PositiveEdge.siteReflect, hj, if_pos, if_neg]
+    simp only [siteReflectConfiguration, Plaquette.siteReflect, true_or, if_pos]
+    simp only [PositiveEdge.siteReflect, hj, if_pos]
     simp only [if_false]
     rw [show (PositiveEdge.mk x τ).target = step x (.forward τ) by rfl]
     rw [show (PositiveEdge.mk (step x (.forward j)) τ).target =
@@ -426,7 +422,7 @@ theorem RealPlaquettePotential.apply_holonomy_siteReflectConfiguration
     have hcomm : step (step x (.forward j)) (.forward τ) =
         step (step x (.forward τ)) (.forward j) := by
       ext a
-      simp [step, SignedDirection.delta, unitVector]
+      simp [step, SignedDirection.delta]
       abel
     rw [show siteReflection τ k
           (step (step x (.forward j)) (.forward τ)) =
@@ -462,9 +458,8 @@ theorem RealPlaquettePotential.apply_holonomy_siteReflectConfiguration
   · by_cases hj : j = τ
     · subst j
       rw [holonomy_plaquette_boundary, holonomy_plaquette_boundary]
-      simp only [siteReflectConfiguration, Plaquette.siteReflect, hi, or_true,
-        if_pos, Plaquette.base, Plaquette.first, Plaquette.second]
-      simp only [PositiveEdge.siteReflect, hi, if_neg, if_pos]
+      simp only [siteReflectConfiguration, Plaquette.siteReflect, hi, or_true, if_pos]
+      simp only [PositiveEdge.siteReflect, hi, if_pos]
       simp only [if_false]
       rw [show (PositiveEdge.mk (step x (.forward i)) τ).target =
           step (step x (.forward i)) (.forward τ) by rfl]
@@ -472,7 +467,7 @@ theorem RealPlaquettePotential.apply_holonomy_siteReflectConfiguration
       rw [show step (step x (.forward i)) (.forward τ) =
           step (step x (.forward τ)) (.forward i) by
         ext a
-        simp [step, SignedDirection.delta, unitVector]
+        simp [step, SignedDirection.delta]
         abel]
       rw [show siteReflection τ k
             (step (step x (.forward τ)) (.forward i)) =
@@ -502,9 +497,8 @@ theorem RealPlaquettePotential.apply_holonomy_siteReflectConfiguration
           a⁻¹ * (q * c * b⁻¹ * a⁻¹)⁻¹ * (a⁻¹)⁻¹ by rw [inv_inv]]
       rw [Φ.conj_invariant, Φ.inv_invariant]
     · rw [holonomy_plaquette_boundary, holonomy_plaquette_boundary]
-      simp only [siteReflectConfiguration, Plaquette.siteReflect, hi, hj,
-        or_false, if_neg, Plaquette.base, Plaquette.first, Plaquette.second]
-      simp only [PositiveEdge.siteReflect, hi, hj, if_neg]
+      simp only [siteReflectConfiguration, Plaquette.siteReflect, hi, hj, or_false]
+      simp only [PositiveEdge.siteReflect, hi, hj]
       simp only [if_false]
       rw [siteReflection_step τ k x (.forward i)]
       rw [show SignedDirection.siteReflect τ (.forward i) = .forward i by

@@ -55,6 +55,7 @@ def localExpectation (μ : ProbabilityMeasure (Configuration d G))
     (F : LocalObservable d G) : ℂ :=
   ∫ A, F A ∂(μ : Measure (Configuration d G))
 
+omit [Group G] [IsTopologicalGroup G] [T2Space G] [GaugeHaarProbability G] in
 theorem integrable_localObservable
     (μ : ProbabilityMeasure (Configuration d G))
     (F : LocalObservable d G) :
@@ -63,6 +64,8 @@ theorem integrable_localObservable
     ‖F.toBoundedContinuousMap‖
   exact ae_of_all _ F.norm_apply_le
 
+omit [Group G] [IsTopologicalGroup G] [T2Space G] [BorelSpace G]
+  [SecondCountableTopology G] [GaugeHaarProbability G] in
 /-- Finite-volume expectations are norm-one functionals. -/
 theorem norm_localExpectation_le
     (μ : ProbabilityMeasure (Configuration d G))
@@ -73,6 +76,7 @@ theorem norm_localExpectation_le
     (μ := (μ : Measure (Configuration d G)))
     (ae_of_all _ F.norm_apply_le)
 
+omit [T2Space G] in
 /-- The pushed-forward law reproduces the previously defined finite-volume
 complex Gibbs expectation at real coupling. -/
 theorem localExpectation_fullGibbsProbability
@@ -177,6 +181,8 @@ namespace ClusterLimitCertificate
 
 variable {measure : ℕ → ProbabilityMeasure (Configuration d G)}
 
+omit [Group G] [IsTopologicalGroup G] [CompactSpace G] [T2Space G]
+  [BorelSpace G] [SecondCountableTopology G] [GaugeHaarProbability G] in
 /-- The cluster tail makes every local expectation sequence Cauchy. -/
 theorem cauchySeq_localExpectation
     (C : ClusterLimitCertificate measure) (F : LocalObservable d G) :
@@ -191,7 +197,7 @@ theorem cauchySeq_localExpectation
   exact (C.compare F N m n hm hn).trans_lt (hN N le_rfl)
 
 /-- The boundary-independent infinite-volume local expectation. -/
-def localState (C : ClusterLimitCertificate measure)
+def localState (_C : ClusterLimitCertificate measure)
     (F : LocalObservable d G) : ℂ :=
   limUnder atTop (fun n => localExpectation (measure n) F)
 
@@ -229,8 +235,7 @@ theorem localState_one (C : ClusterLimitCertificate measure) :
     C.localState (LocalObservable.const (d := d) (G := G) 1) = 1 := by
   apply tendsto_nhds_unique
     (C.tendsto_localState (LocalObservable.const (d := d) (G := G) 1))
-  simpa [localExpectation, LocalObservable.const] using
-    (tendsto_const_nhds : Tendsto (fun _n : ℕ => (1 : ℂ)) atTop (nhds 1))
+  simp [localExpectation, LocalObservable.const]
 
 /-- The infinite-volume state retains the finite-volume sup-norm bound. -/
 theorem norm_localState_le (C : ClusterLimitCertificate measure)

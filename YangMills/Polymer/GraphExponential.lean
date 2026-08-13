@@ -475,7 +475,7 @@ theorem connectedSpanningGraphSum_eq_of_iso
     let H := L.map e.symm.toEquiv.toEmbedding
     have hback : H.map e.toEquiv.toEmbedding = L := by
       ext v w
-      simp [H, SimpleGraph.map_adj']
+      simp [H]
     refine ⟨H, ?_, hback⟩
     have hdata := Finset.mem_filter.mp hL
     have hLK := (Finset.mem_filter.mp hdata.1).2
