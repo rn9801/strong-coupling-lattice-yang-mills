@@ -96,6 +96,22 @@ example (η : ℕ → Configuration d G) (Φ : RealPlaquettePotential G) (β : �
     (centeredInfiniteVolumeMeasure η Φ β hβ).Regular :=
   inferInstance
 
+example (η : ℕ → Configuration d G) (Φ : RealPlaquettePotential G) (β : ℝ)
+    (hβ : ‖(β : ℂ)‖ < latticeStrongCouplingRadius d Φ.bound)
+    (g : GaugeTransformation d G) :
+    Measure.map (gaugeTransform g)
+        (centeredInfiniteVolumeMeasure η Φ β hβ) =
+      centeredInfiniteVolumeMeasure η Φ β hβ :=
+  centeredInfiniteVolumeMeasure_map_gaugeTransform η Φ β hβ g
+
+example (η : ℕ → Configuration d G) (Φ : RealPlaquettePotential G) (β : ℝ)
+    (hβ : ‖(β : ℂ)‖ < latticeStrongCouplingRadius d Φ.bound)
+    (g : GaugeTransformation d G) :
+    MeasurePreserving (gaugeTransform g)
+      (centeredInfiniteVolumeMeasure η Φ β hβ)
+      (centeredInfiniteVolumeMeasure η Φ β hβ) :=
+  centeredInfiniteVolumeMeasure_measurePreserving_gaugeTransform η Φ β hβ g
+
 #print axioms YangMills.StrongCoupling.finiteSupport_subset_centeredBox_eventually
 #print axioms YangMills.StrongCoupling.ClusterLimitCertificate.localState_add
 #print axioms YangMills.StrongCoupling.ClusterLimitCertificate.integral_infiniteVolumeMeasure
@@ -370,6 +386,10 @@ example (η : ℕ → Configuration d G) (Φ : RealPlaquettePotential G) (β : �
   YangMills.StrongCoupling.centeredInfiniteVolumeMeasure_unique
 #print axioms
   YangMills.StrongCoupling.centeredInfiniteVolume_integral_gaugePullback
+#print axioms
+  YangMills.StrongCoupling.centeredInfiniteVolumeMeasure_map_gaugeTransform
+#print axioms
+  YangMills.StrongCoupling.centeredInfiniteVolumeMeasure_measurePreserving_gaugeTransform
 #print axioms
   YangMills.StrongCoupling.centeredInfiniteVolume_integral_translatePullback
 #print axioms

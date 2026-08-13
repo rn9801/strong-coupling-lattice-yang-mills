@@ -6,13 +6,18 @@ Authors: The Strong-Coupling Lattice Yang--Mills contributors
 
 import YangMills.Audit.MathlibSmoke
 import YangMills.Baseline.PeriodicTorusMassGap
+import YangMills.Basic.AnalyticLimit
 import YangMills.Compat.DouglasLGT
 import YangMills.Gauge.ComplexFiniteVolume
 import YangMills.Gauge.FiniteEdgeHaar
 import YangMills.Gauge.Observable
+import YangMills.Gauge.SiteReflectionPositivity
 import YangMills.Lattice.Box
+import YangMills.Lattice.CubicalCharge
 import YangMills.Lattice.Plaquette
+import YangMills.Lattice.RectangleCharge
 import YangMills.Polymer.Cluster
+import YangMills.Polymer.CountableMayer
 import YangMills.Polymer.Dobrushin
 import YangMills.Polymer.FiniteMayer
 import YangMills.Polymer.FiniteGas
@@ -23,6 +28,7 @@ import YangMills.Polymer.LabelledMayerExponential
 import YangMills.Polymer.LabelledRootedForestSpecies
 import YangMills.Polymer.LabelledTreeSummation
 import YangMills.Polymer.Mayer
+import YangMills.Polymer.MayerEvaluation
 import YangMills.Polymer.MayerNormalization
 import YangMills.Polymer.MayerPowerSeries
 import YangMills.Polymer.Penrose
@@ -30,6 +36,7 @@ import YangMills.Polymer.PowerSeriesLog
 import YangMills.Polymer.RootedForestEnumeration
 import YangMills.Polymer.RootedForestPartition
 import YangMills.Polymer.RootedTreeDecomposition
+import YangMills.Polymer.Relabel
 import YangMills.Polymer.SourcePowerSeries
 import YangMills.Polymer.BivariateSourcePowerSeries
 import YangMills.Polymer.BigradedSource
@@ -60,6 +67,14 @@ import YangMills.StrongCoupling.PlaquettePolymer
 import YangMills.StrongCoupling.SpatialClusterExpansion
 import YangMills.StrongCoupling.SpatialClusterGeometry
 import YangMills.StrongCoupling.ThermodynamicBoxes
+import YangMills.StrongCoupling.ThermodynamicCluster
+import YangMills.StrongCoupling.ThermodynamicPressure
+import YangMills.StrongCoupling.ThermodynamicAnalyticity
+import YangMills.StrongCoupling.WilsonAreaLaw
+import YangMills.StrongCoupling.WilsonTaylorJets
+import YangMills.StrongCoupling.WilsonTaylorSelection
+import YangMills.Probability.CenterSelection
+import YangMills.Wilson.CenterSelection
 import YangMills.Wilson.Loop
 
 /-!

@@ -1953,6 +1953,53 @@ def decoratedObservableRootLinearMayerDegreeSum
     (Φ : RealPlaquettePotential G) (β : ℂ) (n : ℕ) : ℂ :=
   (decoratedObservableRootModel F Λ Φ β 1).exclusiveRootLinearMayerDegreeSum n
 
+/-- Every fixed decorated one-root Mayer coefficient is entire in the
+coupling.  This is finite algebra over the entire bulk and marked-subset
+activities. -/
+theorem analyticOnNhd_decoratedObservableRootMayerClusterTerm
+    (F : LocalObservable d G) (Λ : FiniteSpecification d G)
+    (Φ : RealPlaquettePotential G)
+    (X : FinitePolymerModel.MayerMultiIndex
+      (PlaquettePolymer Λ ⊕ ObservableRootDecoration F Λ)) :
+    AnalyticOnNhd ℂ
+      (fun β ↦ (decoratedObservableRootModel F Λ Φ β 1).mayerClusterTerm X)
+      Set.univ := by
+  unfold decoratedObservableRootModel FinitePolymerModel.mayerClusterTerm
+    FinitePolymerModel.mayerActivityMonomial
+  change AnalyticOnNhd ℂ (fun β ↦
+    (((decoratedObservableRootModel F Λ Φ 0 1).mayerUrsell X : ℂ) /
+      (FinitePolymerModel.mayerSymmetryFactor X : ℂ)) *
+      ∏ γ, (decoratedObservableRootModel F Λ Φ β 1).activity γ ^ X γ)
+    Set.univ
+  apply analyticOnNhd_const.mul
+  apply Finset.analyticOnNhd_fun_prod Finset.univ
+  rintro (γ | D) _
+  · change AnalyticOnNhd ℂ
+      (fun β ↦ subsetWeight Λ Φ β γ.support ^ X (Sum.inl γ)) Set.univ
+    exact (subsetWeight_entire Λ Φ γ.support).pow (X (Sum.inl γ))
+  · change AnalyticOnNhd ℂ (fun β ↦
+      (1 * markedSubsetWeight F Λ Φ β D.support) ^ X (Sum.inr D)) Set.univ
+    simpa only [one_mul] using
+      (markedSubsetWeight_entire F Λ Φ D.support).pow (X (Sum.inr D))
+
+/-- Each fixed total-degree coefficient of the connected decorated-root
+series is entire. -/
+theorem analyticOnNhd_decoratedObservableRootLinearMayerDegreeSum
+    (F : LocalObservable d G) (Λ : FiniteSpecification d G)
+    (Φ : RealPlaquettePotential G) (n : ℕ) :
+    AnalyticOnNhd ℂ
+      (fun β ↦ decoratedObservableRootLinearMayerDegreeSum F Λ Φ β n)
+      Set.univ := by
+  unfold decoratedObservableRootLinearMayerDegreeSum
+    FinitePolymerModel.exclusiveRootLinearMayerDegreeSum
+  apply Finset.analyticOnNhd_fun_sum
+  intro X _
+  by_cases hX : FinitePolymerModel.exclusiveRootMultiplicity X = 1
+  · simp only [hX, if_true]
+    exact analyticOnNhd_decoratedObservableRootMayerClusterTerm F Λ Φ X
+  · simp only [hX, if_false]
+    exact analyticOnNhd_const
+
 /-- Unfolded form of the decorated connected coefficient, with the trivial
 unit source multiplication removed. -/
 theorem decoratedObservableRootLinearMayerDegreeSum_eq_exclusive

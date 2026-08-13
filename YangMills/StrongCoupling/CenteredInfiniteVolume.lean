@@ -185,6 +185,41 @@ theorem centeredInfiniteVolume_integral_gaugePullback
     _ = ∫ A, F A ∂centeredInfiniteVolumeMeasure η Φ β hβ := by
       rw [hboundary]
 
+/-- The infinite-volume Yang--Mills probability is literally invariant under
+every sitewise gauge transformation.  This is the pushforward-measure form of
+`centeredInfiniteVolume_integral_gaugePullback`; local continuous observables
+determine Borel probability measures on the compact configuration space. -/
+theorem centeredInfiniteVolumeMeasure_map_gaugeTransform
+    (η : ℕ → Configuration d G) (Φ : RealPlaquettePotential G) (β : ℝ)
+    (hβ : ‖(β : ℂ)‖ < latticeStrongCouplingRadius d Φ.bound)
+    (g : GaugeTransformation d G) :
+    Measure.map (gaugeTransform g)
+        (centeredInfiniteVolumeMeasure η Φ β hβ) =
+      centeredInfiniteVolumeMeasure η Φ β hβ := by
+  have hg : Measurable (gaugeTransform g) :=
+    (LocalObservable.gaugeTransformContinuous g).continuous.measurable
+  letI : IsProbabilityMeasure
+      (Measure.map (gaugeTransform g)
+        (centeredInfiniteVolumeMeasure η Φ β hβ)) :=
+    Measure.isProbabilityMeasure_map hg.aemeasurable
+  apply measure_eq_of_integral_localObservable_eq
+  intro F
+  rw [MeasureTheory.integral_map hg.aemeasurable
+    F.toContinuousMap.continuous.aestronglyMeasurable]
+  exact centeredInfiniteVolume_integral_gaugePullback η Φ β hβ g F
+
+/-- A fixed sitewise gauge transformation preserves the strong-coupling
+infinite-volume Yang--Mills probability. -/
+theorem centeredInfiniteVolumeMeasure_measurePreserving_gaugeTransform
+    (η : ℕ → Configuration d G) (Φ : RealPlaquettePotential G) (β : ℝ)
+    (hβ : ‖(β : ℂ)‖ < latticeStrongCouplingRadius d Φ.bound)
+    (g : GaugeTransformation d G) :
+    MeasurePreserving (gaugeTransform g)
+      (centeredInfiniteVolumeMeasure η Φ β hβ)
+      (centeredInfiniteVolumeMeasure η Φ β hβ) := by
+  refine ⟨(LocalObservable.gaugeTransformContinuous g).continuous.measurable, ?_⟩
+  exact centeredInfiniteVolumeMeasure_map_gaugeTransform η Φ β hβ g
+
 /-- Translation invariance of the infinite-volume local state.  This follows
 from the translated-box finite Gibbs tower and the one-root KP boundary tail;
 no periodic-lattice or Douglas-limit argument is used. -/

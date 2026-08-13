@@ -107,6 +107,13 @@ def PlaquettePolymer.support {Λ : FiniteSpecification d G} (γ : PlaquettePolym
 omit [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [MeasurableSpace G]
   [BorelSpace G] [SecondCountableTopology G] [GaugeHaarProbability G] in
 @[simp]
+theorem PlaquettePolymer.card_support {Λ : FiniteSpecification d G}
+    (γ : PlaquettePolymer Λ) : γ.support.card = γ.1.card := by
+  exact Finset.card_map _
+
+omit [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [MeasurableSpace G]
+  [BorelSpace G] [SecondCountableTopology G] [GaugeHaarProbability G] in
+@[simp]
 theorem PlaquettePolymer.support_nonempty {Λ : FiniteSpecification d G}
     (γ : PlaquettePolymer Λ) : γ.support.Nonempty := by
   simpa [PlaquettePolymer.support] using γ.2.1

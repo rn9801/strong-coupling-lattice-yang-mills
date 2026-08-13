@@ -101,6 +101,14 @@ def normMayerDegreeSum (M : FinitePolymerModel P) (n : ℕ) : ℝ :=
   ∑ X ∈ mayerMultiIndicesOfDegree (P := P) n,
     ‖M.mayerClusterTerm X‖
 
+/-- Triangle-inequality comparison between the connected coefficient and
+the absolute Mayer degree sum. -/
+theorem norm_symmetricMayerDegreeSum_le
+    (M : FinitePolymerModel P) (n : ℕ) :
+    ‖M.symmetricMayerDegreeSum n‖ ≤ M.normMayerDegreeSum n := by
+  unfold symmetricMayerDegreeSum normMayerDegreeSum
+  exact norm_sum_le _ _
+
 /-- Absolute degree-`n` Mayer sum with one root occurrence distinguished. -/
 def pinnedNormMayerDegreeSum
     (M : FinitePolymerModel P) (root : P) (n : ℕ) : ℝ :=

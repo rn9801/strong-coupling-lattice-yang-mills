@@ -180,6 +180,19 @@ theorem labelledMayerDegreeSum_eq_symmetricClusterSum
 def symmetricMayerDegreeSum (M : FinitePolymerModel P) (n : ℕ) : ℂ :=
   ∑ X ∈ mayerMultiIndicesOfDegree (P := P) n, M.mayerClusterTerm X
 
+/-- There is no connected Mayer contribution of total degree zero. -/
+@[simp]
+theorem symmetricMayerDegreeSum_zero (M : FinitePolymerModel P) :
+    M.symmetricMayerDegreeSum 0 = 0 := by
+  unfold symmetricMayerDegreeSum
+  simp only [mayerMultiIndicesOfDegree, Finset.piAntidiag_zero]
+  rw [Finset.sum_map, Finset.sum_singleton]
+  apply M.mayerClusterTerm_eq_zero_of_not_connected
+  intro hconnected
+  rcases hconnected.nonempty with ⟨⟨γ, i⟩⟩
+  simpa using i.isLt
+
+
 /-- Degree-`n` symmetric Mayer coefficient with one occurrence of `root`
 distinguished. -/
 def pinnedSymmetricMayerDegreeSum

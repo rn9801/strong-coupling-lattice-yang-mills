@@ -511,6 +511,33 @@ theorem summable_normMayerDegreeSum_succ_of_koteckyPreiss_certified
   M.summable_normMayerDegreeSum_succ_of_koteckyPreiss
     a M.rootedTreeOrbitBound hKP
 
+/-- Complex symmetric Mayer coefficients are summable after removing the
+zero-degree term. -/
+theorem summable_symmetricMayerDegreeSum_succ_of_koteckyPreiss_certified
+    (M : FinitePolymerModel P) (a : P → ℝ)
+    (hKP : M.KoteckyPreissCertificate Finset.univ a) :
+    Summable (fun n : ℕ ↦ M.symmetricMayerDegreeSum (n + 1)) := by
+  apply Summable.of_norm_bounded
+    (M.summable_normMayerDegreeSum_succ_of_koteckyPreiss_certified a hKP)
+  intro n
+  exact M.norm_symmetricMayerDegreeSum_le (n + 1)
+
+/-- The first degree moment of the absolute Mayer series is summable.  The
+factor `n + 1` is not an extra estimate: it is exactly the sum over all
+possible distinguished polymer labels, so the already-certified pinned KP
+series supplies it. -/
+theorem summable_succ_mul_normMayerDegreeSum_succ_of_koteckyPreiss_certified
+    (M : FinitePolymerModel P) (a : P → ℝ)
+    (hKP : M.KoteckyPreissCertificate Finset.univ a) :
+    Summable (fun n : ℕ ↦
+      ((n + 1 : ℕ) : ℝ) * M.normMayerDegreeSum (n + 1)) := by
+  have hsum : Summable (fun n : ℕ ↦
+      ∑ root : P, M.pinnedNormMayerDegreeSum root (n + 1)) :=
+    summable_sum (s := (Finset.univ : Finset P)) fun root _ ↦
+      M.summable_pinnedNormMayerDegreeSum_succ_of_koteckyPreiss_certified
+        a hKP root
+  exact hsum.congr fun n ↦ M.sum_pinnedNormMayerDegreeSum (n + 1)
+
 /-- Quantitative rooted-orbit total-mass bound from the KP certificate alone. -/
 theorem tsum_residualSymmetricPinnedTreeDegreeSum_le_of_koteckyPreiss_certified
     (M : FinitePolymerModel P) (a : P → ℝ)
@@ -529,6 +556,96 @@ theorem tsum_pinnedMayerTreeDegreeSum_succ_le_of_koteckyPreiss_certified
       ‖M.activity root‖ * Real.exp (a root) :=
   M.tsum_pinnedMayerTreeDegreeSum_succ_le_of_koteckyPreiss
     a M.rootedTreeOrbitBound hKP root
+
+/-- Quantitative absolute Mayer bound, obtained by combining the sharp
+Whitney termwise inequality with the certified rooted-tree budget. -/
+theorem tsum_pinnedNormMayerDegreeSum_succ_le_of_koteckyPreiss_certified
+    (M : FinitePolymerModel P) (a : P → ℝ)
+    (hKP : M.KoteckyPreissCertificate Finset.univ a) (root : P) :
+    ∑' n : ℕ, M.pinnedNormMayerDegreeSum root (n + 1) ≤
+      ‖M.activity root‖ * Real.exp (a root) := by
+  have hnorm :=
+    M.summable_pinnedNormMayerDegreeSum_succ_of_koteckyPreiss_certified
+      a hKP root
+  have htree :=
+    M.summable_pinnedMayerTreeDegreeSum_succ_of_koteckyPreiss_certified
+      a hKP root
+  exact (hnorm.tsum_le_tsum (fun n ↦ by
+    unfold pinnedNormMayerDegreeSum pinnedMayerTreeDegreeSum
+    apply Finset.sum_le_sum
+    intro X _
+    exact M.pinned_norm_mayerClusterTerm_le_tree root X) htree).trans
+      (M.tsum_pinnedMayerTreeDegreeSum_succ_le_of_koteckyPreiss_certified
+        a hKP root)
+
+/-- Every finite collection of multiplicity-pinned Mayer terms is bounded by
+the same rooted KP budget.  This finite-partial-sum form is the one that
+passes directly to countable ambient polymer species. -/
+theorem sum_pinnedNormMayerTerm_le_of_koteckyPreiss_certified
+    (M : FinitePolymerModel P) (a : P → ℝ)
+    (hKP : M.KoteckyPreissCertificate Finset.univ a) (root : P)
+    (U : Finset (MayerMultiIndex P)) :
+    ∑ X ∈ U, (X root : ℝ) * ‖M.mayerClusterTerm X‖ ≤
+      ‖M.activity root‖ * Real.exp (a root) := by
+  let N := U.sup mayerDegree
+  let f : MayerMultiIndex P → ℝ :=
+    fun X ↦ (X root : ℝ) * ‖M.mayerClusterTerm X‖
+  let b : ℕ → ℝ := fun n ↦ M.pinnedNormMayerDegreeSum root n
+  have hmaps : ∀ X ∈ U, mayerDegree X ∈ Finset.range (N + 1) := by
+    intro X hX
+    exact Finset.mem_range.mpr (Nat.lt_succ_of_le (Finset.le_sup hX))
+  have hfiber :
+      ∑ X ∈ U, f X =
+        ∑ n ∈ Finset.range (N + 1),
+          ∑ X ∈ U with mayerDegree X = n, f X := by
+    exact (Finset.sum_fiberwise_of_maps_to hmaps f).symm
+  have hdegree : ∀ n,
+      ∑ X ∈ U with mayerDegree X = n, f X ≤ b n := by
+    intro n
+    unfold b FinitePolymerModel.pinnedNormMayerDegreeSum
+    apply Finset.sum_le_sum_of_subset_of_nonneg
+    · intro X hX
+      exact (mem_mayerMultiIndicesOfDegree n X).mpr
+        (Finset.mem_filter.mp hX).2
+    · intro X _ _
+      exact mul_nonneg (Nat.cast_nonneg _) (norm_nonneg _)
+  have hbzero : b 0 = 0 := by
+    unfold b FinitePolymerModel.pinnedNormMayerDegreeSum
+    apply Finset.sum_eq_zero
+    intro X hX
+    have hdegreeX : mayerDegree X = 0 :=
+      (mem_mayerMultiIndicesOfDegree 0 X).mp hX
+    have hroot : X root = 0 := by
+      unfold mayerDegree at hdegreeX
+      exact (Finset.sum_eq_zero_iff_of_nonneg
+        (fun _ _ ↦ Nat.zero_le _)).mp hdegreeX root (Finset.mem_univ root)
+    simp [hroot]
+  have hbshift : Summable (fun n : ℕ ↦ b (n + 1)) := by
+    simpa [b] using
+      M.summable_pinnedNormMayerDegreeSum_succ_of_koteckyPreiss_certified
+        a hKP root
+  have hb : Summable b := (summable_nat_add_iff 1).mp (by
+    simpa [Nat.add_comm] using hbshift)
+  have htsum : ∑' n : ℕ, b n = ∑' n : ℕ, b (n + 1) := by
+    have h := hb.sum_add_tsum_nat_add 1
+    simpa [hbzero, Nat.add_comm] using h.symm
+  calc
+    ∑ X ∈ U, (X root : ℝ) * ‖M.mayerClusterTerm X‖ =
+        ∑ X ∈ U, f X := rfl
+    _ = ∑ n ∈ Finset.range (N + 1),
+          ∑ X ∈ U with mayerDegree X = n, f X := hfiber
+    _ ≤ ∑ n ∈ Finset.range (N + 1), b n := by
+      exact Finset.sum_le_sum fun n _ ↦ hdegree n
+    _ ≤ ∑' n : ℕ, b n :=
+      hb.sum_le_tsum _ (fun _ _ ↦ by
+        unfold b FinitePolymerModel.pinnedNormMayerDegreeSum
+        exact Finset.sum_nonneg fun _ _ ↦
+          mul_nonneg (Nat.cast_nonneg _) (norm_nonneg _))
+    _ = ∑' n : ℕ, M.pinnedNormMayerDegreeSum root (n + 1) := by
+      rw [htsum]
+    _ ≤ ‖M.activity root‖ * Real.exp (a root) :=
+      M.tsum_pinnedNormMayerDegreeSum_succ_le_of_koteckyPreiss_certified
+        a hKP root
 
 end FinitePolymerModel
 

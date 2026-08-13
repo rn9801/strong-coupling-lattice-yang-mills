@@ -7,6 +7,7 @@ Authors: The Strong-Coupling Lattice Yang--Mills contributors
 import YangMills.Polymer.FiniteMayer
 import YangMills.Polymer.LabelledMayerExponential
 import YangMills.Polymer.LabelledRootedForestSpecies
+import YangMills.Polymer.MayerEvaluation
 import YangMills.StrongCoupling.ObservableRootPolymer
 
 /-!
@@ -138,6 +139,51 @@ theorem exp_plaquetteFiniteMayerSum_eq_complexPartitionFunction
   exact (plaquettePolymerModel Λ Φ β).exp_finiteMayerSum_eq_partitionFunction_of_dobrushin
       (plaquetteDobrushinWeight (perturbationMajorant Φ β))
       (plaquettePolymerModel_dobrushin_of_norm_lt_latticeRadius Λ Φ hβ)
+
+/-- The genuine symmetry-normalized connected cluster sum exponentiates to
+the exact finite Yang--Mills partition function.  This is the scalar
+evaluation of the labelled Mayer exponential formula using only the explicit
+KP certificate. -/
+theorem exp_plaquetteSymmetricMayerSum_eq_complexPartitionFunction
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) {β : ℂ}
+    (hβ : ‖β‖ < latticeStrongCouplingRadius d Φ.bound) :
+    Complex.exp ((plaquettePolymerModel Λ Φ β).symmetricMayerSum) =
+      complexPartitionFunction Λ Φ β := by
+  rw [complexPartitionFunction_eq_polymerPartition]
+  exact FinitePolymerModel.exp_symmetricMayerSum_eq_partitionFunction_of_koteckyPreiss
+      (plaquettePolymerModel Λ Φ β)
+      plaquetteKPWeight
+      (plaquettePolymerModel_koteckyPreiss_of_norm_lt_latticeRadius Λ Φ hβ)
+
+/-- Zero-freeness on the explicit disk, derived from the genuine KP/Mayer
+exponential identity rather than from the deletion/Dobrushin baseline. -/
+theorem complexPartitionFunction_ne_zero_of_norm_lt_latticeRadius_koteckyPreiss
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) {β : ℂ}
+    (hβ : ‖β‖ < latticeStrongCouplingRadius d Φ.bound) :
+    complexPartitionFunction Λ Φ β ≠ 0 := by
+  rw [← exp_plaquetteSymmetricMayerSum_eq_complexPartitionFunction Λ Φ hβ]
+  exact Complex.exp_ne_zero _
+
+/-- Every normalized finite-volume local expectation is analytic throughout
+the explicit zero-free strong-coupling disk. -/
+theorem analyticOnNhd_complexGibbsExpectation
+    (F : LocalObservable d G) (Λ : FiniteSpecification d G)
+    (Φ : RealPlaquettePotential G) :
+    AnalyticOnNhd ℂ (complexGibbsExpectation F Λ Φ)
+      (Metric.ball 0 (latticeStrongCouplingRadius d Φ.bound)) := by
+  have hnum : AnalyticOnNhd ℂ (complexObservableNumerator F Λ Φ)
+      (Metric.ball 0 (latticeStrongCouplingRadius d Φ.bound)) :=
+    (complexObservableNumerator_entire F Λ Φ).mono (Set.subset_univ _)
+  have hden : AnalyticOnNhd ℂ (complexPartitionFunction Λ Φ)
+      (Metric.ball 0 (latticeStrongCouplingRadius d Φ.bound)) :=
+    (complexPartitionFunction_entire Λ Φ).mono (Set.subset_univ _)
+  have hquot := hnum.div hden (fun β hβ =>
+    complexPartitionFunction_ne_zero_of_norm_lt_latticeRadius_koteckyPreiss Λ Φ (by
+      simpa only [Metric.mem_ball, dist_zero_right] using hβ))
+  change AnalyticOnNhd ℂ (fun β ↦
+    (complexPartitionFunction Λ Φ β)⁻¹ * complexObservableNumerator F Λ Φ β)
+      (Metric.ball 0 (latticeStrongCouplingRadius d Φ.bound))
+  simpa only [div_eq_mul_inv, mul_comm] using hquot
 
 /-- Explicit weighted one-root/pinned tree bound for the plaquette gas.  It
 is uniform in the finite specification and its frozen exterior condition. -/

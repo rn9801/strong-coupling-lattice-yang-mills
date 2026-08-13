@@ -70,6 +70,73 @@ def subsetWeight (Λ : FiniteSpecification d G)
     (Φ : RealPlaquettePotential G) (β : ℂ) (X : Finset (Plaquette d)) : ℂ :=
   ∫ U, subsetIntegrand Λ Φ β X U ∂Λ.haarMeasure
 
+/-! ## Entire dependence of subset weights -/
+
+/-- Pointwise derivative of the finite plaquette-subset integrand. -/
+def subsetIntegrandDerivative (Λ : FiniteSpecification d G)
+    (Φ : RealPlaquettePotential G) (β : ℂ) (X : Finset (Plaquette d))
+    (U : DynamicConfiguration Λ) : ℂ :=
+  ∑ p ∈ X,
+    (∏ q ∈ X.erase p, plaquettePerturbation Λ Φ β q U) *
+      Complex.exp (β * (Φ (plaquetteHolonomy Λ U p) : ℂ)) *
+        (Φ (plaquetteHolonomy Λ U p) : ℂ)
+
+omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
+    [SecondCountableTopology G] [GaugeHaarProbability G] in
+theorem hasDerivAt_plaquettePerturbation
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
+    (β : ℂ) (p : Plaquette d) (U : DynamicConfiguration Λ) :
+    HasDerivAt (fun z ↦ plaquettePerturbation Λ Φ z p U)
+      (Complex.exp (β * (Φ (plaquetteHolonomy Λ U p) : ℂ)) *
+        (Φ (plaquetteHolonomy Λ U p) : ℂ)) β := by
+  unfold plaquettePerturbation
+  convert (((hasDerivAt_id β).mul_const
+    (Φ (plaquetteHolonomy Λ U p) : ℂ)).cexp.sub_const 1) using 1 <;>
+    simp [mul_comm]
+
+omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
+    [SecondCountableTopology G] [GaugeHaarProbability G] in
+theorem hasDerivAt_subsetIntegrand
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
+    (β : ℂ) (X : Finset (Plaquette d)) (U : DynamicConfiguration Λ) :
+    HasDerivAt (fun z ↦ subsetIntegrand Λ Φ z X U)
+      (subsetIntegrandDerivative Λ Φ β X U) β := by
+  unfold subsetIntegrand subsetIntegrandDerivative
+  convert HasDerivAt.fun_finsetProd
+    (u := X) (x := β) (f := fun p z ↦ plaquettePerturbation Λ Φ z p U)
+    (f' := fun p ↦ Complex.exp
+      (β * (Φ (plaquetteHolonomy Λ U p) : ℂ)) *
+        (Φ (plaquetteHolonomy Λ U p) : ℂ))
+    (fun p _ ↦ hasDerivAt_plaquettePerturbation Λ Φ β p U) using 1
+  simp [smul_eq_mul, mul_assoc]
+
+omit [MeasurableSpace G] [BorelSpace G] [SecondCountableTopology G]
+    [GaugeHaarProbability G] in
+theorem continuous_subsetIntegrandDerivative
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
+    (β : ℂ) (X : Finset (Plaquette d)) :
+    Continuous (subsetIntegrandDerivative Λ Φ β X) := by
+  unfold subsetIntegrandDerivative plaquettePerturbation
+  apply continuous_finsetSum
+  intro p _
+  have hΦp : Continuous (fun U ↦
+      (Φ (plaquetteHolonomy Λ U p) : ℂ)) :=
+    Complex.continuous_ofReal.comp
+      (Φ.toContinuousMap.continuous.comp
+        (continuous_plaquetteHolonomy Λ p))
+  have hprod : Continuous (fun U ↦
+      ∏ q ∈ X.erase p, plaquettePerturbation Λ Φ β q U) := by
+    apply continuous_finsetProd
+    intro q _
+    exact (Complex.continuous_exp.comp
+      (continuous_const.mul (Complex.continuous_ofReal.comp
+        (Φ.toContinuousMap.continuous.comp
+          (continuous_plaquetteHolonomy Λ q))))).sub continuous_const
+  have hexp : Continuous (fun U ↦ Complex.exp
+      (β * (Φ (plaquetteHolonomy Λ U p) : ℂ))) :=
+    Complex.continuous_exp.comp (continuous_const.mul hΦp)
+  exact (hprod.mul hexp).mul hΦp
+
 omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
   [SecondCountableTopology G] [GaugeHaarProbability G] in
 /-- A single plaquette perturbation depends only on the dynamic edges in its
@@ -184,6 +251,79 @@ theorem norm_plaquettePerturbation_le
         (Φ.norm_le_bound (plaquetteHolonomy Λ U p)) (norm_nonneg β)
 
 omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
+    [SecondCountableTopology G] [GaugeHaarProbability G] in
+theorem norm_subsetIntegrandDerivative_le
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
+    (R : ℝ) (hR : 0 ≤ R) (β : ℂ) (hβ : ‖β‖ ≤ R)
+    (X : Finset (Plaquette d)) (U : DynamicConfiguration Λ) :
+    ‖subsetIntegrandDerivative Λ Φ β X U‖ ≤
+      (X.card : ℝ) * (Real.exp (R * Φ.bound) + 1) ^ X.card *
+        Real.exp (R * Φ.bound) * Φ.bound := by
+  let Q := Real.exp (R * Φ.bound) + 1
+  have hQ : 0 ≤ Q := by positivity
+  have hQone : 1 ≤ Q := le_add_of_nonneg_left (Real.exp_pos _).le
+  unfold subsetIntegrandDerivative
+  calc
+    ‖∑ p ∈ X,
+        (∏ q ∈ X.erase p, plaquettePerturbation Λ Φ β q U) *
+          Complex.exp (β * (Φ (plaquetteHolonomy Λ U p) : ℂ)) *
+            (Φ (plaquetteHolonomy Λ U p) : ℂ)‖ ≤
+        ∑ p ∈ X, ‖(∏ q ∈ X.erase p,
+          plaquettePerturbation Λ Φ β q U) *
+            Complex.exp (β * (Φ (plaquetteHolonomy Λ U p) : ℂ)) *
+              (Φ (plaquetteHolonomy Λ U p) : ℂ)‖ := norm_sum_le _ _
+    _ ≤ ∑ _p ∈ X,
+        Q ^ X.card * Real.exp (R * Φ.bound) * Φ.bound := by
+      apply Finset.sum_le_sum
+      intro p hp
+      rw [norm_mul, norm_mul, norm_prod, Complex.norm_exp, Complex.norm_real]
+      have hprod : ∏ q ∈ X.erase p,
+          ‖plaquettePerturbation Λ Φ β q U‖ ≤ Q ^ X.card := by
+        calc
+          ∏ q ∈ X.erase p, ‖plaquettePerturbation Λ Φ β q U‖ ≤
+              ∏ _q ∈ X.erase p, Q := by
+            apply Finset.prod_le_prod
+            · exact fun _ _ ↦ norm_nonneg _
+            · intro q _
+              calc
+                ‖plaquettePerturbation Λ Φ β q U‖ ≤
+                    perturbationMajorant Φ β :=
+                  norm_plaquettePerturbation_le Λ Φ β q U
+                _ ≤ Q := by
+                  unfold perturbationMajorant Q
+                  have hexp : Real.exp (‖β‖ * Φ.bound) ≤
+                      Real.exp (R * Φ.bound) := by
+                    apply Real.exp_le_exp.mpr
+                    exact mul_le_mul_of_nonneg_right hβ Φ.bound_nonneg
+                  linarith
+          _ = Q ^ (X.erase p).card := by simp
+          _ ≤ Q ^ X.card :=
+            pow_le_pow_right₀ hQone (Finset.card_erase_le (s := X))
+      have hexp : Real.exp
+          (β * (Φ (plaquetteHolonomy Λ U p) : ℂ)).re ≤
+          Real.exp (R * Φ.bound) := by
+        apply Real.exp_le_exp.mpr
+        calc
+          (β * (Φ (plaquetteHolonomy Λ U p) : ℂ)).re ≤
+              ‖β * (Φ (plaquetteHolonomy Λ U p) : ℂ)‖ :=
+            Complex.re_le_norm _
+          _ = ‖β‖ * ‖(Φ (plaquetteHolonomy Λ U p) : ℂ)‖ := norm_mul _ _
+          _ ≤ R * Φ.bound := by
+            rw [Complex.norm_real]
+            exact mul_le_mul hβ
+              (Φ.norm_le_bound (plaquetteHolonomy Λ U p))
+              (norm_nonneg _) hR
+      have hQpow : 0 ≤ Q ^ X.card := pow_nonneg hQ _
+      exact mul_le_mul
+        (mul_le_mul hprod hexp (Real.exp_pos _).le hQpow)
+        (Φ.norm_le_bound (plaquetteHolonomy Λ U p))
+        (norm_nonneg _) (mul_nonneg hQpow (Real.exp_pos _).le)
+    _ = (X.card : ℝ) * Q ^ X.card *
+        Real.exp (R * Φ.bound) * Φ.bound := by simp [mul_assoc]
+    _ = (X.card : ℝ) * (Real.exp (R * Φ.bound) + 1) ^ X.card *
+        Real.exp (R * Φ.bound) * Φ.bound := rfl
+
+omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
   [SecondCountableTopology G] [GaugeHaarProbability G] in
 /-- Product activity bound before integration. -/
 theorem norm_subsetIntegrand_le
@@ -215,6 +355,106 @@ theorem integrable_subsetIntegrand (Λ : FiniteSpecification d G)
     (continuous_subsetIntegrand Λ Φ β X).aestronglyMeasurable
     (perturbationMajorant Φ β ^ X.card)
   exact ae_of_all _ fun U => norm_subsetIntegrand_le Λ Φ β X U
+
+/-- Differentiation under the finite Haar integral is valid for every
+plaquette-subset activity. -/
+theorem hasDerivAt_subsetWeight
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
+    (X : Finset (Plaquette d)) (β₀ : ℂ) :
+    HasDerivAt (fun β ↦ subsetWeight Λ Φ β X)
+      (∫ U, subsetIntegrandDerivative Λ Φ β₀ X U ∂Λ.haarMeasure) β₀ := by
+  let R := ‖β₀‖ + 1
+  let C := (X.card : ℝ) * (Real.exp (R * Φ.bound) + 1) ^ X.card *
+    Real.exp (R * Φ.bound) * Φ.bound
+  have hR : 0 ≤ R := by positivity
+  have hmeas : ∀ᶠ β in nhds β₀,
+      AEStronglyMeasurable (subsetIntegrand Λ Φ β X) Λ.haarMeasure :=
+    Filter.Eventually.of_forall fun β ↦
+      (continuous_subsetIntegrand Λ Φ β X).aestronglyMeasurable
+  have hderivMeas : AEStronglyMeasurable
+      (subsetIntegrandDerivative Λ Φ β₀ X) Λ.haarMeasure :=
+    (continuous_subsetIntegrandDerivative Λ Φ β₀ X).aestronglyMeasurable
+  have hbound : ∀ᵐ U ∂Λ.haarMeasure, ∀ β ∈ Metric.ball β₀ 1,
+      ‖subsetIntegrandDerivative Λ Φ β X U‖ ≤ C := by
+    refine ae_of_all _ fun U β hβ ↦ ?_
+    apply norm_subsetIntegrandDerivative_le Λ Φ R hR β
+    calc
+      ‖β‖ = ‖β₀ + (β - β₀)‖ := by ring_nf
+      _ ≤ ‖β₀‖ + ‖β - β₀‖ := norm_add_le _ _
+      _ ≤ ‖β₀‖ + 1 := by
+        have hnorm : ‖β - β₀‖ ≤ 1 := by
+          exact (show ‖β - β₀‖ < 1 by
+            simpa only [Metric.mem_ball, dist_eq_norm] using hβ).le
+        exact add_le_add_right hnorm _
+      _ = R := rfl
+  have hdiff : ∀ᵐ U ∂Λ.haarMeasure, ∀ β ∈ Metric.ball β₀ 1,
+      HasDerivAt (fun z ↦ subsetIntegrand Λ Φ z X U)
+        (subsetIntegrandDerivative Λ Φ β X U) β :=
+    ae_of_all _ fun U β _ ↦ hasDerivAt_subsetIntegrand Λ Φ β X U
+  simpa only [subsetWeight] using
+    (hasDerivAt_integral_of_dominated_loc_of_deriv_le
+      (F := fun β U ↦ subsetIntegrand Λ Φ β X U)
+      (F' := fun β U ↦ subsetIntegrandDerivative Λ Φ β X U)
+      (bound := fun _ ↦ C)
+      (Metric.ball_mem_nhds β₀ (by norm_num : (0 : ℝ) < 1))
+      hmeas (integrable_subsetIntegrand Λ Φ β₀ X) hderivMeas hbound
+      (integrable_const C) hdiff).2
+
+/-- Every finite connected-polymer activity is entire in the complex
+coupling. -/
+theorem subsetWeight_entire
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
+    (X : Finset (Plaquette d)) :
+    AnalyticOnNhd ℂ (fun β ↦ subsetWeight Λ Φ β X) Set.univ := by
+  rw [Complex.analyticOnNhd_univ_iff_differentiable]
+  intro β
+  exact (hasDerivAt_subsetWeight Λ Φ X β).differentiableAt
+
+/-! ## Translation covariance -/
+
+omit [BorelSpace G] [SecondCountableTopology G] in
+/-- Translating the plaquette set and relabeling all dynamic variables leaves
+the subset integrand unchanged. -/
+theorem subsetIntegrand_translate
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
+    (β : ℂ) (X : Finset (Plaquette d)) (v : Site d)
+    (U : DynamicConfiguration Λ) :
+    subsetIntegrand (Λ.translate v) Φ β
+        (X.map (Plaquette.translationEquiv v).toEmbedding)
+        (Λ.translateDynamic v U) =
+      subsetIntegrand Λ Φ β X U := by
+  classical
+  unfold subsetIntegrand
+  rw [Finset.prod_map]
+  apply Finset.prod_congr rfl
+  intro p hp
+  change plaquettePerturbation (Λ.translate v) Φ β (p.translate v)
+      (Λ.translateDynamic v U) = plaquettePerturbation Λ Φ β p U
+  unfold plaquettePerturbation
+  rw [Gauge.FiniteVolume.plaquetteHolonomy_translate]
+
+/-- Haar-integrated subset weights are invariant under simultaneous lattice
+translation of the finite specification and the plaquette support. -/
+theorem subsetWeight_translate
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
+    (β : ℂ) (X : Finset (Plaquette d)) (v : Site d) :
+    subsetWeight (Λ.translate v) Φ β
+        (X.map (Plaquette.translationEquiv v).toEmbedding) =
+      subsetWeight Λ Φ β X := by
+  let f : DynamicConfiguration (Λ.translate v) → ℂ :=
+    subsetIntegrand (Λ.translate v) Φ β
+      (X.map (Plaquette.translationEquiv v).toEmbedding)
+  let e := Λ.translateDynamicEquiv v
+  let T := ProductHaar.reindexEquiv (G := G) e
+  have hT := ProductHaar.measurePreserving_reindex (G := G) e
+  have heq : Λ.translateDynamic v = T := by
+    funext U j
+    change U (e.symm j) = T U j
+    symm
+    exact ProductHaar.reindex_apply e U j
+  have h := hT.integral_comp' f
+  rw [← heq] at h
+  simpa only [subsetWeight, f, subsetIntegrand_translate] using h.symm
 
 omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
   [SecondCountableTopology G] [GaugeHaarProbability G] in

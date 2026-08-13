@@ -50,6 +50,16 @@ theorem mem_centeredBox_sites {d n : ℕ} (x : Site d) :
   · intro h
     exact ⟨fun i => (h i).1, fun i => (h i).2⟩
 
+/-- The centered box has exactly `(2n+1)^d` lattice sites. -/
+theorem card_centeredBox_sites (d n : ℕ) :
+    (centeredBox d n).sites.card = (2 * n + 1) ^ d := by
+  rw [Box.sites, Pi.card_Icc,
+    Finset.prod_eq_pow_card (b := 2 * n + 1)]
+  · simp
+  · intro i _
+    simp [centeredBox, Int.card_Icc]
+    omega
+
 /-- Centered site sets are nested. -/
 theorem centeredBox_sites_mono {d m n : ℕ} (hmn : m ≤ n) :
     (centeredBox d m).sites ⊆ (centeredBox d n).sites := by

@@ -17,7 +17,8 @@ weights.  This is the numerator companion to
 coupling and every frozen exterior configuration.
 -/
 
-open MeasureTheory
+open Filter MeasureTheory
+open scoped Topology
 
 namespace YangMills.StrongCoupling
 
@@ -103,6 +104,12 @@ def markedSubsetWeight (F : LocalObservable d G)
     (X : Finset (Plaquette d)) : ℂ :=
   ∫ U, markedSubsetIntegrand F Λ Φ β X U ∂Λ.haarMeasure
 
+/-- Pointwise derivative of a marked subset integrand. -/
+def markedSubsetIntegrandDerivative (F : LocalObservable d G)
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℂ)
+    (X : Finset (Plaquette d)) (U : DynamicConfiguration Λ) : ℂ :=
+  F (Λ.evaluate U) * subsetIntegrandDerivative Λ Φ β X U
+
 /-- Unnormalized complex expectation of a local observable. -/
 def complexObservableNumerator (F : LocalObservable d G)
     (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℂ) : ℂ :=
@@ -112,6 +119,117 @@ def complexObservableNumerator (F : LocalObservable d G)
 def complexGibbsExpectation (F : LocalObservable d G)
     (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β : ℂ) : ℂ :=
   (complexPartitionFunction Λ Φ β)⁻¹ * complexObservableNumerator F Λ Φ β
+
+/-- Pointwise derivative of the observable-weighted complex Boltzmann
+integrand. -/
+def complexObservableNumeratorDerivative (F : LocalObservable d G)
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
+    (β : ℂ) (U : DynamicConfiguration Λ) : ℂ :=
+  complexBoltzmannDerivative Λ Φ β U * F (Λ.evaluate U)
+
+omit [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
+    [SecondCountableTopology G] [GaugeHaarProbability G] in
+theorem hasDerivAt_complexObservableIntegrand (F : LocalObservable d G)
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
+    (β : ℂ) (U : DynamicConfiguration Λ) :
+    HasDerivAt
+      (fun z => complexBoltzmannWeight Λ Φ z U * F (Λ.evaluate U))
+      (complexObservableNumeratorDerivative F Λ Φ β U) β := by
+  simpa only [complexObservableNumeratorDerivative] using
+    (hasDerivAt_complexBoltzmannWeight Λ Φ β U).mul_const (F (Λ.evaluate U))
+
+/-- Differentiation under the observable-weighted finite-volume integral is
+valid at every complex coupling. -/
+theorem hasDerivAt_complexObservableNumerator (F : LocalObservable d G)
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) (β₀ : ℂ) :
+    HasDerivAt (complexObservableNumerator F Λ Φ)
+      (∫ U, complexObservableNumeratorDerivative F Λ Φ β₀ U ∂Λ.haarMeasure) β₀ := by
+  let B := actionBound Λ Φ
+  let R := ‖β₀‖ + 1
+  let C := Real.exp (R * B) * B * ‖F.toBoundedContinuousMap‖
+  have hB : 0 ≤ B := actionBound_nonneg Λ Φ
+  have hmeas : ∀ᶠ β in 𝓝 β₀,
+      AEStronglyMeasurable
+        (fun U => complexBoltzmannWeight Λ Φ β U * F (Λ.evaluate U))
+        Λ.haarMeasure :=
+    Filter.Eventually.of_forall fun β =>
+      ((continuous_complexBoltzmannWeight Λ Φ β).mul
+        (F.toContinuousMap.continuous.comp Λ.continuous_evaluate)).aestronglyMeasurable
+  have hbaseInt : Integrable
+      (fun U => complexBoltzmannWeight Λ Φ β₀ U * F (Λ.evaluate U))
+      Λ.haarMeasure := by
+    apply Integrable.of_bound
+      ((continuous_complexBoltzmannWeight Λ Φ β₀).mul
+        (F.toContinuousMap.continuous.comp Λ.continuous_evaluate)).aestronglyMeasurable
+      (Real.exp (‖β₀‖ * B) * ‖F.toBoundedContinuousMap‖)
+    exact ae_of_all _ fun U => by
+      change ‖complexBoltzmannWeight Λ Φ β₀ U * F (Λ.evaluate U)‖ ≤ _
+      rw [norm_mul]
+      exact mul_le_mul
+        (norm_complexBoltzmannWeight_le Λ Φ β₀ U)
+        (F.norm_apply_le (Λ.evaluate U)) (norm_nonneg _) (Real.exp_pos _).le
+  have hderivMeas : AEStronglyMeasurable
+      (complexObservableNumeratorDerivative F Λ Φ β₀) Λ.haarMeasure := by
+    apply Continuous.aestronglyMeasurable
+    exact ((continuous_complexBoltzmannWeight Λ Φ β₀).mul
+      (Complex.continuous_ofReal.comp (continuous_action Λ Φ))).mul
+        (F.toContinuousMap.continuous.comp Λ.continuous_evaluate)
+  have hbound : ∀ᵐ U ∂Λ.haarMeasure, ∀ β ∈ Metric.ball β₀ 1,
+      ‖complexObservableNumeratorDerivative F Λ Φ β U‖ ≤ C := by
+    refine ae_of_all _ fun U β hβ => ?_
+    have hβnorm : ‖β‖ ≤ R := by
+      calc
+        ‖β‖ = ‖β₀ + (β - β₀)‖ := by ring_nf
+        _ ≤ ‖β₀‖ + ‖β - β₀‖ := norm_add_le _ _
+        _ ≤ ‖β₀‖ + 1 := by
+          exact add_le_add (le_refl ‖β₀‖) ((show ‖β - β₀‖ < 1 by
+            simpa only [Metric.mem_ball, dist_eq_norm] using hβ).le)
+        _ = R := rfl
+    rw [complexObservableNumeratorDerivative, norm_mul]
+    have hderiv : ‖complexBoltzmannDerivative Λ Φ β U‖ ≤
+        Real.exp (‖β‖ * B) * B := by
+      calc
+        ‖complexBoltzmannDerivative Λ Φ β U‖ =
+            ‖complexBoltzmannWeight Λ Φ β U‖ *
+              ‖(action Λ Φ U : ℂ)‖ := by
+          simp [complexBoltzmannDerivative, complexBoltzmannWeight]
+        _ ≤ Real.exp (‖β‖ * B) * B := by
+          exact mul_le_mul
+            (norm_complexBoltzmannWeight_le Λ Φ β U)
+            (by simpa only [B, Complex.norm_real] using norm_action_le Λ Φ U)
+            (norm_nonneg _) (Real.exp_pos _).le
+    calc
+      _ ≤ (Real.exp (‖β‖ * B) * B) * ‖F.toBoundedContinuousMap‖ := by
+        exact mul_le_mul hderiv (F.norm_apply_le (Λ.evaluate U))
+          (norm_nonneg _) (mul_nonneg (Real.exp_pos _).le hB)
+      _ ≤ (Real.exp (R * B) * B) * ‖F.toBoundedContinuousMap‖ := by
+        apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
+        apply mul_le_mul_of_nonneg_right _ hB
+        exact Real.exp_le_exp.mpr (mul_le_mul_of_nonneg_right hβnorm hB)
+      _ = C := rfl
+  have hboundIntegrable : Integrable
+      (fun _ : DynamicConfiguration Λ => C) Λ.haarMeasure := integrable_const C
+  have hdiff : ∀ᵐ U ∂Λ.haarMeasure, ∀ β ∈ Metric.ball β₀ 1,
+      HasDerivAt
+        (fun z => complexBoltzmannWeight Λ Φ z U * F (Λ.evaluate U))
+        (complexObservableNumeratorDerivative F Λ Φ β U) β :=
+    ae_of_all _ fun U β _ => hasDerivAt_complexObservableIntegrand F Λ Φ β U
+  simpa only [complexObservableNumerator] using
+    (hasDerivAt_integral_of_dominated_loc_of_deriv_le
+      (F := fun β U => complexBoltzmannWeight Λ Φ β U * F (Λ.evaluate U))
+      (F' := complexObservableNumeratorDerivative F Λ Φ)
+      (bound := fun _ => C)
+      (Metric.ball_mem_nhds β₀ (by norm_num : (0 : ℝ) < 1))
+      hmeas hbaseInt hderivMeas hbound hboundIntegrable hdiff).2
+
+/-- The unnormalized finite-volume numerator of every local observable is
+entire. -/
+theorem complexObservableNumerator_entire (F : LocalObservable d G)
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G) :
+    AnalyticOnNhd ℂ (complexObservableNumerator F Λ Φ) Set.univ := by
+  rw [Complex.analyticOnNhd_univ_iff_differentiable]
+  intro β
+  exact (hasDerivAt_complexObservableNumerator F Λ Φ β).differentiableAt
 
 omit [CompactSpace G] [MeasurableSpace G] [BorelSpace G]
   [SecondCountableTopology G] [GaugeHaarProbability G] in
@@ -208,6 +326,69 @@ theorem integrable_markedSubsetIntegrand (F : LocalObservable d G)
     (continuous_markedSubsetIntegrand F Λ Φ β X).aestronglyMeasurable
     (‖F.toBoundedContinuousMap‖ * perturbationMajorant Φ β ^ X.card)
   exact ae_of_all _ fun U => norm_markedSubsetIntegrand_le F Λ Φ β X U
+
+/-- Differentiation under the finite Haar integral is valid for each fixed
+marked plaquette subset. -/
+theorem hasDerivAt_markedSubsetWeight (F : LocalObservable d G)
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
+    (X : Finset (Plaquette d)) (β₀ : ℂ) :
+    HasDerivAt (fun β ↦ markedSubsetWeight F Λ Φ β X)
+      (∫ U, markedSubsetIntegrandDerivative F Λ Φ β₀ X U ∂Λ.haarMeasure) β₀ := by
+  let R := ‖β₀‖ + 1
+  let C := ‖F.toBoundedContinuousMap‖ *
+    ((X.card : ℝ) * (Real.exp (R * Φ.bound) + 1) ^ X.card *
+      Real.exp (R * Φ.bound) * Φ.bound)
+  have hR : 0 ≤ R := by positivity
+  have hmeas : ∀ᶠ β in 𝓝 β₀,
+      AEStronglyMeasurable (markedSubsetIntegrand F Λ Φ β X)
+        Λ.haarMeasure := Filter.Eventually.of_forall fun β ↦
+    (continuous_markedSubsetIntegrand F Λ Φ β X).aestronglyMeasurable
+  have hbase : Integrable (markedSubsetIntegrand F Λ Φ β₀ X)
+      Λ.haarMeasure := integrable_markedSubsetIntegrand F Λ Φ β₀ X
+  have hderivMeas : AEStronglyMeasurable
+      (markedSubsetIntegrandDerivative F Λ Φ β₀ X) Λ.haarMeasure := by
+    exact ((F.toContinuousMap.continuous.comp Λ.continuous_evaluate).mul
+      (continuous_subsetIntegrandDerivative Λ Φ β₀ X)).aestronglyMeasurable
+  have hbound : ∀ᵐ U ∂Λ.haarMeasure, ∀ β ∈ Metric.ball β₀ 1,
+      ‖markedSubsetIntegrandDerivative F Λ Φ β X U‖ ≤ C := by
+    refine ae_of_all _ fun U β hβ ↦ ?_
+    have hβR : ‖β‖ ≤ R := by
+      calc
+        ‖β‖ = ‖β₀ + (β - β₀)‖ := by ring_nf
+        _ ≤ ‖β₀‖ + ‖β - β₀‖ := norm_add_le _ _
+        _ ≤ ‖β₀‖ + 1 := add_le_add_right
+          ((show ‖β - β₀‖ < 1 by
+            simpa only [Metric.mem_ball, dist_eq_norm] using hβ).le) _
+        _ = R := rfl
+    rw [markedSubsetIntegrandDerivative, norm_mul]
+    exact mul_le_mul
+      (F.norm_apply_le (Λ.evaluate U))
+      (norm_subsetIntegrandDerivative_le Λ Φ R hR β hβR X U)
+      (norm_nonneg _)
+      (norm_nonneg _)
+  have hdiff : ∀ᵐ U ∂Λ.haarMeasure, ∀ β ∈ Metric.ball β₀ 1,
+      HasDerivAt (fun z ↦ markedSubsetIntegrand F Λ Φ z X U)
+        (markedSubsetIntegrandDerivative F Λ Φ β X U) β := by
+    refine ae_of_all _ fun U β _ ↦ ?_
+    simpa only [markedSubsetIntegrand, markedSubsetIntegrandDerivative] using
+      (hasDerivAt_subsetIntegrand Λ Φ β X U).const_mul
+        (F (Λ.evaluate U))
+  simpa only [markedSubsetWeight] using
+    (hasDerivAt_integral_of_dominated_loc_of_deriv_le
+      (F := fun β U ↦ markedSubsetIntegrand F Λ Φ β X U)
+      (F' := fun β U ↦ markedSubsetIntegrandDerivative F Λ Φ β X U)
+      (bound := fun _ ↦ C)
+      (Metric.ball_mem_nhds β₀ (by norm_num : (0 : ℝ) < 1))
+      hmeas hbase hderivMeas hbound (integrable_const C) hdiff).2
+
+/-- Every fixed marked plaquette-subset weight is entire. -/
+theorem markedSubsetWeight_entire (F : LocalObservable d G)
+    (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
+    (X : Finset (Plaquette d)) :
+    AnalyticOnNhd ℂ (fun β ↦ markedSubsetWeight F Λ Φ β X) Set.univ := by
+  rw [Complex.analyticOnNhd_univ_iff_differentiable]
+  intro β
+  exact (hasDerivAt_markedSubsetWeight F Λ Φ X β).differentiableAt
 
 omit [IsTopologicalGroup G] [BorelSpace G] [SecondCountableTopology G] in
 /-- Marked weights inherit the product cardinality bound, with the observable

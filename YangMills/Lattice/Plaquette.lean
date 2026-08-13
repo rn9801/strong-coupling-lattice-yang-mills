@@ -27,6 +27,7 @@ structure Plaquette (d : ℕ) where
   first : Fin d
   second : Fin d
   distinct : first ≠ second
+  deriving Countable
 
 namespace Path
 

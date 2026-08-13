@@ -1,10 +1,40 @@
 # Project status
 
-Last updated: 2026-08-12
+Last updated: 2026-08-13
 
-## Next milestone: 14 -- Analyticity and pressure
+## Next milestone: 18 -- Half-integer/link-hyperplane reflection positivity
 
 ### Completed
+
+- Completed Milestone 17 (integer/site-hyperplane reflection positivity).
+  Defined the site involution on sites, signed directions and signed edges,
+  stored positive edges, paths, plaquettes, and full configurations.  Proved
+  reflected signed-edge evaluation, path holonomy covariance, and invariance
+  of every real plaquette potential satisfying the existing conjugation and
+  inversion hypotheses.
+- Added the anti-linear observable reflection `theta` on the full continuous
+  observable algebra, with addition, multiplication, conjugate scalar,
+  conjugation, involution, and uniform-norm laws.  Positive observables are all
+  continuous functions of the plane and positive-side variables; no gauge
+  invariance assumption is imposed.
+- Implemented the explicit finite label partition `(A₀,A₋,A₊)` and proved
+  `measurePreserving_reflectedVariableEquiv`, identifying the original finite
+  product Haar law with plane Haar times two independent reflected side laws.
+- Packaged the site-reflection Wilson action decomposition
+  `S = S₊(A₀,A₋) + S₀(A₀) + S₊(A₀,A₊)` and supplied the
+  explicit finite Wilson-plaquette constructor `ofWilsonPlaquettes`.
+- Proved `gibbsReflectionPairing_eq_factorized`: Fubini and product-Haar
+  factorization turn the full finite-volume reflected Gibbs integral into the
+  plane integral of the two half-volume amplitudes.  On the diagonal,
+  `factorizedPairing_self_eq_squareModulus` is the required weighted square
+  modulus.
+- Proved finite-volume site reflection positivity for every real `β` (hence
+  every `β ≥ 0`) in `siteReflectionPositivity`, as well as positivity of the
+  normalized reflection inner product.
+- Proved Cauchy--Schwarz for the reflection inner product in squared form
+  `normSq_reflectionInnerProduct_le` and norm/square-root form
+  `norm_reflectionInnerProduct_le`, by identifying it with the ordinary
+  complex `L²` inner product of weighted half-volume amplitudes.
 
 - Chosen the public package name `strong-coupling-lattice-yang-mills` and Lean
   namespace `YangMills`.
@@ -627,8 +657,11 @@ Last updated: 2026-08-12
   expectation, independence of arbitrary exterior sequences, and uniqueness
   among probability measures representing the local cluster state.
 - Proved gauge invariance of the concrete infinite-volume local state from
-  finite-volume gauge covariance and boundary independence.  Proved
-  translation invariance by embedding a translated centered box into an
+  finite-volume gauge covariance and boundary independence, and strengthened
+  it to the literal pushforward identity
+  `centeredInfiniteVolumeMeasure_map_gaugeTransform` and its
+  `MeasurePreserving` form.  Proved translation invariance by embedding a
+  translated centered box into an
   explicitly enlarged centered box and applying the same Gibbs-tower and
   one-root KP tail comparison.
 - Registered the concrete infinite-volume measure as a regular Borel
@@ -644,15 +677,77 @@ Last updated: 2026-08-12
   thermodynamic-limit, invariance, measure-representation, and clustering
   proofs use the plaquette polymer cluster expansion and its explicit KP/tree
   certificate, not the Douglas compatibility layer or the Dobrushin baseline.
+- Audited the pinned Mathlib complex-analysis infrastructure for Milestone 14.
+  Mathlib supplies locally uniform Weierstrass convergence, Cauchy derivative
+  bounds, Arzelà--Ascoli compactness, and the analytic identity principle, but
+  not a directly reusable complex Vitali theorem.  Added a proved disk Vitali
+  package from precisely those results, without new axioms.
+- Proved that every centered finite complex local expectation is exactly its
+  absolutely convergent connected decorated observable-root Mayer series and
+  is uniformly bounded on every smaller closed strong-coupling disk by an
+  explicit volume-independent KP/tree majorant.
+- Defined `analyticInfiniteVolumeLocalExpectation` as the resulting locally
+  uniform thermodynamic limit.  Proved it analytic on
+  `ball 0 (latticeStrongCouplingRadius d Φ.bound)`, identified its real-axis
+  values with integration against `centeredInfiniteVolumeMeasure`, and proved
+  the analytic continuation is independent of the centered exterior sequence.
+- Constructed the countable infinite plaquette-polymer Mayer model and its
+  explicit KP certificate, rooted pressure terms, absolute majorants, and
+  anchored pressure.  Proved the anchored pressure analytic throughout the
+  same explicit complex disk.
+- Proved the centered-box boundary/volume estimate by showing the fitting-root
+  fraction of every fixed finite cluster tends to one.  Tannery dominated
+  convergence with the rooted KP norm sum then proves convergence of the exact
+  normalized finite symmetric Mayer logarithms to both the per-site and
+  per-ordered-plaquette anchored pressures.
+- Proved that each finite symmetric Mayer logarithm in the pressure exhaustion
+  exponentiates to the exact finite-volume Yang--Mills partition function, so
+  the limiting pressure uses the cluster-normalized logarithm branch at
+  `β = 0`, not an arbitrary principal logarithm.
+- Completed Milestone 14.  Both the local-observable and pressure arguments use
+  the plaquette/decorated polymer cluster expansion and its explicit KP/tree
+  estimates; neither uses the Douglas compatibility layer nor the Dobrushin
+  baseline.
+- Completed the finite-edge center-selection package.  A center twist acts on
+  path holonomy and every labelled Wilson Taylor word by its signed incidence
+  phase; Haar change of variables therefore kills every word whose edge charge
+  is nonzero modulo the order of the chosen nontrivial center phase.
+- Defined finite cubical edge and plaquette charge chains, proved equivalence
+  between coefficientwise Taylor screening and the chain equation
+  `[C] + ∂(a-b) = 0` over `ZMod m`, and used it to show every nonzero Wilson
+  Taylor monomial supplies a genuine center screening field.  This completes
+  Milestone 15 without a representation-orthogonality black box.
+- Proved the rectangle filling-order comparison by a discrete half-hyperplane
+  flux argument.  Transverse plaquette contributions cancel, while the flux
+  of the rectangle boundary through each of its `R * T` cells is one.  Thus
+  every screening Taylor field has at least one distinct charged plaquette
+  occurrence per cell:
+  `rectangle_area_le_taylorOrder_of_taylorScreens`.
+- Lifted that comparison directly to labelled Wilson words, action moments,
+  and finite normalized expectations.  In particular,
+  `iteratedDeriv_complexGibbsExpectation_wilsonRectangle_zero_of_lt_area`
+  proves that every Taylor jet of order strictly below `R * T` vanishes.
+- Passed the rectangular zero jets to infinite volume using the locally
+  uniform completed-box limit produced by the cluster expansion.  Applied
+  Mathlib's higher-order Schwarz lemma with the existing explicit one-root
+  KP/tree closed-disk bound to prove
+  `norm_analyticInfiniteVolumeWilsonRectangle_le_areaLaw` and its physical
+  real-measure form `norm_integral_wilsonRectangle_le_areaLaw`:
+  `K(r)^(2(R+T)) * exp(-log(r/|β|) * R*T)` for `|β| < r` inside the explicit
+  strong-coupling disk.
+- Completed Milestone 16.  The thermodynamic limit and quantitative prefactor
+  come exclusively from the plaquette-polymer cluster expansion and its
+  explicit KP/tree certificate; neither the Douglas compatibility layer nor
+  the Dobrushin baseline enters the area-law proof.
 
 ### In progress
 
-- None.  Milestones 11--13 meet their roadmap exit criteria; Milestone 14 has
-  not yet started.
+- None.  Milestones 15 and 16 meet their roadmap exit criteria.
 
 ### Not started
 
-- Milestone 14 and all later area-law and reflection-positivity results.
+- Milestones 17--20: site- and link-reflection positivity, infinite-volume
+  reflection positivity, and the optional Osterwalder--Schrader construction.
 
 ## Verification log
 
@@ -926,6 +1021,49 @@ Commands are added here only after they succeed.
   Success; 3,824 jobs after exporting the completed Milestone 11--13 theorem
   family from the package root.  Remaining output consists of linter and
   pinned-dependency deprecation warnings; there are no build errors.
+2026-08-12: lake build YangMills.StrongCoupling.ThermodynamicAnalyticity
+  YangMills.StrongCoupling.ThermodynamicPressure
+  Success.  The locally uniform analytic local-state limit, explicit decorated
+  KP closed-disk bound, real-axis and boundary-independence identifications,
+  anchored pressure, boundary/volume estimate, and normalized finite-log
+  pressure limit compile without placeholders.
+2026-08-12: lake env lean YangMills/Tests/Milestone14.lean
+  Success.  The Milestone 14 exit declarations have axiom footprint
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-12: lake build
+  Success; 3,848 jobs after exporting the completed Milestone 14 theorem
+  family from the package root.  Remaining output consists of linter and
+  pinned-dependency deprecation warnings; there are no build errors.
+2026-08-13: lake build YangMills.Tests.Milestone16
+  Success; 3,083 jobs.  The rectangular filling-order comparison, finite and
+  infinite zero-jet theorems, analytic area-power estimate, and explicit
+  rectangle area law have axiom footprint
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-13: lake build
+  Success; 3,862 jobs after exporting the completed Milestone 16 theorem
+  family from the package root.  Remaining output consists of linter and
+  pinned-dependency deprecation warnings; there are no build errors.
+2026-08-13: lake build YangMills.Tests.Milestones11To13Foundations
+  Success; 3,032 jobs after adding literal pushforward and
+  `MeasurePreserving` gauge invariance for the infinite-volume Yang--Mills
+  probability.  Both declarations have axiom footprint
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-13: lake build
+  Success; 3,862 jobs after exporting the pushforward gauge-invariance API.
+  Remaining output consists of linter and pinned-dependency deprecation
+  warnings; there are no build errors.
+2026-08-13: lake env lean YangMills/Tests/Milestone17.lean
+  Success.  Integer/site reflection geometry, the explicit finite product-Haar
+  variable partition, Wilson action decomposition, full-to-factorized Gibbs
+  pairing, weighted square-modulus positivity, and reflection-inner-product
+  Cauchy--Schwarz compile without placeholders.  The principal declarations
+  have axiom footprint `[propext, Classical.choice, Quot.sound]` (the purely
+  geometric declarations need no `Classical.choice`).
+2026-08-13: lake build
+  Success; 3,864 jobs after exporting the completed Milestone 17 site
+  reflection-positivity and reflection-inner-product API from the package
+  root.  Remaining output consists of linter and pinned-dependency
+  deprecation warnings; there are no build errors.
 ```
 
 ## Conventions fixed so far
