@@ -1,9 +1,15 @@
 # Douglas compatibility scope
 
+> Historical scope note: this document records the Milestone 0A comparison
+> made before the project-native cubic-lattice and cluster-expansion layers
+> were implemented.  Statements below of the form “the project still needs”
+> describe the gap at that checkpoint, not the current status.  See the
+> repository README and `STATUS.md` for completed Milestones 1--17.
+
 The `YangMills/Compat` layer imports selected declarations from Michael R.
-Douglas and collaborators' `LGT` repository at commit
+Douglas and Fred Rajasekaran's `LGT` repository at commit
 `b8793ccf6a51e00e9e2b1685ba191b8626e37137`. This document records the exact
-scope that remains after Milestone 0A.
+scope identified after Milestone 0A.
 
 ## Adapter boundaries
 
@@ -28,7 +34,7 @@ import the narrowest adapter. Core project modules must not import any adapter.
 - `latticePlaquetteDist` measures periodic `L¹` distance between anchors.
 - `linkGraphDist` is distance in the shared-plaquette link graph.
 
-The project still needs boxes, exterior configurations, translations and
+At the Milestone 0A checkpoint, the project still needed boxes, exterior configurations, translations and
 reflections on `ℤ^d`, signed edges, arbitrary finite paths, and equivalence
 lemmas under torus reduction.
 
@@ -38,7 +44,7 @@ lemmas under torus reduction.
 - Locality results cover plaquette holonomy and plaquette trace observables.
 - `HasGaugeTrace` is a lightweight real-trace interface.
 
-The project still needs open paths, loops, path support, a structured continuous
+At the Milestone 0A checkpoint, the project still needed open paths, loops, path support, a structured continuous
 unitary representation API, Wilson characters, and explicit center charge.
 
 ### Probability and Gibbs layer
@@ -50,7 +56,7 @@ unitary representation API, Wilson characters, and explicit center charge.
 - `ymMeasure_isGibbs` proves DLR consistency only for that finite model.
 - Coupling is real and nonnegative in probability theorems.
 
-The project still needs general bounded conjugation-invariant potentials,
+At the Milestone 0A checkpoint, the project still needed general bounded conjugation-invariant potentials,
 finite box specifications, boundary-disagreement sets, complex unnormalized
 partition functions, and the thermodynamic limit.
 
@@ -64,7 +70,7 @@ partition functions, and the thermodynamic limit.
 - The theorem gives periodic finite-volume decay; it does not establish
   boundary-condition sensitivity or an infinite-volume Gibbs state.
 
-The project still needs general local-observable clustering, the independent
+At the Milestone 0A checkpoint, the project still needed general local-observable clustering, the independent
 polymer expansion, analyticity and pressure, charged-center area laws, and both
 reflection-positivity constructions.
 

@@ -14,8 +14,7 @@ A translated centered box is a geometrically complete sub-specification of a
 slightly larger centered box.  The generic finite-specification Gibbs tower
 then compares the translated finite-volume expectation with the centered one.
 The one-root cluster boundary tail makes this comparison vanish, proving
-translation invariance of the thermodynamic limit without any input from the
-Douglas compatibility layer.
+translation invariance of the thermodynamic limit.
 -/
 
 open Filter MeasureTheory

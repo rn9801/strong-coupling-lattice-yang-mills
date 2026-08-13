@@ -10,10 +10,10 @@ import Mathlib.MeasureTheory.Function.L2Space
 /-!
 # Finite-volume site-reflection positivity
 
-After splitting a reflection-symmetric finite set of edge variables, a field
-is recorded as `(U₀, U₋, U₊)`: variables in the integer reflection plane and
-two reflected copies of the strict half-volume variables.  The Wilson action
-then has the form
+After supplying a reflection-adapted partition of a finite set of edge
+variables, a field is recorded as `(U₀, U₋, U₊)`: variables in the integer
+reflection plane and two reflected copies of the strict half-volume
+variables.  The Wilson action is supplied in the form
 
 `S(U₀, U₋, U₊) = S₊(U₀, U₋) + S₀(U₀) + S₊(U₀, U₊)`.
 
@@ -21,7 +21,9 @@ This file proves the product-Haar Fubini identity turning the reflected Gibbs
 pairing into an integral of products of half-volume amplitudes.  On the
 diagonal it is a weighted square modulus.  The positive algebra consists of
 all continuous complex observables of `(U₀, U₊)`; no gauge-invariance
-hypothesis is imposed.
+hypothesis is imposed.  The geometric identification of this abstract split
+with every standard reflection-symmetric cubic `FiniteSpecification` is a
+separate future theorem.
 -/
 
 open MeasureTheory
@@ -52,6 +54,8 @@ abbrev ReflectedConfiguration (G : Type*) (P O : Type*) :=
 variables.  This is the source type before applying the reflection partition. -/
 abbrev ReflectedLabel (P O : Type*) := O ⊕ (P ⊕ P)
 
+variable {G P O : Type*}
+
 /-- The measurable equivalence implementing the finite variable partition
 `A ↦ (A₀, A₋, A₊)`. -/
 def reflectedVariableEquiv [MeasurableSpace G] :
@@ -70,7 +74,7 @@ structure WilsonActionDecomposition (G : Type*) (P O : Type*)
   positiveAction : C(HalfConfiguration G P O, ℝ)
   planeAction : C(PlaneConfiguration G O, ℝ)
 
-variable {G P O : Type*} [TopologicalSpace G]
+variable [TopologicalSpace G]
 
 namespace WilsonActionDecomposition
 

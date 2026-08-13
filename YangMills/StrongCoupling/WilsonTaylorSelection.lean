@@ -16,8 +16,8 @@ free finite plaquette region every edge read by the action is integrated.
 The integral of a Wilson loop times character/conjugate-character Taylor
 insertions vanishes unless their finite plaquette charge screens the loop.
 
-The proof is an edgewise product-Haar change of variables.  It uses neither
-the Dobrushin baseline nor the Douglas compatibility layer.
+The proof is an edgewise product-Haar change of variables and the finite
+center-charge law of the representation.
 -/
 
 open MeasureTheory

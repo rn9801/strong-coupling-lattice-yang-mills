@@ -6,6 +6,32 @@ Last updated: 2026-08-13
 
 ### Completed
 
+- Completed the first documentation and build-dependency cleanup pass after
+  Milestone 17.  The public `YangMills` root now exports the project-native
+  headline theorem families without importing milestone tests, audits, the
+  periodic Douglas baseline, or the older Dobrushin comparison modules.
+- Added the opt-in `YangMills.Regression` root and a declaration/import audit.
+  The audit found no production proof block that can safely be deleted: every
+  native module is reached by a headline theorem, a foundational result, or a
+  milestone regression.  The largest cluster files are recorded as future
+  file-splitting targets rather than treated as dead code.
+- Added `YangMills.Tests.ReviewerSmoke`, a downstream critical-review suite
+  proving twenty-one small corollaries and explicit fixtures.  It checks
+  empty-volume partition functions at arbitrary real and complex coupling,
+  constant Gibbs normalization, empty and constant-one Wilson loops, that
+  zero lies in the explicit strong-coupling disk and carries the genuine KP
+  certificate, direct vanishing of every zero-coupling polymer activity and
+  of the symmetric Mayer logarithm itself, the corresponding exponential and
+  zero-free theorem,
+  analytic boundary independence and Wilson gauge invariance in infinite
+  volume, vanishing covariance with constants, exact normalization of a
+  zero-action reflection model, and the zero-area rectangle specialization.
+- Rewrote the README with the lattice, gauge, Gibbs, Wilson, polymer/Mayer/KP,
+  thermodynamic, pressure, area-law, and reflection definitions; indexed the
+  main proved declarations and documented their exact present scope.
+- Centralized the use and Apache-2.0 provenance of the pinned LGT repository,
+  crediting Michael R. Douglas and Fred Rajasekaran, and removed repetitive
+  historical comparisons from unrelated project-native module comments.
 - Completed Milestone 17 (integer/site-hyperplane reflection positivity).
   Defined the site involution on sites, signed directions and signed edges,
   stored positive edges, paths, plaquettes, and full configurations.  Proved
@@ -742,11 +768,12 @@ Last updated: 2026-08-13
 
 ### In progress
 
-- None.  Milestones 15 and 16 meet their roadmap exit criteria.
+- None.  The first cleanup pass and Milestones 0--17 meet their stated exit
+  criteria.
 
 ### Not started
 
-- Milestones 17--20: site- and link-reflection positivity, infinite-volume
+- Milestones 18--20: link-hyperplane reflection positivity, infinite-volume
   reflection positivity, and the optional Osterwalder--Schrader construction.
 
 ## Verification log
@@ -1064,6 +1091,34 @@ Commands are added here only after they succeed.
   reflection-positivity and reflection-inner-product API from the package
   root.  Remaining output consists of linter and pinned-dependency
   deprecation warnings; there are no build errors.
+2026-08-13: lake build YangMills.Gauge.SiteReflectionPositivity
+  Success; 2,682 jobs.  A clean rebuild exposed and fixed the missing
+  declaration-order variables on `reflectedVariableEquiv`; the reflection
+  positivity module now elaborates from source rather than relying on a stale
+  artifact.
+2026-08-13: lake build
+  Success; 3,089 jobs with the smaller project-native public root.  The root
+  still exports the finite gauge layer, site reflection positivity,
+  thermodynamic pressure, and Wilson area law, together with their transitive
+  project-native dependencies.
+2026-08-13: lake build +YangMills.Regression
+  Success; 3,879 jobs.  All milestone axiom checks, audits, the pinned Douglas
+  periodic-torus baseline, and the older finite-box Dobrushin comparison route
+  compile through the opt-in comprehensive root.
+2026-08-13: lake build +YangMills.Tests.ReviewerSmoke
+  Success; 3,089 jobs.  The critical-review normalization, non-vacuity,
+  invariance, reflection, and degenerate area-law corollaries compile through
+  the public API without placeholders.
+2026-08-13: lake build +YangMills.Regression
+  Success; 3,880 jobs after adding the critical-review smoke suite to the
+  opt-in comprehensive regression root.  There are no build errors.
+2026-08-13: lake build
+  Success; 3,089 jobs after the reviewer suite and documentation update.  The
+  public project-native root remains green.
+2026-08-13: lake env lean --stdin (reviewer theorem axiom audit)
+  Success.  Representative empty-volume, direct Mayer-log normalization,
+  infinite-volume gauge, reflection-normalization, and zero-area corollaries
+  have the expected footprint `[propext, Classical.choice, Quot.sound]`.
 ```
 
 ## Conventions fixed so far

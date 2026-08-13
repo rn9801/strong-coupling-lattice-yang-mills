@@ -16,8 +16,8 @@ interval cancels in the signed graph sum; only trees with `R(T) = T` survive.
 
 This file proves that cancellation independently of any particular choice of
 Penrose map.  The remaining graph-theoretic task is to construct the interval
-partition itself (for example by ordered greedy deletion).  No Yang--Mills or
-Douglas module is imported.
+partition itself (for example by ordered greedy deletion).  It belongs to the
+model-independent polymer/combinatorics layer.
 -/
 
 namespace YangMills.Polymer

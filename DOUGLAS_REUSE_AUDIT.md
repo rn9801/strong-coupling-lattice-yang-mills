@@ -2,6 +2,16 @@
 
 Audit date: 2026-08-04
 
+The upstream project identifies its human authors as Michael R. Douglas, with
+Fred Rajasekaran.  In this repository it is cited as: Michael R. Douglas and
+Fred Rajasekaran, *Lattice Gauge Theory in Lean 4*, Apache-2.0, pinned at the
+commit below.
+
+The candidate/decision table records the Milestone 0 audit that guided the
+subsequent implementation.  Present theorem status is documented in
+`README.md` and `STATUS.md`; future-tense entries below are historical design
+decisions, not a list of current gaps.
+
 ## Pinned upstream stack
 
 | Repository | Commit | Package | License | Toolchain |
@@ -82,8 +92,8 @@ Milestone 0A split reuse into three narrow modules:
 | `YangMills.Compat.DouglasDobrushin` | Dobrushin influence and periodic mass-gap results |
 
 `YangMills.Compat.DouglasLGT` is a convenience umbrella only. Regression
-modules import the narrowest adapter they need, and future core layers may not
-import `YangMills.Compat`. The remaining specialization boundary is recorded in
+modules import the narrowest adapter they need, and core layers do not import
+`YangMills.Compat`. The specialization boundary is recorded in
 `docs/DOUGLAS_SCOPE.md`.
 
 ## Polymer infrastructure search
@@ -91,8 +101,8 @@ import `YangMills.Compat`. The remaining specialization boundary is recorded in
 A source search of the pinned Mathlib, `LGT`, `MarkovSemigroups`, and
 `GaussianField` trees found no implementation of an abstract polymer gas,
 Kotecky--Preiss criterion, Ursell coefficients, or a tree-graph bound. The
-roadmap's `Polymer/` layer should therefore be treated as new generic
-infrastructure.
+search therefore justified treating the `Polymer/` layer as new generic
+infrastructure; that project-native layer has since been implemented.
 
 ## Provenance policy
 

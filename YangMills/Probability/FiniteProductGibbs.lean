@@ -1,5 +1,6 @@
 /-
 Copyright (c) 2026 The Strong-Coupling Lattice Yang--Mills Authors. All rights reserved.
+Copyright (c) 2026 Michael R. Douglas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: The Strong-Coupling Lattice Yang--Mills contributors
 -/
@@ -17,9 +18,13 @@ probability measure, and a bounded measurable energy, it defines the
 conditional law obtained by resampling a region, gluing in the exterior
 configuration, and exponentially tilting by the energy.
 
-The gluing and product-measure arguments are adapted from Michael R. Douglas'
-Apache-2.0-licensed `LGT.Gibbs.YMSpec` and `LGT.Gibbs.YMIsGibbs` modules, but
-are stated here without lattice- or gauge-specific assumptions.
+The gluing and product-measure arguments are adapted from Michael R. Douglas
+and Fred Rajasekaran's Apache-2.0-licensed `LGT.Gibbs.YMSpec` and
+`LGT.Gibbs.YMIsGibbs` modules at commit
+`b8793ccf6a51e00e9e2b1685ba191b8626e37137`, in particular the upstream
+`gluedConfig`, `glue_measurePreserving`, and `integral_glue_split_eq`
+construction.  They are stated here without lattice- or gauge-specific
+assumptions.
 -/
 
 open MeasureTheory

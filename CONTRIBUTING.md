@@ -11,8 +11,14 @@
 ```sh
 lake build YangMills.Path.To.ChangedModule
 lake build
+lake build +YangMills.Regression
 rg -n '\bsorry\b|\badmit\b' YangMills
 ```
+
+The first two commands are the ordinary edit loop.  The opt-in regression root
+also compiles all milestone axiom checks, the pinned Douglas baseline, and the
+older Dobrushin comparison branch; run it before merging changes to shared
+infrastructure or preparing a release.
 
 Keep commits focused on one milestone-sized result. Add a docstring to every
 mathematically nontrivial public declaration and a small executable example for

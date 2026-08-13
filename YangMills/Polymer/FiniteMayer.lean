@@ -17,7 +17,7 @@ where `u` is the pinned compatible-partition ratio.  The explicit
 Dobrushin--KP certificate gives `‖u‖ < 1`, so the ordinary Mayer series for
 `log (1 + u)` converges absolutely.  Summing these local series gives a
 normalized logarithm whose exponential is exactly the finite partition
-function.  This is independent of any Yang--Mills or Douglas module.
+function.  The argument is stated for an arbitrary finite hard-core gas.
 
 The value is a logarithm branch normalized at zero activity; it is not
 silently identified with the global principal `Complex.log`, in accordance

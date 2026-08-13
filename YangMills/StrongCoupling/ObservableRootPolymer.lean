@@ -16,10 +16,9 @@ import YangMills.StrongCoupling.Counting
 # Observable-root plaquette polymer gases
 
 The constructions here instantiate the abstract augmented polymer gas with
-the plaquette roots already used in the lattice geometry.  No influence
-matrix or Douglas compatibility layer is involved: a source root is adjacent
-exactly to bulk polymers containing a plaquette incident to the recorded edge
-support of its local observable.
+the plaquette roots already used in the lattice geometry.  A source root is
+adjacent exactly to bulk polymers containing a plaquette incident to the
+recorded edge support of its local observable.
 -/
 
 namespace YangMills.StrongCoupling

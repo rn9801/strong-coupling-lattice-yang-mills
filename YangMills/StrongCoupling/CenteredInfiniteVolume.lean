@@ -221,8 +221,7 @@ theorem centeredInfiniteVolumeMeasure_measurePreserving_gaugeTransform
   exact centeredInfiniteVolumeMeasure_map_gaugeTransform η Φ β hβ g
 
 /-- Translation invariance of the infinite-volume local state.  This follows
-from the translated-box finite Gibbs tower and the one-root KP boundary tail;
-no periodic-lattice or Douglas-limit argument is used. -/
+from the translated-box finite Gibbs tower and the one-root KP boundary tail. -/
 theorem centeredInfiniteVolume_integral_translatePullback
     (η : ℕ → Configuration d G) (Φ : RealPlaquettePotential G) (β : ℝ)
     (hβ : ‖(β : ℂ)‖ < latticeStrongCouplingRadius d Φ.bound)

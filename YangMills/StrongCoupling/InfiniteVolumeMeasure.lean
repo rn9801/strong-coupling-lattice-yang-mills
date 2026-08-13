@@ -23,7 +23,7 @@ cluster-expansion tail then forces every local observable to have the same
 limit along the full sequence, so the cluster point represents the local
 state and is independent of the chosen cluster point.
 
-No Dobrushin or Douglas module is imported here.
+This is the measure-representation step for the cluster-expanded local state.
 -/
 
 open Filter MeasureTheory

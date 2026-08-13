@@ -16,7 +16,8 @@ so every surviving cluster joins the two recorded supports.  The bound is
 uniform in volume and boundary condition.  Passing to the one-root cluster
 limit proves infinite-volume exponential clustering.
 
-This module is independent of the Douglas compatibility and Dobrushin layers.
+The result is a direct consequence of the convergent two-root cluster
+expansion and its uniform spatially weighted bound.
 -/
 
 open Filter MeasureTheory

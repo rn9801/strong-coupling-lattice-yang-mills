@@ -11,10 +11,8 @@ import Mathlib.Topology.MetricSpace.Cauchy
 /-!
 # Local thermodynamic limits from cluster tails
 
-This file fixes the proof architecture for Milestone 11.  Its only convergence
-input is a uniform tail estimate for the marked linked-cluster expansion.  In
-particular, this module does not import the Douglas compatibility layer or any
-Dobrushin comparison theorem.
+This file fixes the proof architecture for Milestone 11.  Its convergence
+input is a uniform tail estimate for the marked linked-cluster expansion.
 
 `ClusterLimitCertificate.compare` is the finite-volume conclusion supplied by
 one-root cluster cancellation: after cluster radius `N`, two finite-volume

@@ -21,9 +21,9 @@ minimal) support. Continuous class functions of loop holonomy give the basic
 gauge-invariant examples.
 
 The generic `wilsonLoop` constructor is labelled by a continuous class
-function. Milestone 5 will construct such class functions from normalized
-characters of continuous unitary representations without changing this local
-observable API.
+function. `YangMills.Wilson.Representation` supplies the canonical class
+functions obtained from normalized characters of continuous unitary
+representations without changing this local-observable API.
 -/
 
 namespace YangMills.Gauge

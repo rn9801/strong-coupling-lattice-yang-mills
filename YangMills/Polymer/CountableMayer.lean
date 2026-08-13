@@ -18,7 +18,7 @@ and all products and sums are `Finsupp` products and sums.
 
 The comparison theorems at the end show that these definitions are exactly
 the existing finite Mayer definitions when the ambient type is finite.  This
-module is independent of Yang--Mills and of the Douglas compatibility layer.
+is the countable extension of the model-independent polymer layer.
 -/
 
 namespace YangMills.Polymer

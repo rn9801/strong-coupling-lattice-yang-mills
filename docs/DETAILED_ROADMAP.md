@@ -1,6 +1,11 @@
 # Lean Formalization Roadmap for Strong-Coupling Lattice Yang–Mills Theory
 
-**Status:** implementation plan, not yet a theorem file
+**Status:** historical implementation plan; Milestones 0--17 are now
+implemented, and the current theorem scope and remaining work are recorded in
+`../README.md`, `../STATUS.md`, and `ROADMAP.md`.  Some aspirational wording
+below (notably uniqueness among all DLR measures and automatic identification
+of every symmetric finite specification) is stronger than the declarations
+currently proved.
 **Primary references:** Seiler's constructive gauge-theory monograph; Osterwalder–Seiler on lattice gauge theory and reflection positivity; Menotti–Pelissetto for reflection through hyperplanes containing lattice sites
 **Intended executor:** Codex working inside a pinned Lean 4 + Mathlib repository
 **Quality target:** small reviewable modules, no `sorry`, no `admit`, no custom axioms, and reusable generic infrastructure separated from Yang–Mills-specific arguments

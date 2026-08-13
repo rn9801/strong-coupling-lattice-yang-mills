@@ -17,8 +17,8 @@ active when its endpoints are already joined by edges of `A` strictly below
 edge-cardinality sign.  The fixed connected edge sets are forests, hence
 spanning trees.
 
-The construction is entirely graph/combinatorics based and is independent of
-Yang--Mills and of the Douglas compatibility layer.
+The construction is entirely graph/combinatorics based and supplies the
+model-independent tree-graph estimate used by the polymer expansion.
 -/
 
 namespace YangMills.Polymer

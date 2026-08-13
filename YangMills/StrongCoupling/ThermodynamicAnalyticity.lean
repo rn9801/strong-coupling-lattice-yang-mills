@@ -20,7 +20,8 @@ volume-independent decorated observable-root KP/tree estimate.  On the real
 diameter, the limit is identified with the cluster-expansion infinite-volume
 probability from Milestones 11--13.
 
-No Douglas compatibility or Dobrushin theorem is used in this argument.
+Thus analyticity is derived from the same decorated cluster expansion and
+uniform KP/tree estimates used for the thermodynamic limit.
 -/
 
 namespace YangMills.StrongCoupling

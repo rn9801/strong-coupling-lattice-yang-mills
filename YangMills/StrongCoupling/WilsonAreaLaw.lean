@@ -20,7 +20,8 @@ the added coordinates gives the ordinary centered box with an induced frozen
 exterior field.  The existing one-root KP boundary tail therefore identifies
 the completed-box limit with the already constructed infinite-volume state.
 
-No Douglas compatibility or Dobrushin uniqueness theorem enters the proof.
+The thermodynamic-limit comparison and quantitative prefactor both come from
+the one-root KP/tree cluster bound.
 -/
 
 namespace YangMills.StrongCoupling

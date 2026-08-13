@@ -16,7 +16,7 @@ import YangMills.StrongCoupling.ObservableRootPolymer
 This file instantiates the symmetric finite Mayer logarithm and its genuine
 weighted KP/tree estimate with the explicit plaquette-animal certificate.  It
 is the cluster-expansion bridge used by the thermodynamic-limit and
-correlation layers; it does not use the Douglas influence-matrix baseline.
+correlation layers.
 
 The older deletion-ratio consequences are retained below as a separately
 named finite-volume baseline.  The symmetric logarithm and summability

@@ -25,7 +25,9 @@ This is the repository-facing index of the
 9. Cubic-lattice connected-set counting and a safe small-`|β|` criterion.
 10. Exponential boundary-condition sensitivity.
 11. Boundary-independent infinite-volume local state.
-12. Infinite-volume probability measure and DLR uniqueness.
+12. Infinite-volume probability measure and uniqueness of the probability
+    representing the cluster-expanded local state.  Uniqueness among all DLR
+    measures would require a separate theorem.
 13. Exponential clustering for general local observables.
 14. Analytic local expectations and pressure.
 

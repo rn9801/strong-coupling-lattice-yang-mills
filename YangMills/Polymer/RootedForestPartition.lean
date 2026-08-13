@@ -18,8 +18,7 @@ type: a component is recorded by its vertex finset and its ambient edge
 finset.  In particular, no transport between the varying connected-component
 subtypes remains in the subsequent weighted enumeration.
 
-This is a polymer-only combinatorial module.  It does not use the Yang--Mills
-or Douglas compatibility layers.
+This is a model-independent polymer/combinatorics module.
 -/
 
 namespace YangMills.Polymer

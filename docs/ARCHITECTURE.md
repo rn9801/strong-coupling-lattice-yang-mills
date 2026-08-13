@@ -6,7 +6,7 @@
 Basic ──> Lattice ──> Gauge ──> Wilson
                          │          │
 Polymer ─────────────────┴──────────> StrongCoupling
-Lattice + Gauge + Wilson ──────────> ReflectionPositivity
+Lattice + Gauge + Wilson ──────────> Gauge.SiteReflection*
 Compat ──> Baseline and explicit adapter lemmas only
 ```
 
@@ -19,6 +19,12 @@ probability. `Wilson` owns finite-dimensional unitary representation data.
 The `Compat` layer may import upstream `LGT`; core generic modules may not. This
 prevents periodic-torus implementation choices from leaking into box and
 infinite-lattice definitions.
+
+`YangMills.lean` is the project-native public root.  It reaches the completed
+theorem families through four terminal imports without making audits,
+milestone tests, the periodic Douglas baseline, or the older Dobrushin
+comparison branch prerequisites of every build.  `YangMills.Regression` is
+the opt-in comprehensive root for those modules.
 
 ## Mathematical API boundaries
 
@@ -34,3 +40,18 @@ infinite-lattice definitions.
 Each nontrivial file begins with its conventions, paper-level role, and any
 upstream provenance. Public modules should be small enough to review in one pull
 request and should expose reusable helper lemmas rather than monolithic proofs.
+
+## Build targets
+
+Run the narrow changed module first, then the project-native root:
+
+```sh
+lake build YangMills.Path.To.ChangedModule
+lake build
+```
+
+Before a release or after changing a shared foundational API, also run:
+
+```sh
+lake build +YangMills.Regression
+```

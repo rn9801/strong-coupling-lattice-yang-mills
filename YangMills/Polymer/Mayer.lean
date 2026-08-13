@@ -31,8 +31,7 @@ Mathematical references:
 * D. Ueltschi, *Cluster expansions and correlation functions*, Moscow Math.
   J. 4 (2004), 511--522.
 
-This module is self-contained and does not import any Yang--Mills or Douglas
-compatibility module.
+This module is part of the model-independent polymer layer.
 -/
 
 namespace YangMills.Polymer

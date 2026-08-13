@@ -21,8 +21,8 @@ a signed coordinate direction; its `positive` projection identifies the unique
 positive edge on which a future gauge configuration is evaluated. Reversal
 therefore changes orientation, not the set of stored variables.
 
-This file is original project infrastructure and does not import the periodic
-Douglas compatibility layer.
+These conventions are the common geometry used by the project-native box,
+gauge, polymer, and reflection constructions.
 -/
 
 namespace YangMills.Lattice.Cubic

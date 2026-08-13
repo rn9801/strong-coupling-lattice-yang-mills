@@ -17,8 +17,7 @@ import Mathlib.Analysis.Complex.LocallyUniformLimit
 Finite-volume plaquette-polymer types depend on a specification.  Pressure
 instead needs one stable countable index on the full cubic lattice.  This file
 defines that index, its canonical finite Haar activity, and its translation
-action.  These are the geometric objects used by the anchored cluster series;
-no Dobrushin or Douglas compatibility result is imported.
+action.  These are the geometric objects used by the anchored cluster series.
 -/
 
 namespace YangMills.StrongCoupling
