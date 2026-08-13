@@ -2,7 +2,41 @@
 
 Last updated: 2026-08-13
 
-## Next milestone: 19 -- Infinite-volume reflection positivity
+## Current milestone: 19 -- Infinite-volume reflection positivity
+
+### Milestone 19 progress
+
+- Added the infinite-lattice half-integer reflection on sites, stored positive
+  edges, and configurations, together with continuous anti-linear site/link
+  reflections of `LocalObservable`.  Both are proved involutive, and the link
+  action has the required inversion on perpendicular crossing links.
+- Defined the integer and half-integer positive local algebras by explicit
+  support predicates.  `SiteReflectionPositive` tests all positive-side local
+  observables; `LinkReflectionPositive` retains the full gauge-invariance
+  hypothesis required by Milestone 18.
+- Proved `siteReflectionPositive_of_localExpectation_tendsto` and
+  `linkReflectionPositive_of_localExpectation_tendsto`: realness and
+  nonnegativity pass to a local-state limit because `{0}` and `[0,∞)` are
+  closed.  The centered specializations consume
+  `tendsto_centered_localExpectation_infiniteVolume`, so this infinite-volume
+  passage is entirely based on the existing KP cluster expansion.
+- Proved boundary-condition independence of the resulting positivity
+  statements and used the constructed measure's translation invariance to
+  transfer the basic planes at `0` and `1/2` to every parallel integer and
+  half-integer plane.
+- Constructed the centered site-symmetric and shifted link-symmetric box
+  families, proved their site geometry invariant under reflection, and proved
+  the link family cofinal on every finite edge support.
+- Added `YangMills.Tests.Milestone19`, exercising the reflection involutions,
+  support predicates, symmetric-box geometry, abstract closed-limit passage,
+  centered cluster specialization, and all-plane translation theorems.
+- Remaining blocker for the Milestone-19 exit criterion: M17/M18 prove the
+  finite positivity theorems for fixed labelled-variable normal forms, while
+  their own headers defer the geometric identification with a cubic
+  `FiniteSpecification`.  The symmetric approximants are now available, but
+  their finite Gibbs integrals must still be transported to those labelled
+  normal forms before unconditional reflection positivity of the constructed
+  infinite-volume measure can honestly be stated.
 
 ### Completed
 

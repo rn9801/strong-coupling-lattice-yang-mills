@@ -6,7 +6,8 @@ coupling in Lean 4.  The project works on the infinite cubic lattice
 fields, and derives the thermodynamic results from a convergent plaquette
 polymer/Mayer expansion.
 
-Milestones 0--18 are complete.  The principal proved results are:
+Milestones 0--18 are complete, and the local-state limit/translation part of
+Milestone 19 is formalized.  The principal proved results are:
 
 - finite-volume gauge invariance and finite-volume DLR consistency;
 - an exact plaquette-polymer representation of the partition function;
@@ -28,12 +29,16 @@ Milestones 0--18 are complete.  The principal proved results are:
   half-integer/link-hyperplane decomposition at `β ≥ 0`; here the
   positive-side observables are gauge invariant because the proof fixes all
   crossing-forest links to the identity.
+- a closed-limit theorem transferring eventual finite-volume site/link
+  reflection positivity to the cluster-constructed infinite-volume measure,
+  plus translation from the planes at `0` and `1/2` to all parallel planes.
 
 The thermodynamic limit, clustering, analyticity, pressure, and area-law
 proofs use the cluster expansion and its explicit KP/tree bounds.  They do not
 use the separate periodic-torus Dobrushin regression theorem.
 
-The next target is infinite-volume reflection positivity.  See
+The remaining Milestone-19 target is the finite geometric identification of
+the symmetric cubic approximants with the labelled M17/M18 normal forms.  See
 [`STATUS.md`](STATUS.md) for the exact declaration-level progress and
 [`docs/ROADMAP.md`](docs/ROADMAP.md) for the remaining milestones.
 
@@ -397,6 +402,34 @@ decomposition.  The separate geometric theorem identifying every standard
 reflection-symmetric cubic `FiniteSpecification` with this normal form is
 future work; the README therefore does not claim that stronger statement.
 
+### Infinite-volume reflection limit
+
+`LocalObservable.siteTheta` and `LocalObservable.linkTheta` implement the two
+anti-linear reflections on the full infinite-lattice local algebra.  The
+predicates `SiteReflectionPositive` and `LinkReflectionPositive` state
+positivity directly for a Borel measure; the link predicate retains full
+local gauge invariance.
+
+Theorems `siteReflectionPositive_of_localExpectation_tendsto` and
+`linkReflectionPositive_of_localExpectation_tendsto` prove that these are
+closed conditions under convergence of every local expectation.  Their
+centered specializations use
+`tendsto_centered_localExpectation_infiniteVolume`, hence the passage to the
+infinite-volume measure is based on the KP cluster expansion.  Translation
+invariance then gives all parallel integer and half-integer planes.
+
+The centered boxes and the shifted boxes symmetric about `1/2` are proved
+cofinal and geometrically invariant.  What remains is to identify their
+finite Gibbs integrals with the already-proved fixed-labelled site/link
+reflection normal forms; until that bridge is supplied, the final unconditional
+Milestone-19 theorem is intentionally not claimed.
+
+Principal files:
+[`Gauge/InfiniteReflection.lean`](YangMills/Gauge/InfiniteReflection.lean),
+[`StrongCoupling/SymmetricReflectionBoxes.lean`](YangMills/StrongCoupling/SymmetricReflectionBoxes.lean),
+and
+[`StrongCoupling/InfiniteVolumeReflectionPositivity.lean`](YangMills/StrongCoupling/InfiniteVolumeReflectionPositivity.lean).
+
 Principal files:
 [`Gauge/SiteReflection.lean`](YangMills/Gauge/SiteReflection.lean) and
 [`Gauge/SiteReflectionPositivity.lean`](YangMills/Gauge/SiteReflectionPositivity.lean).
@@ -416,6 +449,7 @@ Principal files:
 | Boundary-independent thermodynamic limit | `tendsto_centered_localExpectation_infiniteVolume`, `centeredInfiniteVolumeMeasure_boundary_independent` |
 | Uniqueness of the representing probability | `centeredInfiniteVolumeMeasure_unique` |
 | Infinite-volume symmetries | `centeredInfiniteVolumeMeasure_map_gaugeTransform`, `centeredInfiniteVolume_integral_translatePullback` |
+| Reflection-positive local limits | `centeredInfiniteVolume_siteReflectionPositive_of_eventually`, `centeredInfiniteVolume_linkReflectionPositive_of_eventually`, `centeredInfiniteVolume_siteReflectionPositive_all_planes`, `centeredInfiniteVolume_linkReflectionPositive_all_planes` |
 | Exponential clustering | `centeredInfiniteVolume_exponential_clustering`, `centeredInfiniteVolume_clusteringMass_pos` |
 | Analytic local expectations | `analyticOnNhd_analyticInfiniteVolumeLocalExpectation`, `analyticInfiniteVolumeLocalExpectation_boundary_independent` |
 | Analytic pressure and finite-volume limit | `analyticOnNhd_anchoredPressure`, `tendsto_normalized_symmetricMayerSum_centeredBasePlaquettes` |
@@ -570,9 +604,10 @@ are not repeated throughout unrelated cluster-expansion modules.
   positivity is proved for a supplied crossing-forest gauge-fixing normal
   form and gauge-invariant positive observables: product-Haar gauge fixing,
   the explicit matrix-coefficient trace contraction, the normally convergent
-  Taylor expansion, and Fubini give a labelled Gram sum.  The general
-  symmetric-box identification, infinite-volume reflection positivity, and
-  optional OS reconstruction remain future milestones.
+  Taylor expansion, and Fubini give a labelled Gram sum.  Symmetric cofinal
+  boxes, the cluster-based closed-limit passage, and translation to all planes
+  are now formalized.  The finite geometric identification with the labelled
+  normal forms, and optional OS reconstruction, remain future work.
 
 ## Documentation and license
 
