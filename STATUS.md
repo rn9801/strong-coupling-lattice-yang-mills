@@ -169,6 +169,22 @@ Last updated: 2026-08-13
 - Rewrote the README with the lattice, gauge, Gibbs, Wilson, polymer/Mayer/KP,
   thermodynamic, pressure, area-law, and reflection definitions; indexed the
   main proved declarations and documented their exact present scope.
+- Completed a second, declaration-level README pass.  It now records the
+  ambient typeclass hypotheses and coupling domain of every headline theorem
+  family; distinguishes the unconditional formal Mayer identity from its
+  KP-summable numerical evaluation; states the exact site, link, and diagonal
+  positive-support predicates; and spells out the normalization and uniqueness
+  scope of the infinite-volume measure, clustering bound, analytic pressure,
+  and rectangular area law.  A layer table separates the model-independent
+  hard-core polymer and finite-product Gibbs APIs from cubic-lattice,
+  Yang--Mills, Wilson, center-charge, and reflection-specific inputs.
+- Added an explicit source-role ledger and bibliography.  Seiler is identified
+  as the principal constructive strong-coupling guide; Osterwalder--Seiler,
+  Menotti--Pelissetto, and Kotecký--Preiss are credited for their precise
+  mathematical roles; Whitney/Penrose are cited for the named graph methods;
+  and mathematical guidance is separated from the two attributed
+  Douglas--Rajasekaran Lean adaptations, the optional periodic Dobrushin
+  regression, Mathlib, and `markov-semigroups`.
 - Centralized the use and Apache-2.0 provenance of the pinned LGT repository,
   crediting Michael R. Douglas and Fred Rajasekaran, and removed repetitive
   historical comparisons from unrelated project-native module comments.
@@ -1335,6 +1351,13 @@ Commands are added here only after they succeed.
   cluster-expansion infinite-volume transfers, concrete reviewer examples,
   axiom audits, all earlier milestones, and the optional Douglas/Dobrushin
   regression routes compile together without errors.
+2026-08-13: lake build +YangMills
+  Success; 3,101 jobs after the rigorous README and bibliography pass.  The
+  project-native public module graph remains green; the emitted messages are
+  the already tracked linter-warning backlog.
+2026-08-13: lake build
+  Success; 3,102 jobs.  The default public build remains green after the
+  documentation-only changes; no theorem source or dependency pin changed.
 ```
 
 ## Conventions fixed so far
