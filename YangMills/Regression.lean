@@ -27,6 +27,9 @@ import YangMills.Tests.Milestone16
 import YangMills.Tests.Milestone17
 import YangMills.Tests.Milestone18
 import YangMills.Tests.Milestone19
+import YangMills.Tests.DiagonalReflection
+import YangMills.Tests.ConcreteLinkReflection
+import YangMills.Tests.ConcreteSiteReflection
 import YangMills.Tests.ReviewerSmoke
 
 /-!

@@ -5,9 +5,14 @@ Authors: The Strong-Coupling Lattice Yang--Mills contributors
 -/
 
 import YangMills.Gauge.FiniteEdgeHaar
+import YangMills.Gauge.DiagonalReflectionPositivity
 import YangMills.Gauge.LinkReflectionPositivity
 import YangMills.Gauge.SiteReflectionPositivity
+import YangMills.StrongCoupling.InfiniteVolumeDiagonalReflectionPositivity
 import YangMills.StrongCoupling.InfiniteVolumeReflectionPositivity
+import YangMills.StrongCoupling.ConcreteDiagonalReflectionPositivity
+import YangMills.StrongCoupling.ConcreteLinkReflectionPositivity
+import YangMills.StrongCoupling.ConcreteSiteReflectionPositivity
 import YangMills.StrongCoupling.ThermodynamicPressure
 import YangMills.StrongCoupling.WilsonAreaLaw
 

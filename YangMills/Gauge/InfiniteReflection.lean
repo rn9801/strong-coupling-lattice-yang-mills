@@ -183,7 +183,97 @@ def linkReflectionEquiv {d : ℕ} (τ : Fin d) (k : ℤ) :
   left_inv := linkReflect_linkReflect τ k
   right_inv := linkReflect_linkReflect τ k
 
+theorem linkReflect_endpoints {d : ℕ} (τ : Fin d) (k : ℤ)
+    (e : PositiveEdge d) :
+    ((e.linkReflect τ k).source = linkReflection τ k e.source ∧
+        (e.linkReflect τ k).target = linkReflection τ k e.target) ∨
+      ((e.linkReflect τ k).source = linkReflection τ k e.target ∧
+        (e.linkReflect τ k).target = linkReflection τ k e.source) := by
+  rcases e with ⟨x, i⟩
+  by_cases hi : i = τ
+  · subst i
+    right
+    constructor
+    · simp [PositiveEdge.linkReflect]
+    · simp only [PositiveEdge.linkReflect, if_pos, PositiveEdge.target]
+      change step (linkReflection τ k (step x (.forward τ))) (.forward τ) =
+        linkReflection τ k x
+      ext j
+      by_cases hj : j = τ
+      · subst j
+        simp [step, SignedDirection.forward, SignedDirection.delta, unitVector]
+        ring
+      · simp [step, SignedDirection.forward, SignedDirection.delta, unitVector, hj]
+  · left
+    constructor
+    · simp [PositiveEdge.linkReflect, hi]
+    · simp only [PositiveEdge.linkReflect, hi, if_false, PositiveEdge.target]
+      change step (linkReflection τ k x) (.forward i) =
+        linkReflection τ k (step x (.forward i))
+      ext j
+      by_cases hj : j = τ
+      · subst j
+        simp [step, SignedDirection.forward, SignedDirection.delta, unitVector,
+          Ne.symm hi]
+      · simp [step, SignedDirection.forward, SignedDirection.delta, unitVector, hj]
+
 end PositiveEdge
+
+namespace Plaquette
+
+/-- The canonical plaquette obtained by reflection through the half-integer
+plane `x τ = k + 1/2`.  It is the integer-reflected plaquette translated by
+one lattice unit in the perpendicular direction. -/
+def linkReflect {d : ℕ} (τ : Fin d) (k : ℤ) (p : Plaquette d) : Plaquette d :=
+  (p.siteReflect τ k).translate (unitVector τ)
+
+@[simp]
+theorem first_linkReflect {d : ℕ} (τ : Fin d) (k : ℤ) (p : Plaquette d) :
+    (p.linkReflect τ k).first = p.first := by
+  simp only [linkReflect, Plaquette.translate, Plaquette.first_siteReflect]
+
+@[simp]
+theorem second_linkReflect {d : ℕ} (τ : Fin d) (k : ℤ) (p : Plaquette d) :
+    (p.linkReflect τ k).second = p.second := by
+  simp only [linkReflect, Plaquette.translate, Plaquette.second_siteReflect]
+
+@[simp]
+theorem linkReflect_linkReflect {d : ℕ} (τ : Fin d) (k : ℤ)
+    (p : Plaquette d) :
+    (p.linkReflect τ k).linkReflect τ k = p := by
+  rcases p with ⟨x, i, j, hij⟩
+  by_cases h : i = τ ∨ j = τ
+  · simp only [linkReflect, Plaquette.siteReflect, h, if_pos,
+      Plaquette.translate]
+    congr 1
+    ext a
+    by_cases ha : a = τ
+    · subst a
+      simp [Lattice.Cubic.translate, step, SignedDirection.delta,
+        unitVector]
+      ring
+    · simp [Lattice.Cubic.translate, step, SignedDirection.delta,
+        SignedDirection.backward, unitVector, ha]
+  · simp only [linkReflect, Plaquette.siteReflect, h, if_false,
+      Plaquette.translate]
+    congr 1
+    ext a
+    by_cases ha : a = τ
+    · subst a
+      simp [Lattice.Cubic.translate, unitVector]
+      ring
+    · simp [Lattice.Cubic.translate, unitVector, ha]
+
+/-- Half-integer reflection as an involutive equivalence of canonical
+plaquettes. -/
+def linkReflectionEquiv {d : ℕ} (τ : Fin d) (k : ℤ) :
+    Plaquette d ≃ Plaquette d where
+  toFun := linkReflect τ k
+  invFun := linkReflect τ k
+  left_inv := linkReflect_linkReflect τ k
+  right_inv := linkReflect_linkReflect τ k
+
+end Plaquette
 
 end YangMills.Lattice.Cubic
 
@@ -196,11 +286,109 @@ noncomputable section
 variable {d : ℕ} {G : Type*} [Group G] [TopologicalSpace G]
   [IsTopologicalGroup G]
 
+omit [TopologicalSpace G] [IsTopologicalGroup G] in
 /-- Half-integer reflection of a full stored-edge configuration. -/
 def linkReflectConfiguration (τ : Fin d) (k : ℤ) (A : Configuration d G) :
     Configuration d G :=
   fun e => if e.direction = τ then (A (e.linkReflect τ k))⁻¹
     else A (e.linkReflect τ k)
+
+omit [TopologicalSpace G] [IsTopologicalGroup G] in
+theorem positiveEdge_linkReflect_eq_translate_siteReflect
+    (τ : Fin d) (k : ℤ) (e : PositiveEdge d) :
+    e.linkReflect τ k = (e.siteReflect τ k).translate (unitVector τ) := by
+  rcases e with ⟨x, i⟩
+  by_cases hi : i = τ
+  · subst i
+    simp only [PositiveEdge.linkReflect, PositiveEdge.siteReflect, if_pos,
+      PositiveEdge.translate]
+    congr 1
+  · simp only [PositiveEdge.linkReflect, PositiveEdge.siteReflect, hi,
+      if_false, PositiveEdge.translate]
+    congr 1
+
+omit [TopologicalSpace G] [IsTopologicalGroup G] in
+/-- Link reflection is integer reflection applied after translating the
+underlying field by one perpendicular lattice unit. -/
+theorem linkReflectConfiguration_eq_siteReflect_translate
+    (τ : Fin d) (k : ℤ) (A : Configuration d G) :
+    linkReflectConfiguration τ k A =
+      siteReflectConfiguration τ k
+        (fun e => A (e.translate (unitVector τ))) := by
+  funext e
+  by_cases he : e.direction = τ
+  · simp only [linkReflectConfiguration, siteReflectConfiguration, he,
+      if_pos]
+    rw [positiveEdge_linkReflect_eq_translate_siteReflect]
+  · simp only [linkReflectConfiguration, siteReflectConfiguration, he,
+      if_false]
+    rw [positiveEdge_linkReflect_eq_translate_siteReflect]
+
+omit [TopologicalSpace G] [IsTopologicalGroup G] in
+/-- Reflection transports a gauge transformation by reflecting its site
+argument. -/
+theorem linkReflectConfiguration_gaugeTransform
+    (τ : Fin d) (k : ℤ) (g : GaugeTransformation d G)
+    (A : Configuration d G) :
+    linkReflectConfiguration τ k (gaugeTransform g A) =
+      gaugeTransform (fun x => g (linkReflection τ k x))
+        (linkReflectConfiguration τ k A) := by
+  funext e
+  by_cases hdir : e.direction = τ
+  · have hend :
+        (e.linkReflect τ k).source = linkReflection τ k e.target ∧
+          (e.linkReflect τ k).target = linkReflection τ k e.source := by
+      rcases e with ⟨x, i⟩
+      simp only at hdir
+      subst i
+      constructor
+      · simp [PositiveEdge.linkReflect]
+      · simp only [PositiveEdge.linkReflect, if_pos, PositiveEdge.target]
+        change step (linkReflection τ k (step x (.forward τ))) (.forward τ) =
+          linkReflection τ k x
+        ext j
+        by_cases hj : j = τ
+        · subst j
+          simp [step, SignedDirection.forward, SignedDirection.delta, unitVector]
+          ring
+        · simp [step, SignedDirection.forward, SignedDirection.delta, unitVector, hj]
+    simp only [linkReflectConfiguration, hdir, if_true, gaugeTransform_apply,
+      mul_inv_rev]
+    rw [hend.1, hend.2]
+    group
+  · have hend :
+        (e.linkReflect τ k).source = linkReflection τ k e.source ∧
+          (e.linkReflect τ k).target = linkReflection τ k e.target := by
+      rcases e with ⟨x, i⟩
+      simp only at hdir
+      constructor
+      · simp [PositiveEdge.linkReflect, hdir]
+      · simp only [PositiveEdge.linkReflect, hdir, if_false,
+          PositiveEdge.target]
+        change step (linkReflection τ k x) (.forward i) =
+          linkReflection τ k (step x (.forward i))
+        ext j
+        by_cases hj : j = τ
+        · subst j
+          simp [step, SignedDirection.forward, SignedDirection.delta, unitVector,
+            Ne.symm hdir]
+        · simp [step, SignedDirection.forward, SignedDirection.delta, unitVector, hj]
+    simp only [linkReflectConfiguration, hdir, if_false, gaugeTransform_apply]
+    rw [hend.1, hend.2]
+
+/-- Wilson plaquette potentials are covariant under half-integer reflection.
+This follows from the integer-reflection identity and translation covariance
+of plaquette holonomy. -/
+@[simp]
+theorem RealPlaquettePotential.apply_holonomy_linkReflectConfiguration
+    (Φ : RealPlaquettePotential G) (τ : Fin d) (k : ℤ)
+    (A : Configuration d G) (p : Plaquette d) :
+    Φ (holonomy (linkReflectConfiguration τ k A) p.boundary) =
+      Φ (holonomy A (p.linkReflect τ k).boundary) := by
+  rw [linkReflectConfiguration_eq_siteReflect_translate]
+  rw [Φ.apply_holonomy_siteReflectConfiguration]
+  rw [holonomy_plaquette_translate]
+  rfl
 
 omit [TopologicalSpace G] [IsTopologicalGroup G] in
 @[simp]
@@ -383,6 +571,18 @@ theorem IsGaugeInvariant.conj {F : LocalObservable d G}
     (hF : IsGaugeInvariant F) : IsGaugeInvariant F.conj := by
   intro g A
   exact congrArg star (hF g A)
+
+/-- Half-integer reflection preserves full local gauge invariance. -/
+theorem IsGaugeInvariant.linkTheta {F : LocalObservable d G}
+    (hF : IsGaugeInvariant F) (τ : Fin d) (k : ℤ) :
+    IsGaugeInvariant (F.linkTheta τ k) := by
+  intro g A
+  change star (F (linkReflectConfiguration τ k (gaugeTransform g A))) =
+    star (F (linkReflectConfiguration τ k A))
+  rw [linkReflectConfiguration_gaugeTransform]
+  exact congrArg star
+    (hF (fun x => g (linkReflection τ k x))
+      (linkReflectConfiguration τ k A))
 
 omit [IsTopologicalGroup G] in
 /-- Translation preserves full local gauge invariance. -/

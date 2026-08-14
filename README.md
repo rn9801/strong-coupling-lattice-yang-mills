@@ -6,8 +6,11 @@ coupling in Lean 4.  The project works on the infinite cubic lattice
 fields, and derives the thermodynamic results from a convergent plaquette
 polymer/Mayer expansion.
 
-Milestones 0--18 are complete, and the local-state limit/translation part of
-Milestone 19 is formalized.  The principal proved results are:
+Milestones 0--19 are complete.  Integer/site, half-integer/link, and affine
+diagonal reflection positivity are connected from concrete cubic Gibbs
+specifications to the cluster-constructed infinite-volume measure, together
+with the corresponding reflected Cauchy--Schwarz inequalities.
+The principal proved results are:
 
 - finite-volume gauge invariance and finite-volume DLR consistency;
 - an exact plaquette-polymer representation of the partition function;
@@ -22,25 +25,34 @@ Milestone 19 is formalized.  The principal proved results are:
   pressure throughout the explicit strong-coupling disk;
 - center selection, vanishing Wilson-loop Taylor coefficients below the
   filling area, and a strong-coupling rectangle area law;
-- reflection positivity and reflection Cauchy--Schwarz for an
-  integer-hyperplane, reflection-adapted finite Wilson action decomposition,
-  with no gauge-invariance assumption on the positive-side observables.
-- reflection positivity and normalized reflection Cauchy--Schwarz for a
-  half-integer/link-hyperplane decomposition at `β ≥ 0`; here the
-  positive-side observables are gauge invariant because the proof fixes all
-  crossing-forest links to the identity.
-- a closed-limit theorem transferring eventual finite-volume site/link
-  reflection positivity to the cluster-constructed infinite-volume measure,
-  plus translation from the planes at `0` and `1/2` to all parallel planes.
+- reflection positivity and reflection Cauchy--Schwarz for concrete centered
+  finite Gibbs measures and for the strong-coupling infinite-volume measure
+  at every integer coordinate plane, with no gauge-invariance assumption on
+  positive-side observables;
+- reflection positivity and reflection Cauchy--Schwarz for concrete completed
+  link-symmetric Gibbs boxes and for the infinite-volume measure at every
+  half-integer coordinate plane when `β ≥ 0` lies in the strong-coupling
+  disk; positive-side observables are gauge invariant because the proof fixes
+  all links crossing the plane to the identity;
+- reflection positivity and Cauchy--Schwarz for concrete centered Gibbs boxes
+  and for the infinite-volume measure at every diagonal plane
+  `xτ - xσ = k` when `β ≥ 0` lies in the strong-coupling disk, proved by
+  conditioning on the links in the plane and applying the explicit
+  cut-plaquette Taylor/Fubini Gram expansion; no gauge-invariance assumption
+  is made on observables;
+- closed-limit theorems transferring eventual finite-volume site, link, and
+  diagonal reflection positivity and Cauchy--Schwarz to the
+  cluster-constructed infinite-volume measure, followed by translation to
+  all parallel affine planes.
 
 The thermodynamic limit, clustering, analyticity, pressure, and area-law
 proofs use the cluster expansion and its explicit KP/tree bounds.  They do not
 use the separate periodic-torus Dobrushin regression theorem.
 
-The remaining Milestone-19 target is the finite geometric identification of
-the symmetric cubic approximants with the labelled M17/M18 normal forms.  See
-[`STATUS.md`](STATUS.md) for the exact declaration-level progress and
-[`docs/ROADMAP.md`](docs/ROADMAP.md) for the remaining milestones.
+The optional next phase is Osterwalder--Schrader reconstruction and a genuine
+Hamiltonian spectral-gap theorem.  See [`STATUS.md`](STATUS.md) for the exact
+declaration-level progress and [`docs/ROADMAP.md`](docs/ROADMAP.md) for the
+remaining optional milestone.
 
 ## Mathematical model and conventions
 
@@ -397,38 +409,126 @@ ordinary complex `L²` inner product of weighted half-volume amplitudes.  This
 proves reflection positivity for every real `β`, and the normalized pairing
 satisfies Cauchy--Schwarz.
 
-At present this theorem is formulated for a reflection-adapted Wilson action
-decomposition.  The separate geometric theorem identifying every standard
-reflection-symmetric cubic `FiniteSpecification` with this normal form is
-future work; the README therefore does not claim that stronger statement.
+`FiniteSpecification.SiteSymmetric` records invariance of the dynamic edges,
+active plaquettes, and exterior field.  The concrete bridge partitions its
+edge variables and plaquettes into plane and reflected strict-side pieces,
+proves product-Haar preservation of the resulting label equivalence, and
+transports its action and positive-side local observables to the labelled
+normal form.  Consequently every such finite specification satisfies
+reflection positivity and Cauchy--Schwarz.  Centered boxes with identity
+exterior data satisfy this symmetry at the origin; the KP local-expectation
+limit, boundary independence, and translation invariance then prove both
+statements for the constructed infinite-volume measure at every integer
+coordinate plane throughout the explicit strong-coupling disk.
+
+### Half-integer/link-hyperplane reflection
+
+Link reflection through `xτ = k + 1/2` exchanges the two open half-lattices
+and inverts the stored perpendicular edges crossing the plane.  Its positive
+algebra consists of local observables supported on the positive side and,
+unlike the site and diagonal cases, requires gauge invariance.
+
+The concrete finite bridge applies a one-sided lattice gauge transformation
+on the first positive layer.  It sends every crossing edge to the identity,
+preserves product Haar measure by coordinatewise left/right multiplication,
+and leaves the negative half unchanged.  The cut-plaquette Wilson factors can
+then be Taylor-expanded into matrix coefficients; Fubini identifies every
+coefficient with a finite Gram sum.  This proves normalized finite-volume
+positivity and reflected Cauchy--Schwarz at `β ≥ 0`.
+
+The completed link-symmetric specification makes every edge read by an active
+plaquette dynamic.  The one-root KP boundary estimate proves that its local
+expectations and those of ordinary centered boxes have the same limit.
+Consequently the cluster-constructed state is link-reflection positive and
+satisfies reflected Cauchy--Schwarz at every half-integer coordinate plane
+throughout the nonnegative part of the explicit strong-coupling disk.
+
+Principal files:
+[`Gauge/LinkReflectionBridge.lean`](YangMills/Gauge/LinkReflectionBridge.lean)
+and
+[`StrongCoupling/ConcreteLinkReflectionPositivity.lean`](YangMills/StrongCoupling/ConcreteLinkReflectionPositivity.lean).
+
+### Diagonal-hyperplane reflection
+
+For distinct coordinates `τ` and `σ`, reflection through
+`xτ - xσ = k` is the involution
+
+```text
+(xτ,xσ) ↦ (xσ+k,xτ-k).
+```
+
+It permutes stored positive edges without inversion.  The finite labelled
+normal form consists of common plane variables `U₀` and two strict-side
+fields `U₋,U₊`.  At fixed `U₀`, every cut-plaquette term has the Wilson
+form
+
+```text
+Φ(hq(U₀,U₊) * hq(U₀,U₋)⁻¹).
+```
+
+The exponential of these terms is expanded in its normally convergent Taylor
+series.  Expanding the unitary-representation traces into matrix coefficients
+and applying product-Haar Fubini identifies each coefficient with a finite
+Gram sum.  The remaining plane integral has a positive real weight.  There
+are no perpendicular crossing-link variables to gauge-fix, so the positive
+algebra is the full continuous one-sided algebra, without a gauge-invariance
+premise.  Both the unnormalized and normalized pairings satisfy
+Cauchy--Schwarz.
+
+The concrete bridge partitions a diagonally symmetric cubic specification
+into fixed-plane and paired side labels and transports its Haar integral,
+action, and supported observables to this normal form.  Centered boxes with
+identity exterior data have the required symmetry.  Their finite positivity
+and Cauchy--Schwarz inequalities pass through the KP local-expectation limit,
+boundary independence, and translation invariance to every affine diagonal
+plane in infinite volume.
+
+Principal files:
+[`Gauge/DiagonalReflection.lean`](YangMills/Gauge/DiagonalReflection.lean),
+[`Gauge/DiagonalReflectionPositivity.lean`](YangMills/Gauge/DiagonalReflectionPositivity.lean),
+[`Gauge/DiagonalReflectionBridge.lean`](YangMills/Gauge/DiagonalReflectionBridge.lean),
+and
+[`StrongCoupling/ConcreteDiagonalReflectionPositivity.lean`](YangMills/StrongCoupling/ConcreteDiagonalReflectionPositivity.lean).
 
 ### Infinite-volume reflection limit
 
-`LocalObservable.siteTheta` and `LocalObservable.linkTheta` implement the two
-anti-linear reflections on the full infinite-lattice local algebra.  The
-predicates `SiteReflectionPositive` and `LinkReflectionPositive` state
-positivity directly for a Borel measure; the link predicate retains full
-local gauge invariance.
+`LocalObservable.siteTheta`, `LocalObservable.linkTheta`, and
+`LocalObservable.diagonalTheta` implement the three anti-linear reflections
+on the full infinite-lattice local algebra.  The predicates
+`SiteReflectionPositive`, `LinkReflectionPositive`, and
+`DiagonalReflectionPositive` state positivity directly for a Borel measure;
+only the link predicate retains full local gauge invariance.
 
-Theorems `siteReflectionPositive_of_localExpectation_tendsto` and
-`linkReflectionPositive_of_localExpectation_tendsto` prove that these are
-closed conditions under convergence of every local expectation.  Their
-centered specializations use
+The corresponding `*_of_localExpectation_tendsto` theorems prove that
+positivity and reflection Cauchy--Schwarz are closed under convergence of
+every local expectation.  Their centered specializations use
 `tendsto_centered_localExpectation_infiniteVolume`, hence the passage to the
 infinite-volume measure is based on the KP cluster expansion.  Translation
-invariance then gives all parallel integer and half-integer planes.
+invariance then gives all parallel integer, half-integer, and affine diagonal
+planes.
 
-The centered boxes and the shifted boxes symmetric about `1/2` are proved
-cofinal and geometrically invariant.  What remains is to identify their
-finite Gibbs integrals with the already-proved fixed-labelled site/link
-reflection normal forms; until that bridge is supplied, the final unconditional
-Milestone-19 theorem is intentionally not claimed.
+All three cases are connected to concrete cubic Gibbs integrals.  Site and
+diagonal reflection use identity-exterior centered boxes.  Link reflection
+uses completed boxes symmetric about `1/2`; the finite-specification Gibbs
+tower and one-root KP boundary estimate identify their local limit with the
+centered state.  Thus none of the infinite-volume reflection theorems relies
+on the Douglas/Dobrushin route.
 
 Principal files:
 [`Gauge/InfiniteReflection.lean`](YangMills/Gauge/InfiniteReflection.lean),
+[`Gauge/SiteReflectionBridge.lean`](YangMills/Gauge/SiteReflectionBridge.lean),
 [`StrongCoupling/SymmetricReflectionBoxes.lean`](YangMills/StrongCoupling/SymmetricReflectionBoxes.lean),
 and
-[`StrongCoupling/InfiniteVolumeReflectionPositivity.lean`](YangMills/StrongCoupling/InfiniteVolumeReflectionPositivity.lean).
+[`StrongCoupling/InfiniteVolumeReflectionPositivity.lean`](YangMills/StrongCoupling/InfiniteVolumeReflectionPositivity.lean),
+with the concrete specialization in
+[`StrongCoupling/ConcreteSiteReflectionPositivity.lean`](YangMills/StrongCoupling/ConcreteSiteReflectionPositivity.lean)
+and
+[`StrongCoupling/ConcreteLinkReflectionPositivity.lean`](YangMills/StrongCoupling/ConcreteLinkReflectionPositivity.lean).
+
+The diagonal extension is in
+[`StrongCoupling/InfiniteVolumeDiagonalReflectionPositivity.lean`](YangMills/StrongCoupling/InfiniteVolumeDiagonalReflectionPositivity.lean)
+and
+[`StrongCoupling/ConcreteDiagonalReflectionPositivity.lean`](YangMills/StrongCoupling/ConcreteDiagonalReflectionPositivity.lean).
 
 Principal files:
 [`Gauge/SiteReflection.lean`](YangMills/Gauge/SiteReflection.lean) and
@@ -449,13 +549,16 @@ Principal files:
 | Boundary-independent thermodynamic limit | `tendsto_centered_localExpectation_infiniteVolume`, `centeredInfiniteVolumeMeasure_boundary_independent` |
 | Uniqueness of the representing probability | `centeredInfiniteVolumeMeasure_unique` |
 | Infinite-volume symmetries | `centeredInfiniteVolumeMeasure_map_gaugeTransform`, `centeredInfiniteVolume_integral_translatePullback` |
-| Reflection-positive local limits | `centeredInfiniteVolume_siteReflectionPositive_of_eventually`, `centeredInfiniteVolume_linkReflectionPositive_of_eventually`, `centeredInfiniteVolume_siteReflectionPositive_all_planes`, `centeredInfiniteVolume_linkReflectionPositive_all_planes` |
+| Concrete reflection-positive local limits | `centeredInfiniteVolume_siteReflectionPositive`, `centeredInfiniteVolume_linkReflectionPositive`, `centeredInfiniteVolume_diagonalReflectionPositive` |
+| Infinite-volume reflected Cauchy--Schwarz | `centeredInfiniteVolume_siteReflectionCauchySchwarz`, `centeredInfiniteVolume_linkReflectionCauchySchwarz`, `centeredInfiniteVolume_diagonalReflectionCauchySchwarz` |
 | Exponential clustering | `centeredInfiniteVolume_exponential_clustering`, `centeredInfiniteVolume_clusteringMass_pos` |
 | Analytic local expectations | `analyticOnNhd_analyticInfiniteVolumeLocalExpectation`, `analyticInfiniteVolumeLocalExpectation_boundary_independent` |
 | Analytic pressure and finite-volume limit | `analyticOnNhd_anchoredPressure`, `tendsto_normalized_symmetricMayerSum_centeredBasePlaquettes` |
 | Center screening and area law | `rectangle_area_le_taylorOrder_of_taylorScreens`, `norm_integral_wilsonRectangle_le_areaLaw` |
-| Reflection positivity | `WilsonActionDecomposition.siteReflectionPositivity` |
-| Reflection Cauchy--Schwarz | `WilsonActionDecomposition.normSq_reflectionInnerProduct_le`, `WilsonActionDecomposition.norm_reflectionInnerProduct_le` |
+| Concrete finite site/link reflection positivity | `FiniteSpecification.siteReflectionPositive_gibbsMeasure`, `FiniteSpecification.linkReflectionPositive_gibbsMeasure` |
+| Concrete finite site/link Cauchy--Schwarz | `FiniteSpecification.normSq_integral_gibbsMeasure_siteReflectionProduct_le`, `FiniteSpecification.normSq_integral_gibbsMeasure_linkReflectionProduct_le` |
+| Diagonal Taylor/Fubini positivity | `DiagonalReflection.WilsonActionDecomposition.gibbsReflectionPairing_eq_taylorPairing`, `DiagonalReflection.WilsonActionDecomposition.diagonalReflectionPositivity` |
+| Diagonal Cauchy--Schwarz/all planes | `DiagonalReflection.WilsonActionDecomposition.normSq_reflectionInnerProduct_le`, `centeredInfiniteVolume_diagonalReflectionCauchySchwarz_all_planes` |
 
 All listed project theorems are proved without `sorry`, `admit`, custom
 axioms, or unsafe proof shortcuts.  Their expected kernel footprint consists
@@ -470,7 +573,8 @@ The default public root is deliberately small:
 ```text
 YangMills
 ├── Gauge.FiniteEdgeHaar
-├── Gauge.SiteReflectionPositivity
+├── concrete finite site, link, and diagonal reflection bridges
+├── concrete infinite-volume reflection positivity and Cauchy--Schwarz
 ├── StrongCoupling.ThermodynamicPressure
 └── StrongCoupling.WilsonAreaLaw
     ├── finite lattice, gauge, Haar, and Wilson layers
@@ -599,15 +703,14 @@ are not repeated throughout unrelated cluster-expansion modules.
   K(r)^(2(R+T)) · exp(-log(r/‖β‖) · R T).
   ```
 
-- Integer/site-hyperplane reflection positivity is proved for a supplied
-  reflection-adapted Wilson action split.  Half-integer/link-hyperplane
-  positivity is proved for a supplied crossing-forest gauge-fixing normal
-  form and gauge-invariant positive observables: product-Haar gauge fixing,
-  the explicit matrix-coefficient trace contraction, the normally convergent
-  Taylor expansion, and Fubini give a labelled Gram sum.  Symmetric cofinal
-  boxes, the cluster-based closed-limit passage, and translation to all planes
-  are now formalized.  The finite geometric identification with the labelled
-  normal forms, and optional OS reconstruction, remain future work.
+- Integer/site-hyperplane and affine diagonal reflection positivity and
+  Cauchy--Schwarz are proved for the cluster-constructed measure without
+  gauge-invariance assumptions on observables.  Half-integer/link-hyperplane
+  positivity and Cauchy--Schwarz are proved for gauge-invariant positive-side
+  observables.  Product-Haar gauge fixing, explicit matrix-coefficient trace
+  contraction, normally convergent Taylor expansion, and Fubini give the
+  finite Gram sum; the one-root KP estimate supplies the infinite-volume
+  passage.  Optional Osterwalder--Schrader reconstruction remains future work.
 
 ## Documentation and license
 

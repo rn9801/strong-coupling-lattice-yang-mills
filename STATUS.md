@@ -2,10 +2,67 @@
 
 Last updated: 2026-08-13
 
-## Current milestone: 19 -- Infinite-volume reflection positivity
+## Current milestone: 19 -- Infinite-volume reflection positivity (complete)
 
 ### Milestone 19 progress
 
+- Completed the concrete integer/site-hyperplane component of Milestone 19.
+  `FiniteSpecification.SiteSymmetric` records exact reflection invariance of
+  dynamic edges, active plaquettes, and exterior data.  The new finite bridge
+  partitions the concrete edge and plaquette labels, proves the product-Haar
+  transport, splits the Wilson action, and transports every supported local
+  observable to the labelled site-reflection normal form.
+- Proved `siteReflectionPositive_gibbsMeasure` and
+  `normSq_integral_gibbsMeasure_siteReflectionProduct_le` for every symmetric
+  concrete finite specification and every real coupling, without a
+  gauge-invariance hypothesis on observables.
+- Proved centered identity-exterior specifications symmetric about the origin
+  plane.  Finite positivity and Cauchy--Schwarz therefore hold for every
+  centered approximant.  Passing through the KP local-expectation limit,
+  using the one-root boundary-independence theorem, and translating gives the
+  unconditional theorems `centeredInfiniteVolume_siteReflectionPositive` and
+  `centeredInfiniteVolume_siteReflectionCauchySchwarz` for arbitrary exterior
+  sequences and every integer coordinate plane throughout the explicit
+  strong-coupling disk.
+- Added `YangMills.Tests.ConcreteSiteReflection`, including concrete finite
+  and infinite applications and axiom audits.  Every audited headline theorem
+  uses only `propext`, `Classical.choice`, and `Quot.sound`.
+
+- Added reflection through every affine diagonal plane
+  `x τ - x σ = k` for distinct axes.  The site, signed-direction,
+  signed-edge, stored-positive-edge, configuration, and local-observable
+  operations are involutive; stored positive edges are permuted without
+  inversion.
+- Added the diagonal positive local algebra, requiring both endpoints of each
+  support edge to lie in the closed positive half-lattice.  It contains all
+  such local observables and deliberately has no gauge-invariance condition.
+- Proved finite diagonal reflection positivity in the labelled
+  fixed-plane/two-side Wilson normal form at `β ≥ 0`.  The proof conditions
+  on tangential plane variables, identifies every fixed-plane slice with the
+  existing explicit cut-plaquette Taylor/matrix-coefficient expansion, uses
+  product-Haar Fubini, and integrates the resulting Gram sums with a positive
+  plane weight.  The full pairing equals its Taylor pairing exactly.
+- Proved Hermitian sesquilinearity and Cauchy--Schwarz for both the
+  unnormalized and normalized finite diagonal reflection pairings.
+- Proved the abstract closed-limit transfer of diagonal positivity and
+  Cauchy--Schwarz, specialized it to the centered infinite-volume measure via
+  `tendsto_centered_localExpectation_infiniteVolume`, proved boundary
+  independence, and used translation invariance to reach every affine
+  parallel diagonal plane.  Thus the diagonal infinite-volume passage is
+  based on the KP cluster expansion.
+- Added `YangMills.Tests.DiagonalReflection`, covering the affine formula,
+  configuration involution, support predicate, automatic absence of a gauge
+  premise, exact Taylor/Fubini equality, finite positivity and normalized
+  Cauchy--Schwarz, abstract local limits, and the centered cluster
+  specialization, with axiom audits of the headline declarations.
+- Completed the concrete diagonal bridge from diagonally symmetric cubic
+  `FiniteSpecification`s to the fixed-plane/two-side Taylor/Fubini normal
+  form.  Centered identity-exterior boxes have the required symmetry, so the
+  finite Gibbs laws satisfy diagonal positivity and Cauchy--Schwarz.
+  Boundary independence and translation invariance transfer these statements
+  through the KP local-expectation limit to every affine diagonal plane via
+  `centeredInfiniteVolume_diagonalReflectionPositive` and
+  `centeredInfiniteVolume_diagonalReflectionCauchySchwarz`.
 - Added the infinite-lattice half-integer reflection on sites, stored positive
   edges, and configurations, together with continuous anti-linear site/link
   reflections of `LocalObservable`.  Both are proved involutive, and the link
@@ -30,13 +87,29 @@ Last updated: 2026-08-13
 - Added `YangMills.Tests.Milestone19`, exercising the reflection involutions,
   support predicates, symmetric-box geometry, abstract closed-limit passage,
   centered cluster specialization, and all-plane translation theorems.
-- Remaining blocker for the Milestone-19 exit criterion: M17/M18 prove the
-  finite positivity theorems for fixed labelled-variable normal forms, while
-  their own headers defer the geometric identification with a cubic
-  `FiniteSpecification`.  The symmetric approximants are now available, but
-  their finite Gibbs integrals must still be transported to those labelled
-  normal forms before unconditional reflection positivity of the constructed
-  infinite-volume measure can honestly be stated.
+- Completed the concrete link bridge for `FiniteSpecification.LinkSymmetric`
+  specifications whose active plaquettes read only dynamic edges.  A
+  one-sided full-lattice gauge transform sets every crossing link to the
+  identity, preserves the negative side, and changes the positive variables
+  only by Haar-preserving left/right multiplications.  The existing
+  cut-plaquette Taylor/matrix-coefficient/Fubini theorem then yields the
+  normalized finite Gibbs positivity and Cauchy--Schwarz declarations
+  `linkReflectionPositive_gibbsMeasure` and
+  `normSq_integral_gibbsMeasure_linkReflectionProduct_le`.
+- Constructed completed link-symmetric specifications, proved their exact
+  reflection symmetry and plaquette closure, and compared them with ordinary
+  centered boxes using the finite-specification Gibbs tower and the explicit
+  one-root KP boundary tail.  Their local expectations therefore converge to
+  the cluster-constructed centered state.  This proves
+  `centeredInfiniteVolume_linkReflectionPositive` and
+  `centeredInfiniteVolume_linkReflectionCauchySchwarz` at every affine
+  half-integer coordinate plane for `β ≥ 0` in the explicit strong-coupling
+  disk, with the required gauge-invariance premise on observables.
+- Added concrete diagonal and link reviewer regressions and axiom audits, and
+  exported both theorem families from the project-native public root.
+- Milestone 19 now meets its exit criterion for site, link, and diagonal
+  reflections.  The only roadmap item after it is optional
+  Osterwalder--Schrader reconstruction (Milestone 20).
 
 ### Completed
 
@@ -1217,6 +1290,51 @@ Commands are added here only after they succeed.
   root remains green and emits 461 project-owned linter messages, concentrated
   primarily in older labelled-tree, Whitney, countable-Mayer, spatial-cluster,
   and thermodynamic modules queued for later cleanup.
+2026-08-13: lake build +YangMills.Tests.DiagonalReflection
+  Success; 3,016 jobs.  Affine diagonal geometry, the full one-sided local
+  algebra without a gauge-invariance premise, exact Taylor/Fubini equality,
+  finite positivity and normalized Cauchy--Schwarz, closed local-limit
+  transfer, and the centered KP specialization compile without placeholders.
+  The eight audited headline declarations have axiom footprint contained in
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-13: lake build
+  Success; 3,096 jobs after exporting finite and infinite-volume diagonal
+  reflection positivity from the project-native public root.  A clean source
+  rebuild also exposed and fixed stale qualification/reduction assumptions in
+  the existing all-plane coordinate-reflection translation proofs.
+2026-08-13: lake build +YangMills.Regression
+  Success; 3,890 jobs.  The complete milestone suite, reviewer smoke tests,
+  project-native theorem graph, Douglas audits, and optional Dobrushin route
+  remain green with the diagonal reflection development enabled.
+2026-08-13: lake build
+  Success; 3,098 jobs after exporting the concrete site-reflection bridge and
+  unconditional strong-coupling site positivity/Cauchy--Schwarz theorems.
+  The newly added source modules compile without their own linter warnings.
+2026-08-13: lake build +YangMills.Regression
+  Success; 3,893 jobs.  The new concrete site-reflection applications and
+  seven headline axiom audits pass together with all existing milestone,
+  Douglas-baseline, Dobrushin-comparison, and reviewer regressions.
+2026-08-13: lake build +YangMills.Tests.ConcreteLinkReflection
+  Success; 3,018 jobs.  The concrete link-symmetric geometry, one-root KP
+  local limit, all-plane positivity and Cauchy--Schwarz, and a constant
+  gauge-invariant observable application compile.  All seven audited
+  headline declarations have axiom footprint
+  `[propext, Classical.choice, Quot.sound]`.
+2026-08-13: lake build +YangMills.Tests.DiagonalReflection
+  Success; 3,024 jobs.  The suite now includes the concrete centered-box
+  symmetry and unconditional all-plane strong-coupling positivity and
+  Cauchy--Schwarz applications.  All eleven audited declarations have the
+  standard axiom footprint.
+2026-08-13: lake build
+  Success; 3,102 jobs after exporting the concrete link and diagonal theorem
+  families.  A clean combined-root build exposed and fixed colliding
+  automatically generated names for local plaquette decidable-equality
+  instances in the three finite bridges.
+2026-08-13: lake build +YangMills.Regression
+  Success; 3,898 jobs.  The completed site, link, and diagonal finite bridges,
+  cluster-expansion infinite-volume transfers, concrete reviewer examples,
+  axiom audits, all earlier milestones, and the optional Douglas/Dobrushin
+  regression routes compile together without errors.
 ```
 
 ## Conventions fixed so far
