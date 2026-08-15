@@ -77,7 +77,7 @@ named Lean definition.  The most common parameters are:
 | `η` | `ℕ → Configuration d G` | Arbitrary exterior configurations along the centered-box exhaustion. |
 | `F,H` | `LocalObservable d G` | Continuous complex observables with recorded finite edge supports. |
 | `ρ` | `ContinuousUnitaryRepData G n` | Positive-dimensional continuous unitary representation in fixed matrix coordinates. |
-| `κ` | `FiniteCenterChargeData ρ` | A nontrivial finite-order scalar center charge for `ρ`. |
+| `κ` | [`FiniteCenterChargeData ρ`](#finitecenterchargedata) | A nontrivial finite-order scalar center charge for `ρ`. |
 
 The thermodynamic theorems are stated for a compact Hausdorff second-countable
 topological group with its Borel measurable structure and a selected
@@ -273,7 +273,11 @@ observable of a closed path `C` are
 Wρ(C,A) = χρ(Hol(A,C)).
 ```
 
-Both are gauge invariant.  `CenterChargeData` records a central element that
+Both are gauge invariant.
+
+#### FiniteCenterChargeData
+
+`CenterChargeData` records a central element that
 acts in the representation by a nontrivial scalar phase.  Explicitly, it
 supplies `z : G` and `ω : ℂ` such that `zg = gz` for every `g`, `‖ω‖ = 1`,
 `ω ≠ 1`, and
@@ -574,7 +578,8 @@ Principal files:
 
 ### Center selection and the rectangular area law
 
-For a representation with `FiniteCenterChargeData`, first expand the Wilson
+For a representation with [`FiniteCenterChargeData`](#finitecenterchargedata),
+first expand the Wilson
 Boltzmann factor into labelled plaquette-character Taylor words.  Twisting one
 integrated edge by the chosen central element preserves product Haar measure,
 while each labelled word is an eigenfunction whose phase is its net center
