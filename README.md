@@ -466,12 +466,13 @@ In the exact declaration, `dist` is
 `centeredClusterSupportDistance F.support H.support`: it is the global
 plaquette-incidence separation when the recorded supports are disjoint, and
 zero otherwise.  The amplitude is an explicit sum of the two-root decorated
-cluster majorant and the trivial observable-norm terms.  It is independent of
-the relative location and distance of the two supports.  Its current explicit
-formula depends on `F` and `H` through their sup norms and their individual
-recorded support cardinalities; hence translating two fixed observables apart
-does not change it.  A constant uniform over arbitrarily large supports and
-depending only on `‖F‖∞` and `‖H‖∞` is not claimed.  The mass is
+cluster majorant and the trivial observable-norm terms.  It contains no
+dependence on the separation distance.  Its current explicit formula uses the
+sup norms and recorded support cardinalities of `F`, `H`, and `F.mul H`; the
+last support is bounded in size by `|supp F| + |supp H|`.  Consequently one
+fixed constant applies while two disjoint observables are translated farther
+apart.  A constant uniform over arbitrarily large supports and depending only
+on `‖F‖∞` and `‖H‖∞` is not claimed.  The mass is
 
 ```text
 centeredClusterMass Φ β = -log(plaquetteClusterDecayRate Φ β) > 0.
