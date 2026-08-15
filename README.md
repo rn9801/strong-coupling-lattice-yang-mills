@@ -6,6 +6,15 @@ coupling in Lean 4.  The project works on the infinite cubic lattice
 fields, and derives the thermodynamic results from a convergent plaquette
 polymer/Mayer expansion.
 
+> [!IMPORTANT]
+> **Project status.** This is an active research formalization and remains a
+> work in progress. Every theorem advertised in this README is checked without
+> `sorry`, `admit`, project-specific axioms, or unsafe proof shortcuts, but the
+> APIs, documentation, quantitative estimates, and theorem coverage will
+> continue to receive additions and revisions. Axiom audits of the headline
+> declarations report only standard Lean/Mathlib foundations such as
+> `propext`, `Classical.choice`, and `Quot.sound`.
+
 Integer/site, half-integer/link, and affine diagonal reflection positivity are
 proved for concrete cubic Gibbs specifications and transferred to the
 cluster-constructed infinite-volume measure, together with the corresponding

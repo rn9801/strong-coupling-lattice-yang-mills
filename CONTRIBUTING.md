@@ -2,7 +2,8 @@
 
 ## Before coding
 
-1. Read `STATUS.md`, `docs/ROADMAP.md`, and the relevant architecture section.
+1. Read `STATUS.md`, `docs/ARCHITECTURE.md`, and the relevant module
+   documentation.
 2. Search Mathlib and pinned upstream dependencies for existing declarations.
 3. Open an issue for changes that alter conventions or public abstractions.
 
@@ -16,13 +17,13 @@ rg -n '\bsorry\b|\badmit\b' YangMills
 ```
 
 The first two commands are the ordinary edit loop.  The opt-in regression root
-also compiles all milestone axiom checks, the pinned Douglas baseline, and the
-older Dobrushin comparison branch; run it before merging changes to shared
-infrastructure or preparing a release.
+also compiles the complete theorem and axiom-audit suite, the pinned Douglas
+baseline, and the older Dobrushin comparison branch; run it before merging
+changes to shared infrastructure or preparing a release.
 
-Keep commits focused on one milestone-sized result. Add a docstring to every
-mathematically nontrivial public declaration and a small executable example for
-every major abstraction.
+Keep commits focused on one coherent result. Add a docstring to every
+mathematically nontrivial public declaration and a small executable example
+for every major abstraction.
 
 ## Pull requests
 
