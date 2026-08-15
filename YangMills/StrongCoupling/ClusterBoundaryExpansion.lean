@@ -84,6 +84,9 @@ theorem decoratedObservableMayerPlaquetteSupport_subset_active
   rcases Finset.mem_biUnion.mp hp with ⟨q, _hq, hpq⟩
   exact decoratedObservablePlaquetteSupport_subset_active F Λ q hpq
 
+-- The initial simplification exposes the two existential union branches that
+-- the proof then transports explicitly across the exterior-field change.
+set_option linter.flexible false in
 @[simp]
 theorem decoratedObservableMayerPlaquetteSupport_withExterior
     (F : LocalObservable d G) (Λ : FiniteSpecification d G)
@@ -485,7 +488,7 @@ theorem decoratedObservableMayerWalkSpatialSupport_connected
       let tailSupport :=
         decoratedObservableMayerWalkSpatialSupport F Λ Φ β path
       have hw : w ∈ path.support.toFinset := by
-        simpa using path.start_mem_support
+        simp
       have hwSubset : carrier w.1 ⊆ tailSupport := by
         intro x hx
         exact Finset.mem_biUnion.mpr ⟨w, hw, hx⟩
@@ -613,9 +616,9 @@ theorem decoratedObservable_boundaryReaching_nonzero_weightedMultiplicity_ge
   obtain ⟨path, _hpath⟩ := hconnected.preconnected.exists_isPath u v
   let S := decoratedObservableMayerWalkSpatialSupport F Λ Φ β path
   have hu : u ∈ path.support.toFinset := by
-    simpa using path.start_mem_support
+    simp
   have hv : v ∈ path.support.toFinset := by
-    simpa using path.end_mem_support
+    simp
   have hrootS : root0 ∈ S := by
     apply Finset.mem_biUnion.mpr
     refine ⟨u, hu, ?_⟩
@@ -720,8 +723,7 @@ theorem pow_mul_norm_decoratedMayerTerm_withExterior_sub_le_tilted
             mul_le_mul_of_nonneg_right hpow (norm_nonneg a)
           _ = ‖aTilt‖ := by
             rw [haTilt, norm_mul, norm_pow]
-            simp [t, norm_mul, norm_pow,
-              abs_of_pos (zero_lt_one.trans ht)]
+            simp [t, abs_of_pos (zero_lt_one.trans ht)]
     have hb : t ^ r * ‖b‖ ≤ ‖bTilt‖ := by
       by_cases hzero : b = 0
       · simp [hzero]
@@ -756,8 +758,7 @@ theorem pow_mul_norm_decoratedMayerTerm_withExterior_sub_le_tilted
             mul_le_mul_of_nonneg_right hpow (norm_nonneg b)
           _ = ‖bTilt‖ := by
             rw [hbTilt, norm_mul, norm_pow]
-            simp [t, norm_mul, norm_pow,
-              abs_of_pos (zero_lt_one.trans ht)]
+            simp [t, abs_of_pos (zero_lt_one.trans ht)]
     have htri : ‖a - b‖ ≤ ‖a‖ + ‖b‖ := norm_sub_le a b
     have hpowNonneg : 0 ≤ t ^ r := by positivity
     change t ^ r * ‖a - b‖ ≤ ‖aTilt‖ + ‖bTilt‖

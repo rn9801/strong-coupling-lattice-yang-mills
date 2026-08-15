@@ -48,7 +48,7 @@ def wilsonTaylorMonomial {x : Site d} (C : Lattice.Cubic.Path x x)
       star (rho.normalizedCharacter (holonomy A p.boundary)) ^ k)
 
 /-- The finite plaquette carrier of the loop and both multiplicity fields. -/
-def wilsonTaylorCarrier {x : Site d} (C : Lattice.Cubic.Path x x)
+def wilsonTaylorCarrier {x : Site d} (_C : Lattice.Cubic.Path x x)
     (a b : Plaquette d →₀ ℕ) : Finset (Plaquette d) :=
   a.support ∪ b.support
 
@@ -88,7 +88,7 @@ def twistDynamicMeasurableEquiv (kappa : CenterChargeData rho)
     (Lambda : FiniteSpecification d G) (e : Lambda.dynamicEdges) :
     DynamicConfiguration Lambda ≃ᵐ DynamicConfiguration Lambda :=
   MeasurableEquiv.piCongrRight fun q ↦
-    if h : q = e then MeasurableEquiv.mulLeft kappa.z else MeasurableEquiv.refl G
+    if _h : q = e then MeasurableEquiv.mulLeft kappa.z else MeasurableEquiv.refl G
 
 @[simp]
 theorem twistDynamicMeasurableEquiv_apply
@@ -101,8 +101,8 @@ theorem twistDynamicMeasurableEquiv_apply
       else MeasurableEquiv.refl G) (U q) = _
   by_cases h : q = e
   · subst q
-    simp [twistDynamicMeasurableEquiv, twistDynamic]
-  · simp [twistDynamicMeasurableEquiv, twistDynamic, h]
+    simp [twistDynamic]
+  · simp [twistDynamic, h]
 
 /-- Product Haar is invariant under a twist of one dynamic edge. -/
 theorem measurePreserving_twistDynamic
@@ -145,7 +145,7 @@ theorem evaluate_twistDynamic
     by_cases h : (⟨q, hq⟩ : Lambda.dynamicEdges) = e
     · have hv : q = e.1 := congrArg Subtype.val h
       subst q
-      simp [twistDynamic, h, Lambda.evaluate_of_mem U e.1 e.2]
+      simp [twistDynamic, h]
     · have hv : q ≠ e.1 := fun hv ↦ h (Subtype.ext hv)
       simp [twistDynamic, h, hv, Lambda.evaluate_of_mem U q hq]
   · rw [Lambda.evaluate_of_not_mem _ q hq]
@@ -237,8 +237,9 @@ def wilsonTaylorIntegral {x : Site d} (C : Lattice.Cubic.Path x x)
   ∫ U, wilsonTaylorMonomial (rho := rho) C a b (Lambda.evaluate U)
     ∂Lambda.haarMeasure
 
-set_option maxHeartbeats 800000
-
+set_option maxHeartbeats 800000 in
+-- The center-charge divisibility proof below combines order computations and
+-- a measure-preserving change of variables, exceeding the default budget.
 /-- If one edge has nontrivial net center charge, the Taylor monomial integral
 vanishes.  Every loop and Taylor-carrier edge is dynamic by construction. -/
 theorem wilsonTaylorIntegral_eq_zero_of_charge_ne_zero

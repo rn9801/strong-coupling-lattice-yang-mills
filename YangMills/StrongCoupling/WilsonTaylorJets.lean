@@ -105,6 +105,9 @@ theorem taylorOrder_wordMultiplicity :
         unfold Lattice.Cubic.taylorOrder at ih
         omega
 
+-- The staged simplification deliberately exposes the two `Finsupp.sum`
+-- expressions before the following explicit additive rewrites.
+set_option linter.flexible false in
 @[simp]
 theorem taylorChargeAt_wordMultiplicity {x : Site d}
     (C : Lattice.Cubic.Path x x) :
@@ -123,8 +126,7 @@ theorem taylorChargeAt_wordMultiplicity {x : Site d}
       rcases q with ⟨p, s⟩
       cases s
       · simp [wilsonTaylorWordPositive, wilsonTaylorWordNegative,
-          Lattice.Cubic.taylorChargeAt, wilsonTaylorWordChargeAt,
-          Finsupp.sum_add_index]
+          Lattice.Cubic.taylorChargeAt, wilsonTaylorWordChargeAt]
         rw [Finsupp.sum_add_index (by simp) (by simp [add_mul])]
         rw [Finsupp.sum_single_index (by simp)]
         norm_num at *
@@ -132,8 +134,7 @@ theorem taylorChargeAt_wordMultiplicity {x : Site d}
         unfold Lattice.Cubic.taylorChargeAt wilsonTaylorWordChargeAt at h
         linarith
       · simp [wilsonTaylorWordPositive, wilsonTaylorWordNegative,
-          Lattice.Cubic.taylorChargeAt, wilsonTaylorWordChargeAt,
-          Finsupp.sum_add_index]
+          Lattice.Cubic.taylorChargeAt, wilsonTaylorWordChargeAt]
         rw [Finsupp.sum_add_index (by simp) (by simp [add_mul])]
         rw [Finsupp.sum_single_index (by simp)]
         norm_num at *
@@ -429,7 +430,7 @@ theorem complexObservableNumeratorMoment_wilsonLoop_zero
         hprod using 1
       ext U
       simp [wilsonTaylorWordMonomial, wilsonTaylorWordOfLabel,
-        List.prod_ofFn, List.map_ofFn, wilsonTaylorLetterValue, hprod]
+        List.prod_ofFn, List.map_ofFn, wilsonTaylorLetterValue]
     exact hcontinuous.continuousOn
 
 /-- If every edge read by the finite Wilson action and the loop is dynamic,
@@ -474,10 +475,8 @@ theorem hasDerivAt_complexObservableNumeratorMomentIntegrand
         complexBoltzmannWeight Lambda Phi beta U * F (Lambda.evaluate U)) beta := by
   convert ((hasDerivAt_complexBoltzmannWeight Lambda Phi beta U).const_mul
     ((FiniteVolume.action Lambda Phi U : ℂ) ^ N)).mul_const
-      (F (Lambda.evaluate U)) using 1 <;>
-    simp [complexBoltzmannDerivative, complexBoltzmannWeight, pow_succ,
-      mul_comm]
-  left
+      (F (Lambda.evaluate U)) using 1
+  simp only [complexBoltzmannDerivative, complexBoltzmannWeight, pow_succ]
   ring
 
 /-- Every finite observable moment differentiates to the next moment. -/

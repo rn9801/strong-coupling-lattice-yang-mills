@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-08-13
+Last updated: 2026-08-15
 
 ## Current milestone: 19 -- Infinite-volume reflection positivity (complete)
 
@@ -150,6 +150,13 @@ Last updated: 2026-08-13
   replacement of model-level `DecidableEq` instances was deliberately
   rejected after downstream elaboration showed that those instances are part
   of the computational behavior of `FinitePolymerModel`.
+- Completed the follow-up warning cleanup on `main`.  All project-owned
+  modules now build without warnings under the public, default, and full
+  regression targets.  The cleanup removes obsolete tactic steps, stale
+  simplifier arguments, deprecated finite-support lemmas, avoidable style
+  diagnostics, and genuinely unused local binders.  Uniform ambient theorem
+  contexts and their existing public types are retained through an explicit
+  lint policy; warnings originating in pinned dependencies remain upstream.
 - Added the opt-in `YangMills.Regression` root and a declaration/import audit.
   The audit found no production proof block that can safely be deleted: every
   native module is reached by a headline theorem, a foundational result, or a

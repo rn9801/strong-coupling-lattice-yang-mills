@@ -107,13 +107,14 @@ theorem plaquetteWeightedPinnedTreeOrbitBound
     (hβ : ‖β‖ < latticeStrongCouplingRadius d Φ.bound)
     (γ : PlaquettePolymer Λ) :
     ∑' n : ℕ,
-        (plaquettePolymerModel Λ Φ β).residualSymmetricPinnedTreeDegreeSum γ n ≤
+      (plaquettePolymerModel Λ Φ β).residualSymmetricPinnedTreeDegreeSum γ n ≤
       (2 : ℝ) ^ γ.1.card := by
-  have h := (plaquettePolymerModel Λ Φ β).tsum_residualSymmetricPinnedTreeDegreeSum_le_of_koteckyPreiss_certified
+  let M := plaquettePolymerModel Λ Φ β
+  have h := M.tsum_residualSymmetricPinnedTreeDegreeSum_le_of_koteckyPreiss_certified
       plaquetteKPWeight
       (plaquettePolymerModel_koteckyPreiss_of_norm_lt_latticeRadius
         Λ Φ hβ) γ
-  simpa [plaquetteKPWeight, Real.exp_nat_mul,
+  simpa [M, plaquetteKPWeight, Real.exp_nat_mul,
     Real.exp_log (by norm_num : (0 : ℝ) < 2)] using h
 
 /-- Exact finite connected Mayer/log identity in the canonical formal

@@ -497,7 +497,7 @@ theorem norm_twoRootMixedMayerDegreeSum_le_tree
       intro X _
       by_cases hroots : twoRootMultiplicity X 0 = 1 ∧
           twoRootMultiplicity X 1 = 1
-      · simp only [hroots, if_true]
+      · simp only [hroots]
         exact A.norm_mayerClusterTerm_le_mayerTreeMajorant X
       · simp [hroots]
 

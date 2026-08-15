@@ -180,8 +180,7 @@ theorem edgeGraph_isAcyclic_of_forall_not_lowerReachable
         have hea : e ≠ a := fun h => haA (h ▸ heA)
         exact (ha e heA).lt_of_ne (fun h => hea (hrank h))
       have hactiveA : ∀ e ∈ A, ¬ LowerReachable rank A e := by
-        intro e heA
-        intro hre
+        intro e heA hre
         apply hactive e (Finset.mem_insert_of_mem heA)
         induction e using Sym2.ind with
         | _ u v =>
@@ -471,8 +470,7 @@ theorem sum_activeConnectedEdgeFamilies_eq_zero
       ((mem_activeConnectedEdgeFamilies rank G).mp hA).2))
   · intro A hA
     exact negOnePow_card_add_toggle A _
-  · intro A hA
-    intro _
+  · intro A hA _
     exact toggle_firstActive_ne rank G A
       ((mem_activeConnectedEdgeFamilies rank G).mp hA).2
   · intro A hA

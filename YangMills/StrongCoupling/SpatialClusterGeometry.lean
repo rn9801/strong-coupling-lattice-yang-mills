@@ -258,8 +258,7 @@ theorem connected_induce_liftPlaquettePolymer
         (liftPlaquetteSupport Λ γ.support :
           Set (BivariateObservableSpatialVertex Λ))) := {
     toFun p := ⟨Sum.inl p.1, by
-      simp [liftPlaquetteSupport, activeSubset, PlaquettePolymer.support,
-        p.2]⟩
+      simp [liftPlaquetteSupport, activeSubset, PlaquettePolymer.support]⟩
     map_rel' := by
       intro p q hpq
       exact hpq
@@ -589,8 +588,10 @@ theorem liftPlaquetteSupport_mono
   classical
   intro x hx
   rcases x with p | i
-  · simp [liftPlaquetteSupport, activeSubset] at hx ⊢
-    exact hST hx
+  · have hp : p.1 ∈ S := by
+      simpa [liftPlaquetteSupport, activeSubset] using hx
+    have hp' : p.1 ∈ T := hST hp
+    simpa [liftPlaquetteSupport, activeSubset] using hp'
   · simp [liftPlaquetteSupport] at hx
 
 theorem liftPlaquetteSupport_subset_leftDecorationCarrier
@@ -881,7 +882,7 @@ theorem bivariateDecoratedMayerWalkSpatialSupport_connected
       let tailSupport :=
         bivariateDecoratedMayerWalkSpatialSupport F H Λ Φ β path
       have hw : w ∈ path.support.toFinset := by
-        simpa using path.start_mem_support
+        simp
       have hwSubset : carrier w.1 ⊆ tailSupport := by
         intro x hx
         exact Finset.mem_biUnion.mpr ⟨w, hw, hx⟩
@@ -1026,10 +1027,10 @@ theorem bivariateDecorated_mixed_nonzero_spatialSeparation_le_weightedMultiplici
   · let S := bivariateDecoratedMayerWalkSpatialSupport F H Λ Φ β path
     have hstart : bivariateDecoratedLeftRootVertex F H Λ X D hD ∈
         path.support.toFinset := by
-      simpa using path.start_mem_support
+      simp
     have hend : bivariateDecoratedRightRootVertex F H Λ X E hE ∈
         path.support.toFinset := by
-      simpa using path.end_mem_support
+      simp
     have hroot0S : root0 ∈ S := by
       apply Finset.mem_biUnion.mpr
       refine ⟨bivariateDecoratedLeftRootVertex F H Λ X D hD,
@@ -1253,7 +1254,8 @@ theorem pow_spatialSeparation_mul_norm_complexGibbsTruncatedCorrelation_le_weigh
 
 /-- End-to-end finite-volume cluster bound obtained by evaluating the
 weighted majorant with the quantitative source-pinned KP/tree estimate. -/
-theorem pow_spatialSeparation_mul_norm_complexGibbsTruncatedCorrelation_le_regularizedPinnedTreeBudget
+theorem
+pow_spatialSeparation_mul_norm_complexGibbsTruncatedCorrelation_le_regularizedPinnedTreeBudget
     (F H : LocalObservable d G) (Λ : FiniteSpecification d G)
     (Φ : RealPlaquettePotential G) {β : ℂ}
     (hFH : Disjoint F.support H.support)
@@ -1337,11 +1339,12 @@ theorem pow_spatialSeparation_mul_norm_complexGibbsTruncatedCorrelation_le_unifo
     mul_le_mul hρ₀ρ hρ₀ρ hρ₀.le hρ.le
   have hinv : (ρ * ρ)⁻¹ ≤ (ρ₀ * ρ₀)⁻¹ :=
     inv_anti₀ (mul_pos hρ₀ hρ₀) hprod
+  have hregularized :=
+    pow_spatialSeparation_mul_norm_complexGibbsTruncatedCorrelation_le_regularizedPinnedTreeBudget
+      F H Λ Φ hFH hβ
   calc
     _ ≤ (ρ * ρ)⁻¹ * twoRootSourceReserve := by
-      simpa [ρ] using
-        (pow_spatialSeparation_mul_norm_complexGibbsTruncatedCorrelation_le_regularizedPinnedTreeBudget
-          F H Λ Φ hFH hβ)
+      simpa [ρ] using hregularized
     _ ≤ (ρ₀ * ρ₀)⁻¹ * twoRootSourceReserve :=
       mul_le_mul_of_nonneg_right hinv twoRootSourceReserve_pos.le
 

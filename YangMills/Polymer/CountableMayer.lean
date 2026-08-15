@@ -55,7 +55,7 @@ def mayerIncompatibilityGraph (M : CountablePolymerModel P)
     (X : MayerMultiIndex P) : SimpleGraph (MayerVertex X) where
   Adj i j := i ≠ j ∧ M.incompatible i.1.1 j.1.1
   symm _ _ h := ⟨h.1.symm, M.symmetric_incompatible h.2⟩
-  loopless := ⟨fun i h ↦ h.1 rfl⟩
+  loopless := ⟨fun _i h ↦ h.1 rfl⟩
 
 /-- Ursell coefficient of a finite multi-index in a countable species. -/
 def mayerUrsell (M : CountablePolymerModel P) (X : MayerMultiIndex P) : ℤ :=
@@ -417,7 +417,9 @@ theorem summable_pinnedNormMayerTerm_of_finiteRestrictionKP
     (M : CountablePolymerModel P) (a : P → ℝ)
     (hKP : M.FiniteRestrictionKPCertificate a) (root : P) :
     Summable (M.pinnedNormMayerTerm root) := by
-  apply summable_of_sum_le (M.pinnedNormMayerTerm_nonneg root)
+  refine summable_of_sum_le
+    (c := ‖M.activity root‖ * Real.exp (a root))
+    (M.pinnedNormMayerTerm_nonneg root) ?_
   intro U
   exact M.sum_pinnedNormMayerTerm_le_of_finiteRestrictionKP a hKP root U
 
@@ -490,7 +492,8 @@ theorem summable_incompatibleTiltedActivity_of_finiteRestrictionKP
     (M : CountablePolymerModel P) (a : P → ℝ)
     (hKP : M.FiniteRestrictionKPCertificate a) (root : P) :
     Summable (M.incompatibleTiltedActivity a root) := by
-  apply summable_of_sum_le (M.incompatibleTiltedActivity_nonneg a root)
+  refine summable_of_sum_le (c := a root)
+    (M.incompatibleTiltedActivity_nonneg a root) ?_
   intro U
   exact M.sum_incompatibleTiltedActivity_le_of_finiteRestrictionKP a hKP root U
 

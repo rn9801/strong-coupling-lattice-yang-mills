@@ -105,13 +105,13 @@ theorem diagonalHeight_step_forward {τ σ : Fin d} (hτσ : τ ≠ σ) (k : ℤ
 omit [Group G] in
 @[simp]
 theorem diagonalDirectionIncrement_eq_one_iff {τ σ : Fin d}
-    (hτσ : τ ≠ σ) (i : Fin d) :
+    (_hτσ : τ ≠ σ) (i : Fin d) :
     diagonalDirectionIncrement τ σ i = 1 ↔ i = τ := by
   unfold diagonalDirectionIncrement
   by_cases hiτ : i = τ
   · simp [hiτ]
   · by_cases hiσ : i = σ
-    · simp [hiτ, hiσ]
+    · simp [hiσ]
     · simp [hiτ, hiσ]
 
 omit [Group G] in
@@ -125,7 +125,7 @@ theorem diagonalDirectionIncrement_eq_neg_one_iff {τ σ : Fin d}
     simp [hτσ]
   · by_cases hiσ : i = σ
     · subst i
-      simp [diagonalDirectionIncrement, hτσ.symm]
+      simp [hτσ.symm]
     · simp [hiτ, hiσ]
 
 omit [Group G] in
@@ -138,7 +138,7 @@ theorem diagonalDirectionIncrement_eq_zero_iff {τ σ : Fin d}
   · simp [hiτ]
   · by_cases hiσ : i = σ
     · subst i
-      simp [diagonalDirectionIncrement, hτσ.symm]
+      simp [hτσ.symm]
     · simp [hiτ, hiσ]
 
 omit [Group G] in
@@ -167,8 +167,7 @@ theorem diagonalDirectionIncrement_swap {τ σ : Fin d} (hτσ : τ ≠ σ)
   · by_cases hiσ : i = σ
     · subst i
       simp [diagonalDirectionIncrement, hτσ.symm]
-    · simp [diagonalDirectionIncrement, Equiv.swap_apply_def, hiτ, hiσ,
-        hτσ, hτσ.symm]
+    · simp [diagonalDirectionIncrement, Equiv.swap_apply_def, hiτ, hiσ]
 
 /-- All four vertices of a plaquette lie in the closed positive diagonal
 half-lattice. -/
@@ -413,13 +412,13 @@ theorem diagonalCutPlaquette_not_positive
     rw [diagonalPlaquetteNonnegative_iff hτσ] at hn
     rcases hcut.2 with haxes | haxes <;>
       simp [hcut.1, haxes.1, haxes.2, diagonalDirectionIncrement,
-        hτσ, hτσ.symm] at hn
+        hτσ.symm] at hn
   · intro hplus
     have hn := (Finset.mem_filter.mp hplus).2.1
     rw [diagonalPlaquetteNonnegative_reflect_iff hτσ] at hn
     rcases hcut.2 with haxes | haxes <;>
       simp [hcut.1, haxes.1, haxes.2, diagonalDirectionIncrement,
-        hτσ, hτσ.symm] at hn
+        hτσ.symm] at hn
 
 omit [Group G] in
 theorem diagonalPlanePlaquette_exclusive
@@ -724,7 +723,7 @@ omit [Group G] in
 /-- Every stored edge read by a nonnegative plaquette has both endpoints in
 the nonnegative half-lattice. -/
 theorem diagonalPlaquetteNonnegative_edgeSupport {τ σ : Fin d}
-    (hτσ : τ ≠ σ) (k : ℤ) (p : Plaquette d)
+    (_hτσ : τ ≠ σ) (k : ℤ) (p : Plaquette d)
     (hp : DiagonalPlaquetteNonnegative τ σ k p)
     (e : PositiveEdge d) (he : e ∈ p.boundary.edgeSupport) :
     0 ≤ diagonalHeight τ σ k e.source ∧
@@ -967,7 +966,7 @@ theorem diagonalReflect_eq_self_of_mem_diagonalPlaneEdges
         rw [diagonalReflection_apply_second hτσ]
         unfold diagonalHeight at hs
         omega
-      · simp [PositiveEdge.diagonalReflect, diagonalReflection, hiτ, hiσ]
+      · simp [diagonalReflection, hiτ, hiσ]
   · simp [Equiv.swap_apply_def, hdirτ, hdirσ]
 
 /-- Swap diagonal strict-side labels and fix plane labels. -/

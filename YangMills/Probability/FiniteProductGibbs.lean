@@ -73,7 +73,7 @@ theorem measurable_glue (region : Finset I) (σ : I → S) :
   intro i
   by_cases hi : i ∈ region
   · simpa [glue, hi] using measurable_pi_apply i
-  · simpa [glue, hi] using (measurable_const : Measurable fun _ : I → S => σ i)
+  · simp [glue, hi]
 
 /-- Joint measurability of gluing. -/
 theorem measurable_glue_joint (region : Finset I) :
@@ -98,7 +98,7 @@ theorem measurePreserving_glue (ν : Measure S) [IsProbabilityMeasure ν]
     fun p => glue region p.2 p.1
   have hγ : Measurable γ := measurable_glue_joint region
   refine ⟨hγ, ?_⟩
-  show Measure.map γ
+  change Measure.map γ
       ((Measure.pi fun _ : I => ν).prod (Measure.pi fun _ : I => ν)) =
         Measure.pi fun _ : I => ν
   refine (Measure.pi_eq (fun s hs => ?_)).symm
@@ -445,7 +445,7 @@ theorem gibbsSpec_condDist (region : Finset I) (σ : I → S) :
 pointwise cylinder-probability ratio.  The factor `2` accounts for the
 Boltzmann numerator and its normalizing partition function. -/
 theorem conditionalMeasure_cylinder_ratio_centered
-    (x : I) (σ τ : I → S) (cσ cτ δ : ℝ) (hδ : 0 ≤ δ)
+    (x : I) (σ τ : I → S) (cσ cτ δ : ℝ) (_hδ : 0 ≤ δ)
     (henergy : ∀ u : I → S,
       |(E (glue {x} u τ) - cτ) - (E (glue {x} u σ) - cσ)| ≤ δ)
     (B : Set S) (hB : MeasurableSet B) :
@@ -661,7 +661,7 @@ theorem conditionalZ_exterior (region : Finset I) :
 theorem integral_mul_conditionalZ
     (region : Finset I) (h : (I → S) → ℝ)
     (hh_ext : ExteriorMeasurable region h)
-    (hh_meas : Measurable h)
+    (_hh_meas : Measurable h)
     (hhw_int : Integrable (fun U => h U * Real.exp (E U))
       (productMeasure (I := I) ν)) :
     ∫ σ, h σ * E.conditionalZ ν region σ
@@ -846,7 +846,7 @@ theorem integral_conditionalMeasure_gibbsMeasure
       rw [← integral_div]
       apply integral_congr_ae
       exact ae_of_all _ fun u => by
-        simp only [inner, W, g]
+        simp only [W, g]
         ring
     · exact ((E.measurable_energy.exp.div_const _).mul hf).aestronglyMeasurable
   have hZpos : 0 < Z := integral_exp_pos hW_int
@@ -902,7 +902,7 @@ theorem measurable_integral_conditionalMeasure
       rw [← integral_div]
       apply integral_congr_ae
       exact ae_of_all _ fun u => by
-        simp only [inner, g]
+        simp only [g]
         ring
     · exact ((E.measurable_energy.exp.div_const _).mul hf).aestronglyMeasurable
   rw [hcond]
@@ -989,7 +989,7 @@ theorem integral_conditionalMeasure_gibbsMeasure_complex
 a normalized conditional law. -/
 theorem integral_conditionalMeasure_complex_eq_div
     (region : Finset I) (σ : I → S) (f : (I → S) → ℂ)
-    (hf : Measurable f) (B : ℝ) (hB : ∀ τ, ‖f τ‖ ≤ B) :
+    (hf : Measurable f) (B : ℝ) (_hB : ∀ τ, ‖f τ‖ ≤ B) :
     ∫ τ, f τ ∂E.conditionalMeasure ν region σ =
       (∫ u, (Real.exp (E (glue region u σ)) : ℂ) *
           f (glue region u σ) ∂productMeasure (I := I) ν) /

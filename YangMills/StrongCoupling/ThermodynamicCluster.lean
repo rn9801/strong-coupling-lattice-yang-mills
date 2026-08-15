@@ -139,7 +139,6 @@ theorem translate_translate (v w : Site d) (γ : InfinitePlaquettePolymer d) :
   change (p.translate (-w)).translate (-v) ∈ γ.support ↔
     p.translate (-(v + w)) ∈ γ.support
   rw [Plaquette.translate_translate]
-  congr 2
   abel
 
 /-- Translation is a bijection of full-lattice plaquette polymers. -/
@@ -287,7 +286,7 @@ def toFiniteFamilyPolymer {G : Type*} [Group G]
           (A : Set (ActivePlaquette Lambda))) := {
       toFun := fun p ↦
         ⟨⟨p.1, support_subset_finiteFamilySpecification S gamma p.2⟩,
-          by simp [A, activeSubset, p.2]⟩
+          by simp [A, activeSubset]⟩
       map_rel' := by
         intro p q hpq
         exact (plaquetteAdjacency_finiteFamilySpecification_iff S _ _).mpr hpq
@@ -414,9 +413,9 @@ def toFreeRegionPolymer {G : Type*} [Group G]
         ((fullPlaquetteAdjacencyGraph d).induce
           (γ.support : Set (Plaquette d))) →g
         ((plaquetteAdjacencyGraph Λ).induce
-          (B : Set (ActivePlaquette Λ))) := {
+      (B : Set (ActivePlaquette Λ))) := {
       toFun := fun p ↦ ⟨⟨p.1, hγ p.2⟩,
-        by simp [B, activeSubset, p.2]⟩
+        by simp [B, activeSubset]⟩
       map_rel' := by
         intro p q hpq
         exact (plaquetteAdjacency_freeRegionSpecification_iff A _ _).mpr hpq
@@ -1554,12 +1553,14 @@ theorem sum_plaquetteRootedMayerTerm_eq_mayerClusterTerm
       obtain ⟨p, hp⟩ := γ.support_nonempty
       have hpC : p ∈ C := (CountablePolymerModel.mem_mayerCarrier
         InfinitePlaquettePolymer.support X p).mpr ⟨γ, hγ, hp⟩
-      simpa [hCempty] using hpC
+      rw [hCempty] at hpC
+      simp at hpC
     let M := infinitePlaquettePolymerModel (d := d) Φ β
     have hnotconnected : ¬(M.mayerIncompatibilityGraph X).Connected := by
       intro h
       rcases h.nonempty with ⟨⟨⟨γ, hγ⟩, i⟩⟩
-      simpa [hXempty] using hγ
+      rw [hXempty] at hγ
+      simp at hγ
     rw [CountablePolymerModel.mayerClusterTerm_eq_zero_of_not_connected
       M X hnotconnected]
     apply Finset.sum_eq_zero
@@ -1625,7 +1626,7 @@ theorem summable_norm_plaquetteRootedMayerTerm
     (hβ : ‖β‖ < latticeStrongCouplingRadius d Φ.bound)
     (p : Plaquette d) :
     Summable (fun X ↦ ‖plaquetteRootedMayerTerm Φ β p X‖) := by
-  apply summable_of_sum_le (fun _ ↦ norm_nonneg _)
+  refine summable_of_sum_le (c := Real.log 2) (fun _ ↦ norm_nonneg _) ?_
   intro U
   exact sum_norm_plaquetteRootedMayerTerm_le_log_two Φ hβ p U
 
@@ -1714,7 +1715,7 @@ theorem summable_norm_plaquetteRootedMajorantTerm
   let root := InfinitePlaquettePolymer.singleton p
   have hKP : M.FiniteRestrictionKPCertificate a :=
     infinitePlaquetteMajorantModel_finiteRestrictionKP Φ hr0 hr
-  apply summable_of_sum_le (fun X ↦ norm_nonneg _)
+  refine summable_of_sum_le (c := Real.log 2) (fun X ↦ norm_nonneg _) ?_
   intro U
   let S : Finset (InfinitePlaquettePolymer d) :=
     insert root (U.biUnion fun X ↦ X.support)

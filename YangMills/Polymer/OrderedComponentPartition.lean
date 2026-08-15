@@ -297,7 +297,6 @@ theorem assemble_orderedComponentGraphs {n : ℕ}
       apply ConnectedComponent.eq_of_common_vertex hai
       rw [hjb] at hbj
       rw [hia]
-      change v ∈ (orderedConnectedComponentEquiv F j).supp
       rw [ConnectedComponent.mem_supp_iff]
       apply (ConnectedComponent.connectedComponentMk_eq_of_adj hvw).trans
       change w ∈ (orderedConnectedComponentEquiv F j).supp at hbj

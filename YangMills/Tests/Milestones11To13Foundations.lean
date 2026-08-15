@@ -27,6 +27,10 @@ import YangMills.StrongCoupling.CenteredInfiniteVolume
 
 /-! Executable regressions for the cluster-expansion thermodynamic-limit backbone. -/
 
+-- Axiom-audit commands below use fully qualified theorem names that cannot be
+-- split internally without changing the identifiers being checked.
+set_option linter.style.longLine false
+
 open MeasureTheory
 
 namespace YangMills.Tests

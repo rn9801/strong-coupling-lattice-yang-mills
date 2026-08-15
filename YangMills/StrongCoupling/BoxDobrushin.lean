@@ -117,7 +117,7 @@ theorem plaquetteHolonomy_glue_eq_of_not_mem
 theorem norm_actionAtEdge_glue_sub_le
     (Λ : FiniteSpecification d G) (Φ : RealPlaquettePotential G)
     (x y : Λ.dynamicEdges) (u σ τ : DynamicConfiguration Λ)
-    (hστ : ∀ z, z ≠ y → σ z = τ z) :
+    (_hστ : ∀ z, z ≠ y → σ z = τ z) :
     ‖actionAtEdge Λ Φ x (glue {x} u τ) -
         actionAtEdge Λ Φ x (glue {x} u σ)‖ ≤
       8 * d * Φ.bound := by
@@ -493,7 +493,9 @@ theorem box_influenceCoeff_le_neighborIndicator
   · subst y
     simp [edgeNeighbors, influenceCoeff_self_eq_zero_nocount]
   · by_cases hshare : sharesActivePlaquette Λ x y
-    · simp [edgeNeighbors, hxy, hshare]
+    · have hy : y ∈ edgeNeighbors Λ x :=
+        Finset.mem_filter.mpr ⟨Finset.mem_univ _, hxy, hshare⟩
+      rw [if_pos hy]
       exact box_influenceCoeff_le Λ Φ β x y
     · simp [edgeNeighbors, hxy, hshare,
         box_influenceCoeff_eq_zero_of_not_shares Λ Φ β x y]
@@ -608,9 +610,9 @@ def box_dobrushinCondition
   α := boxDobrushinAlpha d Φ.bound β
   hα_pos := boxDobrushinAlpha_nonneg Φ.bound β Φ.bound_nonneg
   hα_lt := hsmall
-  col_summable := fun _ => summable_of_finite_support (Set.toFinite _)
+  col_summable := fun _ => summable_of_hasFiniteSupport (Set.toFinite _)
   column_bound := box_influence_column_sum_le Λ Φ β
-  row_summable := fun _ => summable_of_finite_support (Set.toFinite _)
+  row_summable := fun _ => summable_of_hasFiniteSupport (Set.toFinite _)
   row_bound := box_influence_row_sum_le Λ Φ β
 
 /-- Dobrushin certificate under the explicit positive-radius hypothesis. -/

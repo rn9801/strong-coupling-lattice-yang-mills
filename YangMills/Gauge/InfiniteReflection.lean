@@ -196,8 +196,6 @@ theorem linkReflect_endpoints {d : ℕ} (τ : Fin d) (k : ℤ)
     constructor
     · simp [PositiveEdge.linkReflect]
     · simp only [PositiveEdge.linkReflect, if_pos, PositiveEdge.target]
-      change step (linkReflection τ k (step x (.forward τ))) (.forward τ) =
-        linkReflection τ k x
       ext j
       by_cases hj : j = τ
       · subst j
@@ -208,8 +206,6 @@ theorem linkReflect_endpoints {d : ℕ} (τ : Fin d) (k : ℤ)
     constructor
     · simp [PositiveEdge.linkReflect, hi]
     · simp only [PositiveEdge.linkReflect, hi, if_false, PositiveEdge.target]
-      change step (linkReflection τ k x) (.forward i) =
-        linkReflection τ k (step x (.forward i))
       ext j
       by_cases hj : j = τ
       · subst j
@@ -344,8 +340,6 @@ theorem linkReflectConfiguration_gaugeTransform
       constructor
       · simp [PositiveEdge.linkReflect]
       · simp only [PositiveEdge.linkReflect, if_pos, PositiveEdge.target]
-        change step (linkReflection τ k (step x (.forward τ))) (.forward τ) =
-          linkReflection τ k x
         ext j
         by_cases hj : j = τ
         · subst j
@@ -365,8 +359,6 @@ theorem linkReflectConfiguration_gaugeTransform
       · simp [PositiveEdge.linkReflect, hdir]
       · simp only [PositiveEdge.linkReflect, hdir, if_false,
           PositiveEdge.target]
-        change step (linkReflection τ k x) (.forward i) =
-          linkReflection τ k (step x (.forward i))
         ext j
         by_cases hj : j = τ
         · subst j

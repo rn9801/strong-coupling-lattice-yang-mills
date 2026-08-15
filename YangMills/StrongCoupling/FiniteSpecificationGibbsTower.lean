@@ -50,7 +50,7 @@ variable {small large : FiniteSpecification d G}
 
 /-- The smaller dynamic coordinates as a region of the larger coordinate
 family. -/
-def region (h : FiniteSubspecification small large) :
+def region (_h : FiniteSubspecification small large) :
     Finset large.dynamicEdges :=
   Finset.univ.filter fun e => e.1 ∈ small.dynamicEdges
 
@@ -130,7 +130,7 @@ theorem plaquetteHolonomy_glue_of_not_active
 
 /-- Contribution of the large active plaquettes outside the smaller active
 set. -/
-def outerAction (h : FiniteSubspecification small large)
+def outerAction (_h : FiniteSubspecification small large)
     (Φ : RealPlaquettePotential G) (σ : DynamicConfiguration large) : ℝ :=
   ∑ p ∈ large.activePlaquettes \ small.activePlaquettes,
     Φ (plaquetteHolonomy large σ p)

@@ -277,7 +277,7 @@ theorem tsum_centeredCarrierCutoff_translate
           centeredBasePlaquettes d n
       · simp only [hX, if_true]
         exact plaquetteRootedMayerTerm_translate Φ β x o.atOrigin X
-      · simp [hX]
+      · simp
 
 /-- At a site in the outer box, the carrier-containment indicator is exactly
 membership in the fit-site finset. -/

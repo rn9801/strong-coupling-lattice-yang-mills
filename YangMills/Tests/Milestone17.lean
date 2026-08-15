@@ -55,9 +55,11 @@ example (D : WilsonActionDecomposition G P O) (β : ℝ)
 #print axioms YangMills.Lattice.Cubic.siteReflection_involutive
 #print axioms YangMills.Gauge.holonomy_siteReflectConfiguration
 #print axioms YangMills.Gauge.SiteReflection.measurePreserving_reflectedVariableEquiv
-#print axioms YangMills.Gauge.SiteReflection.WilsonActionDecomposition.gibbsReflectionPairing_eq_factorized
+#print axioms
+  YangMills.Gauge.SiteReflection.WilsonActionDecomposition.gibbsReflectionPairing_eq_factorized
 #print axioms YangMills.Gauge.SiteReflection.WilsonActionDecomposition.siteReflectionPositivity
-#print axioms YangMills.Gauge.SiteReflection.WilsonActionDecomposition.normSq_reflectionInnerProduct_le
+#print axioms
+  YangMills.Gauge.SiteReflection.WilsonActionDecomposition.normSq_reflectionInnerProduct_le
 
 end
 

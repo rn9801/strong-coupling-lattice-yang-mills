@@ -257,7 +257,7 @@ allowed parent attachments gives the attached-component weight. -/
 theorem sum_labelledAttachedTreeChoiceWeight_fiber
     (M : FinitePolymerModel P) (root : P) (s : ℕ)
     (label : Fin s → P) :
-    (∑ x :
+    (∑ _x :
         {T : SimpleGraph (Fin s) //
           T ∈ graphSpanningTrees (labelledIncompatibilityGraph M label)} ×
         {j : Fin s // M.incompatible root (label j)},
@@ -265,7 +265,9 @@ theorem sum_labelledAttachedTreeChoiceWeight_fiber
       M.labelledAttachedComponentWeight root label := by
   classical
   unfold labelledAttachedComponentWeight
-  simp [Fintype.card_subtype]
+  simp only [Finset.sum_const, Finset.card_univ, Fintype.card_prod,
+    Fintype.card_coe, nsmul_eq_mul, Nat.cast_mul]
+  rw [Fintype.card_subtype]
   rw [← Finset.sum_filter]
   simp
   ring

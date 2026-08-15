@@ -160,7 +160,7 @@ theorem linkReflectPlaquette_base_eq_of_perpendicular (τ : Fin d) (k : ℤ)
     (p.linkReflect τ k).base τ = 2 * k - p.base τ := by
   rw [Plaquette.linkReflect, Plaquette.siteReflect, if_pos hp]
   simp [Plaquette.translate, Lattice.Cubic.translate, step,
-    SignedDirection.delta_backward, unitVector, siteReflection_apply_eq]
+    SignedDirection.delta_backward, siteReflection_apply_eq]
 
 omit [Group G] in
 theorem linkReflectPlaquette_base_eq_of_not_perpendicular (τ : Fin d) (k : ℤ)
@@ -235,7 +235,7 @@ theorem activePlaquette_linkPartition (Λ : FiniteSpecification d G)
 
 theorem activePlaquette_linkPartition_exclusive
     (Λ : FiniteSpecification d G) (τ : Fin d) (k : ℤ)
-    (hΛ : Λ.LinkSymmetric τ k) (p : Plaquette d) :
+    (_hΛ : Λ.LinkSymmetric τ k) (p : Plaquette d) :
     (p ∈ Λ.linkCrossPlaquettes τ k →
       p ∉ Λ.linkPositivePlaquettes τ k ∧
       p.linkReflect τ k ∉ Λ.linkPositivePlaquettes τ k) ∧
@@ -606,7 +606,7 @@ def linkCrossingGaugeValue (Λ : FiniteSpecification d G)
     (τ : Fin d) (k : ℤ)
     (U : LinkReflection.CrossingConfiguration G (Λ.linkCrossingEdges τ k))
     (x : Site d) : G :=
-  if hx : x τ = k + 1 then
+  if _hx : x τ = k + 1 then
     if he : linkIncomingCrossingEdge τ x ∈ Λ.linkCrossingEdges τ k then
       U ⟨linkIncomingCrossingEdge τ x, he⟩
     else 1
@@ -729,15 +729,12 @@ theorem linkReflect_positiveEdge_endpoints_le
       simp [step, SignedDirection.delta_forward, unitVector]
       omega
   · have hrefs := source_linkReflect_eq_of_direction_ne τ k e.1 hdir
-    have hd : (e.1.linkReflect τ k).direction ≠ τ := by simpa using hdir
     constructor
     · rw [hrefs, linkReflection_apply_eq]
       omega
     · rw [PositiveEdge.target]
-      change step (e.1.linkReflect τ k).source
-        (.forward (e.1.linkReflect τ k).direction) τ ≤ k
-      simp [step, SignedDirection.delta_forward, unitVector, Ne.symm hd]
-      rw [hrefs, linkReflection_apply_eq]
+      rw [PositiveEdge.direction_linkReflect, step_forward_apply,
+        if_neg (Ne.symm hdir), add_zero, hrefs, linkReflection_apply_eq]
       omega
 
 /-- At every dynamic edge, the crossing-field gauge transform of the
@@ -834,7 +831,7 @@ def linkCrossPositiveEdge (τ : Fin d) (p : Plaquette d) : PositiveEdge d :=
 
 omit [Group G] in
 theorem linkCrossPositiveEdge_direction_ne (τ : Fin d) (p : Plaquette d)
-    (hp : p.first = τ ∨ p.second = τ) :
+    (_hp : p.first = τ ∨ p.second = τ) :
     (linkCrossPositiveEdge τ p).direction ≠ τ := by
   unfold linkCrossPositiveEdge
   by_cases hfirst : p.first = τ
@@ -878,7 +875,7 @@ theorem linkCrossPositiveEdge_linkReflect (τ : Fin d) (k : ℤ)
     · subst i
       simp [linkReflection_apply_eq, step_forward_apply, hbase]
       omega
-    · simp [linkReflection_apply_ne hi, step_forward_apply, hi]
+    · simp [step_forward_apply, hi]
   · simp only [hfirst, if_false]
     congr 1
     ext i
@@ -886,7 +883,7 @@ theorem linkCrossPositiveEdge_linkReflect (τ : Fin d) (k : ℤ)
     · subst i
       simp [linkReflection_apply_eq, step_forward_apply, hbase]
       omega
-    · simp [linkReflection_apply_ne hi, step_forward_apply, hi]
+    · simp [step_forward_apply, hi]
 
 /-- Positive half-holonomy attached to a cross plaquette after crossing-link
 gauge fixing. -/
@@ -1169,7 +1166,7 @@ theorem wilsonPotential_crossPlaquette_linkAssemble_fixed
         linkCrossPositiveEdge_linkReflect τ k p.1 hbase hperp
     rw [hc0, hc1]
     rw [← hbottomEq, hbottom, ← hetopEq, htop V.2]
-    simp only [one_mul, inv_one, mul_one]
+    simp only [inv_one, mul_one]
     calc
       ρ.wilsonPotential (V.1 et * (V.2 et)⁻¹) =
           ρ.wilsonPotential ((V.1 et * (V.2 et)⁻¹)⁻¹) :=

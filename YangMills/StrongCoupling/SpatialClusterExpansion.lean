@@ -539,8 +539,10 @@ theorem cardinalityTiltedObservableTouchingMass_le_card_mul_log_two
           simpa [M, Polymer.FinitePolymerModel.scaleByNatWeight] using
             singletonPlaquettePolymer_incompatible_of_mem Λ Φ β p γ hpγ
         simp [hpγ, hinc]
-      · simp [hpγ]
-        positivity
+      · rw [if_neg hpγ]
+        split_ifs
+        · exact mul_nonneg (norm_nonneg _) (Real.exp_pos _).le
+        · exact le_rfl
     calc
       (∑ γ : PlaquettePolymer Λ, if p ∈ γ.1 then w γ else 0) ≤
           ∑ γ : PlaquettePolymer Λ,
@@ -1025,6 +1027,7 @@ def decoratedObservableCardinalityTiltedLinearTreeMajorantDegreeSum
       (decoratedObservableCardinalityTiltedModel F Λ Φ β 0).residualSymmetricPinnedTreeDegreeSum
         (Sum.inr D) n
 
+set_option linter.style.longLine false in
 /-- Every fixed tilted root decoration has a summable residual rooted-tree
 orbit. -/
 theorem summable_decoratedObservableCardinalityTilted_residualTree
@@ -1056,6 +1059,7 @@ theorem summable_decoratedObservableCardinalityTiltedLinearTreeMajorantDegreeSum
   exact (summable_decoratedObservableCardinalityTilted_residualTree
     F Λ Φ hβ D).mul_left _
 
+set_option linter.style.longLine false in
 /-- The total tilted one-root tree majorant is bounded uniformly in the
 finite specification and its exterior field. -/
 theorem tsum_decoratedObservableCardinalityTiltedLinearTreeMajorantDegreeSum_le
@@ -1077,7 +1081,7 @@ theorem tsum_decoratedObservableCardinalityTiltedLinearTreeMajorantDegreeSum_le
   rw [Summable.tsum_finsetSum (fun D _ => hsummable D)]
   calc
     _ = ∑ D : ObservableRootDecoration F Λ,
-        ‖(plaquetteCardinalityTilt (d := d) Φ β : ℂ) ^ D.support.card *
+          ‖(plaquetteCardinalityTilt (d := d) Φ β : ℂ) ^ D.support.card *
             markedSubsetWeight F Λ Φ β D.support‖ *
           (∑' n : ℕ,
             (decoratedObservableCardinalityTiltedModel F Λ Φ β 0).residualSymmetricPinnedTreeDegreeSum
@@ -1292,7 +1296,7 @@ theorem bivariateDecoratedObservableCardinalityTiltSourceMass_one_one_eq
     bivariateDecoratedObservableCardinalityTiltedModel_left_activity,
     bivariateDecoratedObservableCardinalityTiltedModel_right_activity,
     bivariateDecoratedObservableCardinalityTiltedModel_bridge_activity,
-    norm_mul, norm_pow]
+    norm_pow]
 
 /-- Explicit volume-free budget for all three tilted source colours. -/
 def bivariateDecoratedObservableCardinalityTiltUniformSourceBudget
@@ -1595,6 +1599,9 @@ theorem bivariateDecoratedObservableCardinalityTiltSourceMass_regularized_le
       intro q _
       by_cases hq : BivariateDecoratedObservableRootIsSource F H Λ q
       · rw [if_pos hq, if_pos hq]
+        have hsource :=
+          norm_bivariateDecoratedObservableCardinalityTiltedModel_regularized_source_activity_le
+            F H Λ Φ β q hq
         calc
           _ ≤ (ρ *
                 ‖(bivariateDecoratedObservableCardinalityTiltedModel
@@ -1603,8 +1610,8 @@ theorem bivariateDecoratedObservableCardinalityTiltSourceMass_regularized_le
                   (bivariateDecoratedObservableCardinalityTiltRegularizedKPWeight
                     F H Λ Φ β q) :=
             mul_le_mul_of_nonneg_right
-              (norm_bivariateDecoratedObservableCardinalityTiltedModel_regularized_source_activity_le
-                F H Λ Φ β q hq) (Real.exp_pos _).le
+              hsource
+              (Real.exp_pos _).le
           _ = _ := by ring
       · simp [hq]
     _ ≤ _ :=
@@ -2167,7 +2174,7 @@ theorem tsum_bivariateDecoratedObservableMixedCardinalityWeightedNormDegreeSum_s
     · rw [hAsActivity]
       simp only [grading, bivariateDecoratedObservableRootGrading,
         Fin.isValue, ↓reduceIte, Nat.cast_one, one_mul,
-        BivariateDecoratedObservableRootIsSource, if_true]
+        BivariateDecoratedObservableRootIsSource]
       exact le_rfl
     · have hne : (0 : Fin 2) ≠ 1 := by decide
       simp only [grading, bivariateDecoratedObservableRootGrading,

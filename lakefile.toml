@@ -8,6 +8,11 @@ autoImplicit = false
 pp.unicode.fun = true
 relaxedAutoImplicit = false
 weak.linter.mathlibStandardSet = true
+# Many theorem families deliberately retain a uniform ambient context.  Keep
+# those public signatures stable while enabling the remaining Mathlib lints.
+linter.unusedSectionVars = false
+linter.unusedDecidableInType = false
+linter.unusedFintypeInType = false
 
 [[require]]
 name = "mathlib"
