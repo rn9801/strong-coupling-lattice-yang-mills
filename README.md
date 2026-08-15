@@ -6,10 +6,10 @@ coupling in Lean 4.  The project works on the infinite cubic lattice
 fields, and derives the thermodynamic results from a convergent plaquette
 polymer/Mayer expansion.
 
-Milestones 0--19 are complete.  Integer/site, half-integer/link, and affine
-diagonal reflection positivity are connected from concrete cubic Gibbs
-specifications to the cluster-constructed infinite-volume measure, together
-with the corresponding reflected Cauchy--Schwarz inequalities.
+Integer/site, half-integer/link, and affine diagonal reflection positivity are
+proved for concrete cubic Gibbs specifications and transferred to the
+cluster-constructed infinite-volume measure, together with the corresponding
+reflected Cauchy--Schwarz inequalities.
 The principal proved results are:
 
 - finite-volume gauge invariance and finite-volume DLR consistency;
@@ -49,10 +49,9 @@ The thermodynamic limit, clustering, analyticity, pressure, and area-law
 proofs use the cluster expansion and its explicit KP/tree bounds.  They do not
 use the separate periodic-torus Dobrushin regression theorem.
 
-The optional next phase is Osterwalder--Schrader reconstruction and a genuine
-Hamiltonian spectral-gap theorem.  See [`STATUS.md`](STATUS.md) for the exact
-declaration-level progress and [`docs/ROADMAP.md`](docs/ROADMAP.md) for the
-remaining optional milestone.
+Osterwalder--Schrader reconstruction and a genuine Hamiltonian spectral-gap
+theorem are not currently formalized.  See [`STATUS.md`](STATUS.md) for exact
+declaration-level coverage and verified build records.
 
 ## API conventions and theorem scope
 
@@ -770,9 +769,9 @@ and
 
 ## Reusable layers and specialization boundaries
 
-The directory names reflect mathematical dependencies rather than merely the
-order in which milestones were completed.  A result at a higher row in this
-table can be reused without importing the rows below it.
+The directory names reflect mathematical dependencies and reuse boundaries.
+A result at a higher row in this table can be reused without importing the
+rows below it.
 
 | Layer | Mathematical input | Reusable output | First model-specific ingredient |
 |---|---|---|---|
@@ -846,7 +845,7 @@ the Dobrushin mass-gap theorem.
 All listed project theorems are proved without `sorry`, `admit`, custom
 axioms, or unsafe proof shortcuts.  Their expected kernel footprint consists
 only of standard Lean/Mathlib foundations such as `propext`,
-`Classical.choice`, and `Quot.sound`; the milestone regression files run
+`Classical.choice`, and `Quot.sound`; the theorem regression files run
 `#print axioms` on the headline declarations.
 
 ## Dependency structure and builds
@@ -867,7 +866,7 @@ YangMills
     └── center selection and Wilson Taylor jets
 
 YangMills.Regression                    (opt-in)
-├── milestone tests and axiom audits
+├── theorem tests and axiom audits
 ├── older finite-box Dobrushin comparison route
 └── pinned Douglas periodic-torus baseline → LGT
 ```
@@ -886,7 +885,7 @@ lake build
 ```
 
 For the comprehensive regression build, including the pinned periodic-torus
-baseline and every milestone test, run:
+baseline and the full theorem and axiom-audit suite, run:
 
 ```sh
 lake build +YangMills.Regression
@@ -904,6 +903,11 @@ The first `lake update` downloads the pinned dependencies and available
 Mathlib artifacts.  Subsequent native incremental builds should not rebuild
 the Douglas regression path unless `YangMills.Regression` or a compatibility
 module is requested.
+
+The project-owned modules compile without warnings under the public, default,
+and comprehensive regression targets.  A clean comprehensive build may still
+display warnings emitted by the pinned Douglas dependencies; those diagnostics
+are upstream and are kept separate from the project-native warning policy.
 
 The comprehensive root also imports
 [`YangMills/Tests/ReviewerSmoke.lean`](YangMills/Tests/ReviewerSmoke.lean), a
@@ -929,7 +933,7 @@ YangMills/
   Probability/     generic finite-product Gibbs and center-selection tools
   StrongCoupling/  plaquette expansion, thermodynamic limit, clustering,
                    pressure, analyticity, and area law
-  Tests/           milestone, axiom, and critical-review regressions
+  Tests/           theorem, axiom, and critical-review regressions
 ```
 
 The generic `Polymer/` layer does not depend on Yang--Mills modules.  Core
@@ -1032,11 +1036,12 @@ are not repeated throughout unrelated cluster-expansion modules.
    Apache-2.0, commit `c5ea00351c28e24afc9f0f84379aa41082b1188f`
    (toolchain `v4.30.0`).
 
-The first four items are the mathematical references identified in the
-project roadmap.  Items 5--6 document the named graph methods used in the
-generic Mayer proof.  Items 7--9 are software/formalization sources rather
-than substitutes for the mathematical references.  Exact dependency pins,
-including transitive packages, are in [`lake-manifest.json`](lake-manifest.json).
+The first four items are the principal mathematical references for the lattice
+gauge, cluster-expansion, and reflection-positivity arguments.  Items 5--6
+document the named graph methods used in the generic Mayer proof.  Items 7--9
+are software/formalization sources rather than substitutes for the
+mathematical references.  Exact dependency pins, including transitive
+packages, are in [`lake-manifest.json`](lake-manifest.json).
 
 ## Scope and terminology
 
@@ -1068,10 +1073,9 @@ including transitive packages, are in [`lake-manifest.json`](lake-manifest.json)
 See also:
 
 - [`STATUS.md`](STATUS.md) for exact completed declarations and build logs;
-- [`docs/ROADMAP.md`](docs/ROADMAP.md) for the concise milestone roadmap;
-- [`docs/DETAILED_ROADMAP.md`](docs/DETAILED_ROADMAP.md) for the original
-  long-form plan;
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for dependency rules;
+- [`docs/DEPENDENCY_AUDIT.md`](docs/DEPENDENCY_AUDIT.md) for the public and
+  regression import closures;
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) for the development workflow.
 
 The project is released under the [Apache License 2.0](LICENSE).
