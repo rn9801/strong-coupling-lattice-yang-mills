@@ -274,9 +274,19 @@ Wρ(C,A) = χρ(Hol(A,C)).
 ```
 
 Both are gauge invariant.  `CenterChargeData` records a central element that
-acts in the representation by a nontrivial scalar phase;
-`FiniteCenterChargeData` additionally records its finite order.  This is the
-precise hypothesis used by the center-selection and area-law arguments.
+acts in the representation by a nontrivial scalar phase.  Explicitly, it
+supplies `z : G` and `ω : ℂ` such that `zg = gz` for every `g`, `‖ω‖ = 1`,
+`ω ≠ 1`, and
+
+```text
+ρ(z) = ω I.
+```
+
+`FiniteCenterChargeData` additionally supplies an integer `q ≥ 2` with
+`ω^q = 1`.  Thus the scalar center phase has finite nontrivial order; the
+formalization does not assume that `ρ` is irreducible and does not invoke
+Schur's lemma.  This is the precise hypothesis used by the center-selection
+and area-law arguments.
 
 Principal files:
 [`Wilson/Representation.lean`](YangMills/Wilson/Representation.lean),
@@ -456,7 +466,12 @@ In the exact declaration, `dist` is
 `centeredClusterSupportDistance F.support H.support`: it is the global
 plaquette-incidence separation when the recorded supports are disjoint, and
 zero otherwise.  The amplitude is an explicit sum of the two-root decorated
-cluster majorant and the trivial observable-norm terms.  The mass is
+cluster majorant and the trivial observable-norm terms.  It is independent of
+the relative location and distance of the two supports.  Its current explicit
+formula depends on `F` and `H` through their sup norms and their individual
+recorded support cardinalities; hence translating two fixed observables apart
+does not change it.  A constant uniform over arbitrarily large supports and
+depending only on `‖F‖∞` and `‖H‖∞` is not claimed.  The mass is
 
 ```text
 centeredClusterMass Φ β = -log(plaquetteClusterDecayRate Φ β) > 0.
@@ -564,6 +579,21 @@ circle of radius `r` converts the Taylor zero of order `R*T` into
   ≤ K(Φ,r)^(2*(R+T))
       * exp(-log(r/|β|) * (R*T)).
 ```
+
+Here `i,j : Fin d` are distinct coordinate axes.  Starting from the base site
+`x`, the boundary path takes `R` positive `i`-steps, `T` positive `j`-steps,
+and then the corresponding negative runs back to `x`.  Thus `R*T` is the
+filling area and `2*(R+T)` is the perimeter.
+
+The exponential perimeter factor comes from the present decorated
+observable-root KP bound: on the analytic circle `|β| = r`, its uniform bound
+grows exponentially with the Wilson-loop support cardinality, which is at
+most the loop length.  The center-selection argument supplies the separate
+area power `(|β|/r)^(R*T)`.  Consequently the displayed estimate is
+equivalently `exp(-σ area + c perimeter)`, a standard area law with an explicit
+boundary correction.  The perimeter term is not asserted to be optimal or
+intrinsically necessary; removing it would require a sharper Wilson-loop
+source bound than is currently formalized.
 
 The Lean theorem `norm_integral_wilsonRectangle_le_areaLaw` assumes
 `i ≠ j`, `0 < r`, `r < latticeStrongCouplingRadius d Φ.bound`, and
