@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this formalization, please cite it using these metadata."
+title: "Strong-Coupling Lattice Yang--Mills in Lean"
+type: software
+authors:
+  - given-names: "Ron"
+    family-names: "Nissim"
+repository-code: "https://github.com/rn9801/strong-coupling-lattice-yang-mills"
+license: "Apache-2.0"
+version: "0.1.0"
+keywords:
+  - "Lean 4"
+  - "lattice gauge theory"
+  - "Yang--Mills theory"
+  - "cluster expansion"
+  - "formalized mathematics"
